@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {
-    internal class Transaction
+    public class Transaction
     {
         [Key]
         public int Id { get; set; }

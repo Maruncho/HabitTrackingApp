@@ -4,25 +4,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {
-    internal class BadHabit
+    public class Treat
     {
-        public BadHabit()
+        public Treat()
         {
-            SessionBadHabits = new HashSet<SessionBadHabit>();
+            SessionTreats = new HashSet<SessionTreat>();
         }
 
         [Key]
         public int Id { get; set; }
 
-        [MaxLength(32)]
         [Required]
+        [MaxLength(32)]
         public required string Name { get; set; }
 
         [Required]
-        public int CreditsSuccess { get; set; }
+        public byte QuantityPerSession { get; set; }
 
         [Required]
-        public int CreditsFail { get; set; }
+        public int CreditsPrice { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
@@ -31,6 +31,6 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [ForeignKey(nameof(UserId))]
         public required AppUser User { get; set; }
 
-        public ICollection<SessionBadHabit> SessionBadHabits { get; set; } = null!;
+        public ICollection<SessionTreat> SessionTreats { get; set; } = null!;
     }
 }

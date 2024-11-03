@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HTApp.Infrastructure.EntityModels
 {
-    internal class ApplicationDbContext : IdentityDbContext<AppUser>
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         public virtual DbSet<AppUser> AppUsers { get; set; }
 

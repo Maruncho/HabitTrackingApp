@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels
 {
-    internal class AppUser : IdentityUser
+    public class AppUser : IdentityUser
     {
         public AppUser()
         {

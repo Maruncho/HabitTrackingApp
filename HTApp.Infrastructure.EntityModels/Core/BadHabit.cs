@@ -4,13 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {
-    internal class GoodHabit
+    public class BadHabit
     {
-        public GoodHabit()
+        public BadHabit()
         {
-            SessionGoodHabits = new HashSet<SessionGoodHabit>();
+            SessionBadHabits = new HashSet<SessionBadHabit>();
         }
-
 
         [Key]
         public int Id { get; set; }
@@ -25,8 +24,6 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [Required]
         public int CreditsFail { get; set; }
 
-        public bool IsActive { get; set; } = true;
-
         public bool IsDeleted { get; set; } = false;
 
         [Required]
@@ -34,6 +31,6 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [ForeignKey(nameof(UserId))]
         public required AppUser User { get; set; }
 
-        public ICollection<SessionGoodHabit> SessionGoodHabits { get; set; } = null!;
+        public ICollection<SessionBadHabit> SessionBadHabits { get; set; } = null!;
     }
 }
