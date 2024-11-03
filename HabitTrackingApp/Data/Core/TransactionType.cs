@@ -27,7 +27,7 @@ namespace HabitTrackingApp.Data.Core
     {
         Unknown = 0,
         Manual = 1,
-        DeletedType = 2, // Wow, backwards compatibility is not your cup of tea! Don't forget to change the nulls in the DB!
+        DeletedTransactionType = 2, // Wow, backwards compatibility is not your cup of tea! Don't forget to change the nulls in the DB!
 
         GoodHabitSuccess = 100,
         GoodHabitFail = 101,
@@ -44,7 +44,6 @@ namespace HabitTrackingApp.Data.Core
     public class TransactionTypeConfiguration
         : IEntityTypeConfiguration<TransactionType>
     {
-        //EF complains about constructors and I'm too bothered to fix it. It's a trivial Model anyway.
         private static TransactionType newTransactionType(int id, string desc)
         {
             return new TransactionType { Id = id, Message = desc};

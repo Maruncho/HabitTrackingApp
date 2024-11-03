@@ -65,11 +65,6 @@ namespace HabitTrackingApp.Data
 
             modelBuilder.ApplyConfiguration(new TransactionTypeConfiguration());
 
-            //I don't know if this works. Gonna do it through the DbContext on new entry.
-            //modelBuilder.Entity<Session>()
-            //    .Property(s => s.Refunds)
-            //    .HasDefaultValueSql("AspNetUsers.[RefundsPerSession]");
-
 
             modelBuilder.Entity<SessionGoodHabit>()
                 .Property(s => s.Completed)
