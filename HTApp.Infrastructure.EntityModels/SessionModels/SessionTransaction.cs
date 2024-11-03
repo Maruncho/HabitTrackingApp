@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HTApp.Infrastructure.EntityModels.SessionModels
 {
     [PrimaryKey(nameof(SessionId), nameof(TransactionId))]
-    public class SessionTransaction
+    internal class SessionTransaction
     {
         public int SessionId { get; set; }
         [ForeignKey(nameof(SessionId))]

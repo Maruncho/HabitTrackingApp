@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HTApp.Infrastructure.EntityModels.SessionModels
 {
     [PrimaryKey(nameof(SessionId), nameof(BadHabitId))]
-    public class SessionBadHabit
+    internal class SessionBadHabit
     {
         public int SessionId { get; set; }
         [ForeignKey(nameof(SessionId))]

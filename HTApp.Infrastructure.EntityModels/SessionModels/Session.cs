@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.SessionModels
 {
-    public class Session
+    internal class Session
     {
         public Session()
         {

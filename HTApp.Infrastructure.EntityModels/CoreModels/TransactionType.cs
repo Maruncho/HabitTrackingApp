@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {
-    public class TransactionType
+    internal class TransactionType
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
