@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HabitTrackingApp.Data.Core
+namespace HTApp.Infrastructure.EntityModels.Core
 {
     public class Transaction
     {
@@ -13,7 +13,7 @@ namespace HabitTrackingApp.Data.Core
 
         public int? TypeId { get; set; }
         [ForeignKey(nameof(TypeId))]
-        public TransactionType? Type { get; set; } 
+        public TransactionType? Type { get; set; }
 
         [Required]
         public required string UserId { get; set; }

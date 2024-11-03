@@ -1,8 +1,8 @@
-﻿using HabitTrackingApp.Data.SessionModels;
+﻿using HTApp.Infrastructure.EntityModels.SessionModels;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HabitTrackingApp.Data.Core
+namespace HTApp.Infrastructure.EntityModels.Core
 {
     public class BadHabit
     {

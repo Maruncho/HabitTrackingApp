@@ -1,10 +1,10 @@
-﻿using HabitTrackingApp.Data.Core;
-using HabitTrackingApp.Data.SessionModels;
+﻿using HTApp.Infrastructure.EntityModels.Core;
+using HTApp.Infrastructure.EntityModels.SessionModels;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HabitTrackingApp.Data
+namespace HTApp.Infrastructure.EntityModels
 {
     public class AppUser : IdentityUser
     {
@@ -24,7 +24,7 @@ namespace HabitTrackingApp.Data
         public required byte RefundsPerSession { get; set; }
 
         public ICollection<GoodHabit> GoodHabits { get; set; } = null!;
-        public ICollection<BadHabit> BadHabits { get; set;} = null!;
+        public ICollection<BadHabit> BadHabits { get; set; } = null!;
         public ICollection<Treat> Treats { get; set; } = null!;
         public ICollection<Transaction> Transactions { get; set; } = null!;
         public ICollection<Session> Sessions { get; set; } = null!;

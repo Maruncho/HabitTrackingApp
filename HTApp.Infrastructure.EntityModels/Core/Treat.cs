@@ -1,31 +1,28 @@
-﻿using HabitTrackingApp.Data.SessionModels;
+﻿using HTApp.Infrastructure.EntityModels.SessionModels;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HabitTrackingApp.Data.Core
+namespace HTApp.Infrastructure.EntityModels.Core
 {
-    public class GoodHabit
+    public class Treat
     {
-        public GoodHabit()
+        public Treat()
         {
-            SessionGoodHabits = new HashSet<SessionGoodHabit>();
+            SessionTreats = new HashSet<SessionTreat>();
         }
-
 
         [Key]
         public int Id { get; set; }
 
-        [MaxLength(32)]
         [Required]
+        [MaxLength(32)]
         public required string Name { get; set; }
 
         [Required]
-        public int CreditsSuccess { get; set; }
+        public byte QuantityPerSession { get; set; }
 
         [Required]
-        public int CreditsFail { get; set; }
-
-        public bool IsActive { get; set; } = true;
+        public int CreditsPrice { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
@@ -34,6 +31,6 @@ namespace HabitTrackingApp.Data.Core
         [ForeignKey(nameof(UserId))]
         public required AppUser User { get; set; }
 
-        public ICollection<SessionGoodHabit> SessionGoodHabits { get; set; } = null!;
+        public ICollection<SessionTreat> SessionTreats { get; set; } = null!;
     }
 }

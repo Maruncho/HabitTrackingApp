@@ -1,14 +1,14 @@
-﻿using HabitTrackingApp.Data.Core;
-using HabitTrackingApp.Data.SessionModels;
+﻿using HTApp.Infrastructure.EntityModels.Core;
+using HTApp.Infrastructure.EntityModels.SessionModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace HabitTrackingApp.Data
+namespace HTApp.Infrastructure.EntityModels
 {
     public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
-        public virtual DbSet<AppUser> AppUsers {  get; set; }
+        public virtual DbSet<AppUser> AppUsers { get; set; }
 
         public virtual DbSet<GoodHabit> GoodHabits { get; set; }
         public virtual DbSet<BadHabit> BadHabits { get; set; }

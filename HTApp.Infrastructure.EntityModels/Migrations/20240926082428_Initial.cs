@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace HabitTrackingApp.Data.Migrations
+namespace HTApp.Infrastructure.EntityModels.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

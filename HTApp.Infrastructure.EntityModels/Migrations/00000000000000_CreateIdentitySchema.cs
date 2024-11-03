@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
-namespace HabitTrackingApp.Data.Migrations
+namespace HTApp.Infrastructure.EntityModels.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

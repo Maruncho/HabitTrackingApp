@@ -1,4 +1,4 @@
-namespace HabitTrackingApp.Models
+namespace HTApp.Web.MVC.Models
 {
     public class ErrorViewModel
     {

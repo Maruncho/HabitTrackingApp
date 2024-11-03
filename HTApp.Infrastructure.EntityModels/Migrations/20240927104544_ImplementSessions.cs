@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace HabitTrackingApp.Data.Migrations
+namespace HTApp.Infrastructure.EntityModels.Migrations
 {
     /// <inheritdoc />
     public partial class ImplementSessions : Migration

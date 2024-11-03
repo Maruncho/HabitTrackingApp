@@ -1,8 +1,8 @@
-﻿using HabitTrackingApp.Data.Core;
+﻿using HTApp.Infrastructure.EntityModels.Core;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HabitTrackingApp.Data.SessionModels
+namespace HTApp.Infrastructure.EntityModels.SessionModels
 {
     [PrimaryKey(nameof(SessionId), nameof(TransactionId))]
     public class SessionTransaction

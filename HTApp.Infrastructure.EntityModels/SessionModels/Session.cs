@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HabitTrackingApp.Data.SessionModels
+namespace HTApp.Infrastructure.EntityModels.SessionModels
 {
     public class Session
     {

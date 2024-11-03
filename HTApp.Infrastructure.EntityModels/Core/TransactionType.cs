@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HabitTrackingApp.Data.Core
+namespace HTApp.Infrastructure.EntityModels.Core
 {
     public class TransactionType
     {
@@ -20,7 +20,7 @@ namespace HabitTrackingApp.Data.Core
     ////////////////////////////////////////////////////////
     // PLEASE KEEP THE ENUM AND THE CONFIGURATION IN SYNC //
     ////////////////////////////////////////////////////////
-   
+
 
     //Bad name, sorry! ;) Oh well! ;]
     public enum TransactionEnum
@@ -46,7 +46,7 @@ namespace HabitTrackingApp.Data.Core
     {
         private static TransactionType newTransactionType(int id, string desc)
         {
-            return new TransactionType { Id = id, Message = desc};
+            return new TransactionType { Id = id, Message = desc };
         }
 
         public void Configure(EntityTypeBuilder<TransactionType> builder)
