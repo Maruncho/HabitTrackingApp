@@ -1,6 +1,6 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class GoodHabitSimple
+public class BadHabitSimple
 {
     public int Id { get; set; }
 
@@ -9,6 +9,4 @@ public class GoodHabitSimple
     public int CreditsSuccess { get; set; }
 
     public int CreditsFail { get; set; }
-
-    public bool IsActive { get; set; } = true;
 }

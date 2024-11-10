@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HTApp.Core.Contracts.Interfaces;
+﻿namespace HTApp.Core.Contracts;
 
 // No sync methods, only async. It's easy to add them whenever you would need them.
 

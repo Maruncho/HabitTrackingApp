@@ -1,20 +1,23 @@
-﻿using HTApp.Core.Contracts.Interfaces;
+﻿using HTApp.Core.Contracts;
 using HTApp.Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HTApp.Infrastructure.Repositories.Defaults
+namespace HTApp.Infrastructure.Repositories;
+
+public abstract class GenericRepositoryBase<Entity, IdType>
+    : IGenericRepository<Entity, IdType>
+    where Entity : class
 {
-    public abstract class GenericRepositoryBase<Entity, IdType>
-        (ApplicationDbContext db, ILogger logger)
-        : IGenericRepository<Entity, IdType>
-        where Entity : class
+    protected ApplicationDbContext db;
+    protected ILogger logger;
+
+    protected GenericRepositoryBase(ApplicationDbContext db, ILogger logger)
     {
+        this.db = db;
+        this.logger = logger;
+    }
+
     public ValueTask<Entity?> GetAsync(IdType id)
     {
         return db.FindAsync<Entity>(id);
@@ -55,7 +58,5 @@ namespace HTApp.Infrastructure.Repositories.Defaults
             logger.LogError(e, "EF Core said this, trying to save:");
             return Task.FromResult(false);
         }
-    }
-
     }
 }
