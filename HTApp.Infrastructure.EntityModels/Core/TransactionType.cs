@@ -31,11 +31,11 @@ namespace HTApp.Infrastructure.EntityModels.Core
 
         GoodHabitSuccess = 100,
         GoodHabitFail = 101,
-        GoodHabitSuccessChangeOfMind = 102,
+        GoodHabitSuccessCancel = 102,
 
         BadHabitSuccess = 200,
         BadHabitFail = 201,
-        BadHabitFailChangeOfMind = 202,
+        BadHabitFailCancel = 202,
 
         BuyingTreat = 300,
         RefundTreat = 301,
