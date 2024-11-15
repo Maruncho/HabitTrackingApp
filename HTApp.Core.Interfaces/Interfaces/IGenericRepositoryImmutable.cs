@@ -6,8 +6,9 @@
 // The caller checks for valid arguments.
 // The callee (a IGenericRepository<>) is responsible for change tracking.
 //      SaveChangesAsync() informs the caller whether the changes were successful.
-public interface IGenericRepository<Entity, IdType> : IGenericRepositoryImmutable<Entity, IdType>
+public interface IGenericRepositoryImmutable<Entity, IdType>
 {
-    public Task DeleteAsync(Entity entity);
-    public Task UpdateAsync(Entity entity);
+    public ValueTask<Entity?> GetAsync(IdType id); //EF Core FindAsync returns ValueTask. Change if you don't use EF Core I guess.
+    public Task AddAsync(Entity entity);
+    public Task<bool> SaveChangesAsync();
 }
