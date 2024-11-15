@@ -18,30 +18,30 @@ public abstract class GenericRepositoryBase<Entity, IdType>
         this.logger = logger;
     }
 
-    public ValueTask<Entity?> GetAsync(IdType id)
+    public virtual ValueTask<Entity?> GetAsync(IdType id)
     {
         return db.FindAsync<Entity>(id);
     }
 
-    public Task AddAsync(Entity entity)
+    public virtual Task AddAsync(Entity entity)
     {
         db.Add<Entity>(entity);
         return Task.CompletedTask;
     }
 
-    public Task DeleteAsync(Entity entity)
+    public virtual Task DeleteAsync(Entity entity)
     {
         db.Remove<Entity>(entity);
         return Task.CompletedTask;
     }
 
-    public Task UpdateAsync(Entity entity)
+    public virtual Task UpdateAsync(Entity entity)
     {
         db.Update<Entity>(entity);
         return Task.CompletedTask;
     }
 
-    public Task<bool> SaveChangesAsync()
+    public virtual Task<bool> SaveChangesAsync()
     {
         try
         {
@@ -55,6 +55,7 @@ public abstract class GenericRepositoryBase<Entity, IdType>
         }
         catch(DbUpdateException e)
         {
+            //I'm new to ASP.Net, so I don't know if there is a better way to log with more useful information.
             logger.LogError(e, "EF Core said this, trying to save:");
             return Task.FromResult(false);
         }
