@@ -2,6 +2,7 @@
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.EntityModels.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.Extensions.Logging;
 
 namespace HTApp.Infrastructure.Repositories;
@@ -27,5 +28,18 @@ public class GoodHabitRepository
                 IsActive = x.IsActive,
             })
             .ToArrayAsync();
+    }
+    public override async ValueTask<GoodHabit?> GetAsync(int id)
+    {
+        var res = await db.GoodHabits.FindAsync(id);
+        if (res?.IsDeleted ?? false) res = null;
+        return res;
+    }
+
+    public override Task DeleteAsync(GoodHabit entity)
+    {
+        entity.IsDeleted = true;
+        db.Update(entity);
+        return Task.CompletedTask;
     }
 }

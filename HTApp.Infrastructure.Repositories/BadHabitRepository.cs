@@ -27,4 +27,18 @@ public class BadHabitRepository
             })
             .ToArrayAsync();
     }
+
+    public override async ValueTask<BadHabit?> GetAsync(int id)
+    {
+        var res = await db.BadHabits.FindAsync(id);
+        if (res?.IsDeleted ?? false) res = null;
+        return res;
+    }
+
+    public override Task DeleteAsync(BadHabit entity)
+    {
+        entity.IsDeleted = true;
+        db.Update(entity);
+        return Task.CompletedTask;
+    }
 }
