@@ -2,23 +2,22 @@
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.EntityModels.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace HTApp.Infrastructure.Repositories;
 
 public class BadHabitRepository
-    : GenericRepositoryBase<BadHabit, int>,
+    : RepositoryBase<EntityModels.Core.BadHabit, int>,
       IBadHabitRepository<string, int, BadHabit>
 {
-    public BadHabitRepository(ApplicationDbContext db, ILogger logger) : base(db, logger)
+    public BadHabitRepository(ApplicationDbContext db) : base(db)
     {
     }
 
-    public Task<BadHabitSimple[]> GetSimpleAll(string userId)
+    public Task<BadHabitModel[]> GetAll(string userId)
     {
         return db.BadHabits
             .Where(x => x.IsDeleted == false && x.User.Id == userId)
-            .Select(x => new BadHabitSimple
+            .Select(x => new BadHabitModel
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -28,17 +27,17 @@ public class BadHabitRepository
             .ToArrayAsync();
     }
 
-    public override async ValueTask<BadHabit?> GetAsync(int id)
+    protected override async ValueTask<BadHabit?> Get(int id)
     {
         var res = await db.BadHabits.FindAsync(id);
         if (res?.IsDeleted ?? false) res = null;
         return res;
     }
 
-    public override Task DeleteAsync(BadHabit entity)
+    protected override ValueTask Delete(BadHabit entity)
     {
         entity.IsDeleted = true;
         db.Update(entity);
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

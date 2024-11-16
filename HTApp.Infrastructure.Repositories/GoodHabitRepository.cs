@@ -2,24 +2,22 @@
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.EntityModels.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-using Microsoft.Extensions.Logging;
 
 namespace HTApp.Infrastructure.Repositories;
 
 public class GoodHabitRepository
-    : GenericRepositoryBase<GoodHabit, int>,
+    : RepositoryBase<GoodHabit, int>,
       IGoodHabitRepository<string, int, GoodHabit>
 {
-    public GoodHabitRepository(ApplicationDbContext db, ILogger logger) : base(db, logger)
+    public GoodHabitRepository(ApplicationDbContext db) : base(db)
     {
     }
 
-    public Task<GoodHabitSimple[]> GetSimpleAll(string userId)
+    public Task<GoodHabitModel[]> GetAll(string userId)
     {
         return db.GoodHabits
             .Where(x => x.IsDeleted == false && x.User.Id == userId)
-            .Select(x => new GoodHabitSimple
+            .Select(x => new GoodHabitModel
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -29,17 +27,17 @@ public class GoodHabitRepository
             })
             .ToArrayAsync();
     }
-    public override async ValueTask<GoodHabit?> GetAsync(int id)
+    protected override async ValueTask<GoodHabit?> Get(int id)
     {
         var res = await db.GoodHabits.FindAsync(id);
         if (res?.IsDeleted ?? false) res = null;
         return res;
     }
 
-    public override Task DeleteAsync(GoodHabit entity)
+    protected override ValueTask Delete(GoodHabit entity)
     {
         entity.IsDeleted = true;
         db.Update(entity);
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class TransactionSimple
+public class TransactionModel
 {
     public int Id { get; set; }
 
