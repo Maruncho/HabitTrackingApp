@@ -87,10 +87,6 @@ namespace HTApp.Infrastructure.EntityModels
 
 
             modelBuilder.Entity<SessionTreat>()
-                .Property(s => s.UnitsBought)
-                .HasDefaultValue(0);
-
-            modelBuilder.Entity<SessionTreat>()
                 .HasOne(s => s.Treat)
                 .WithMany(t => t.SessionTreats)
                 .OnDelete(DeleteBehavior.NoAction);

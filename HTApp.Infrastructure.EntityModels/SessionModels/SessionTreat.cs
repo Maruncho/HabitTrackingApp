@@ -17,6 +17,6 @@ namespace HTApp.Infrastructure.EntityModels.SessionModels
         public required Treat Treat { get; set; }
 
         [Required]
-        public byte UnitsBought { get; set; } = 0;
+        public byte UnitsLeft { get; set; }
     }
 }

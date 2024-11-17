@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {
-    public class BadHabit
+    public class BadHabit : ISoftDeletable
     {
         public BadHabit()
         {

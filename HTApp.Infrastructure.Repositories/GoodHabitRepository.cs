@@ -34,10 +34,14 @@ public class GoodHabitRepository
         return res;
     }
 
-    protected override ValueTask Delete(GoodHabit entity)
+    protected override IQueryable<GoodHabit> GetAll()
+    {
+        return base.GetAll().Where(x => x.IsDeleted == false);
+    }
+
+    protected override void Delete(GoodHabit entity)
     {
         entity.IsDeleted = true;
         db.Update(entity);
-        return ValueTask.CompletedTask;
     }
 }

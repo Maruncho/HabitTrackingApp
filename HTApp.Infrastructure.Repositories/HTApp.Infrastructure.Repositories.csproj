@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BadHabitRepository.cs~RF6c2dcd4.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HTApp.Core.Interfaces\HTApp.Core.Contracts.csproj" />
     <ProjectReference Include="..\HTApp.Infrastructure.EntityModels\HTApp.Infrastructure.EntityModels.csproj" />
   </ItemGroup>

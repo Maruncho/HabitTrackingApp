@@ -1,7 +1,4 @@
-﻿using HTApp.Core.Contracts;
-using HTApp.Infrastructure.EntityModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using HTApp.Infrastructure.EntityModels;
 
 namespace HTApp.Infrastructure.Repositories;
 
@@ -20,9 +17,8 @@ public abstract class RepositoryImmutableBase<Entity, IdType>
         return db.FindAsync<Entity>(id);
     }
 
-    protected virtual ValueTask Add(Entity entity)
+    protected virtual IQueryable<Entity> GetAll()
     {
-        db.Add<Entity>(entity);
-        return ValueTask.CompletedTask;
+        return db.Set<Entity>();
     }
 }

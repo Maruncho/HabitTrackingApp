@@ -22,7 +22,7 @@ public class TransactionRepository
     {
         return db.Transactions
             .Where(t => t.UserId == userId)
-            .Where(t => t.TypeId != null) //It's necessary for the enumConverter above. Shouldn't happen anyway, unless someone(me) screwed up.
+            .Where(t => t.TypeId != null) //It's necessary for the enumConverter above. Shouldn't happen anyway, unless someone (me) screwed up.
             .Select(t => new TransactionModel
             {
                 Id = t.Id,

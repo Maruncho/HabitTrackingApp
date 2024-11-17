@@ -13,6 +13,11 @@ public class BadHabitRepository
     {
     }
 
+    public Task<BadHabitModel> Get(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<BadHabitModel[]> GetAll(string userId)
     {
         return db.BadHabits
@@ -27,17 +32,24 @@ public class BadHabitRepository
             .ToArrayAsync();
     }
 
-    protected override async ValueTask<BadHabit?> Get(int id)
+    public ValueTask Add(BadHabitModel model)
     {
-        var res = await db.BadHabits.FindAsync(id);
-        if (res?.IsDeleted ?? false) res = null;
-        return res;
+        throw new NotImplementedException();
     }
 
-    protected override ValueTask Delete(BadHabit entity)
+    public ValueTask Update(int id, BadHabitModel model)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ValueTask Delete(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void Delete(BadHabit entity)
     {
         entity.IsDeleted = true;
         db.Update(entity);
-        return ValueTask.CompletedTask;
     }
 }

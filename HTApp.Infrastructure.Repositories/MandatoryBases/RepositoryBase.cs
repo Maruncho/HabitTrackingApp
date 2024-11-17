@@ -14,9 +14,8 @@ public abstract class RepositoryBase<Entity, IdType>
     {
     }
 
-    protected virtual ValueTask Delete(Entity entity)
+    protected virtual void Delete(Entity entity)
     {
         db.Remove<Entity>(entity);
-        return ValueTask.CompletedTask;
     }
 }
