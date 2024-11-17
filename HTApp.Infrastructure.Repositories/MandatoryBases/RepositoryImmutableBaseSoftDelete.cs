@@ -3,7 +3,7 @@
 namespace HTApp.Infrastructure.Repositories;
 
 public abstract class RepositoryImmutableBaseSoftDelete<Entity, IdType>
-    where Entity : SoftDeletable//, ISoftDeletable
+    where Entity : SoftDeletable
 {
     private ApplicationDbContext db;
 
