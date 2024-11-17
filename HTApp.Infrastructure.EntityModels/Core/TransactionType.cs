@@ -27,7 +27,7 @@ namespace HTApp.Infrastructure.EntityModels.Core
     {
         Unknown = 0,
         Manual = 1,
-        DeletedTransactionType = 2, // Wow, backwards compatibility is not your cup of tea! Don't forget to change the nulls in the DB!
+        DeletedTransactionType = 2,
 
         GoodHabitSuccess = 100,
         GoodHabitFail = 101,

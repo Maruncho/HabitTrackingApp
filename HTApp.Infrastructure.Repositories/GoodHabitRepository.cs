@@ -28,23 +28,71 @@ public class GoodHabitRepository
             .ToArrayAsync();
     }
 
-    public Task<GoodHabitModel> Get(string userId)
+    public async ValueTask<GoodHabitInputModel<string>?> GetInputModel(int id)
     {
-        throw new NotImplementedException();
+        GoodHabit? entity = await Get(id);
+
+        if(entity is null)
+        {
+            return null;
+        }
+
+        var model = new GoodHabitInputModel<string>
+        {
+            UserId = entity.UserId,
+            Name = entity.Name,
+            CreditsSuccess = entity.CreditsSuccess,
+            CreditsFail = entity.CreditsFail,
+            IsActive = entity.IsActive,
+        };
+
+        return model;
     }
 
-    public ValueTask Add(GoodHabitModel model)
+    public ValueTask Add(GoodHabitInputModel<string> model)
     {
-        throw new NotImplementedException();
+        GoodHabit entity = new GoodHabit
+        {
+            Name = model.Name,
+            CreditsSuccess = model.CreditsSuccess,
+            CreditsFail = model.CreditsFail,
+            IsActive = model.IsActive,
+            UserId = model.UserId,
+            IsDeleted = false,
+        };
+
+        Add(entity);
+        return ValueTask.CompletedTask;
     }
 
-    public ValueTask Update(int id, GoodHabitModel model)
+    public async ValueTask<bool> Update(int id, GoodHabitInputModel<string> model)
     {
-        throw new NotImplementedException();
+        GoodHabit? entity = await Get(id);
+
+        if (entity is null)
+        {
+            return false;
+        }
+
+        entity.Name = model.Name;
+        entity.CreditsSuccess = model.CreditsSuccess;
+        entity.CreditsFail = model.CreditsFail;
+        entity.IsActive = model.IsActive;
+
+        Update(entity);
+        return true;
     }
 
-    public ValueTask Delete(int id)
+    public async ValueTask<bool> Delete(int id)
     {
-        throw new NotImplementedException();
+        GoodHabit? entity = await Get(id);
+
+        if (entity is null)
+        {
+            return false;
+        }
+
+        Delete(entity);
+        return true;
     }
 }

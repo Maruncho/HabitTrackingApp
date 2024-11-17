@@ -11,9 +11,10 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [Required]
         public int Amount { get; set; }
 
-        public int? TypeId { get; set; }
+        [Required]
+        public int TypeId { get; set; }
         [ForeignKey(nameof(TypeId))]
-        public TransactionType? Type { get; set; }
+        public TransactionType Type { get; set; } = null!;
 
         [Required]
         public string UserId { get; set; } = null!;

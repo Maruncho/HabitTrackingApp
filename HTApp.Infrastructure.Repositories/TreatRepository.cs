@@ -27,18 +27,69 @@ public class TreatRepository
             .ToArrayAsync();
     }
 
-    public ValueTask Add(TreatModel model)
+    public async ValueTask<TreatInputModel<string>?> GetInputModel(int id)
     {
-        throw new NotImplementedException();
+        Treat? entity = await Get(id);
+
+        if(entity is null)
+        {
+            return null;
+        }
+
+        var model = new TreatInputModel<string>
+        {
+            UserId = entity.UserId,
+            Name = entity.Name,
+            QuantityPerSession = entity.QuantityPerSession,
+            Price = entity.CreditsPrice,
+        };
+
+        return model;
     }
 
-    public ValueTask Update(int id, TreatModel model)
+    public ValueTask Add(TreatInputModel<string> model)
     {
-        throw new NotImplementedException();
+        Treat entity = new Treat
+        {
+            Name = model.Name,
+            QuantityPerSession = model.QuantityPerSession,
+            CreditsPrice = model.Price,
+            UserId = model.UserId,
+            IsDeleted = false,
+        };
+
+        Add(entity);
+        return ValueTask.CompletedTask;
     }
 
-    public ValueTask Delete(int id)
+    public async ValueTask<bool> Update(int id, TreatInputModel<string> model)
     {
-        throw new NotImplementedException();
+        Treat? entity = await Get(id);
+
+        if (entity is null)
+        {
+            return false;
+        }
+
+        entity.Name = model.Name;
+        entity.QuantityPerSession = model.QuantityPerSession;
+        entity.CreditsPrice = model.Price;
+
+        Update(entity);
+        return true;
+    }
+
+    public async ValueTask<bool> Delete(int id)
+    {
+        Treat? entity = await Get(id);
+
+        if (entity is null)
+        {
+            return false;
+        }
+
+        Delete(entity);
+        return true;
     }
 }
+

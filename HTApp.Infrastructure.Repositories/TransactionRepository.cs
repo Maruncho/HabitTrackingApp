@@ -9,29 +9,28 @@ public class TransactionRepository
     : RepositoryImmutableBase<Transaction, int>
     , ITransactionRepository<string, int, Transaction>
 {
-    private Dictionary<int, string> enumConverter =
+    private static Dictionary<int, string> intToStringEnum =
         Enum.GetValues(typeof(TransactionEnum))
-           .Cast<TransactionEnum>()
-           .ToDictionary(t => (int)t, t => t.ToString() );
+            .Cast<TransactionEnum>()
+            .ToDictionary(t => (int)t, t => t.ToString());
+
+    private static Dictionary<string, int> stringToIntEnum =
+        Enum.GetValues(typeof(TransactionEnum))
+            .Cast<TransactionEnum>()
+            .ToDictionary(t => t.ToString(), t => (int)t);
 
     public TransactionRepository(ApplicationDbContext db) : base(db)
     {
     }
 
-    public ValueTask Add(TransactionInputModel model)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<TransactionModel[]> GetAll(string userId)
     {
-        return db.Transactions
+        return GetAll()
             .Where(t => t.UserId == userId)
-            .Where(t => t.TypeId != null) //It's necessary for the enumConverter above. Shouldn't happen anyway, unless someone (me) screwed up.
             .Select(t => new TransactionModel
             {
                 Id = t.Id,
-                Type = enumConverter[t.TypeId!.Value],
+                Type = intToStringEnum[t.TypeId],
                 Message = t.Type!.Message ?? string.Empty,
                 Amount = t.Amount
             })
@@ -40,9 +39,21 @@ public class TransactionRepository
 
     public Task<string[]> GetTypeNames()
     {
-        return db.Transactions
-            .Where(t => t.TypeId != null)
-            .Select(t => enumConverter[t.TypeId!.Value])
+        return GetAll()
+            .Select(t => intToStringEnum[t.TypeId])
             .ToArrayAsync();
+    }
+
+    public ValueTask Add(TransactionInputModel<string> model)
+    {
+        Transaction entity = new Transaction
+        {
+            Amount = model.Amount,
+            TypeId = stringToIntEnum[model.Type],
+            UserId = model.UserId,
+        };
+
+        Add(entity);
+        return ValueTask.CompletedTask;
     }
 }

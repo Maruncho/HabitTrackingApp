@@ -13,15 +13,10 @@ public class BadHabitRepository
     {
     }
 
-    public Task<BadHabitModel> Get(string userId)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<BadHabitModel[]> GetAll(string userId)
     {
         return GetAll()
-            .Where(x => x.IsDeleted == false && x.User.Id == userId)
+            .Where(x => x.User.Id == userId)
             .Select(x => new BadHabitModel
             {
                 Id = x.Id,
@@ -32,22 +27,68 @@ public class BadHabitRepository
             .ToArrayAsync();
     }
 
-    public ValueTask Add(BadHabitModel model)
+    public async ValueTask<BadHabitInputModel<string>?> GetInputModel(int id)
+    {
+        BadHabit? entity = await Get(id);
+
+        if(entity is null)
+        {
+            return null;
+        }
+
+        var model = new BadHabitInputModel<string>
+        {
+            UserId = entity.UserId,
+            Name = entity.Name,
+            CreditsSuccess = entity.CreditsSuccess,
+            CreditsFail = entity.CreditsFail,
+        };
+
+        return model;
+    }
+
+    public ValueTask Add(BadHabitInputModel<string> model)
     {
         BadHabit entity = new BadHabit
         {
             Name = model.Name,
+            CreditsSuccess = model.CreditsSuccess,
+            CreditsFail = model.CreditsFail,
+            UserId = model.UserId,
+            IsDeleted = false,
+        };
 
+        Add(entity);
+        return ValueTask.CompletedTask;
+    }
+
+    public async ValueTask<bool> Update(int id, BadHabitInputModel<string> model)
+    {
+        BadHabit? entity = await Get(id);
+
+        if (entity is null)
+        {
+            return false;
         }
+
+        entity.Name = model.Name;
+        entity.CreditsSuccess = model.CreditsSuccess;
+        entity.CreditsFail = model.CreditsFail;
+
+        Update(entity);
+        return true;
     }
 
-    public ValueTask Update(int id, BadHabitModel model)
+    public async ValueTask<bool> Delete(int id)
     {
-        throw new NotImplementedException();
-    }
+        BadHabit? entity = await Get(id);
 
-    public ValueTask Delete(int id)
-    {
-        throw new NotImplementedException();
+        if (entity is null)
+        {
+            return false;
+        }
+
+        Delete(entity);
+        return true;
     }
 }

@@ -35,7 +35,7 @@ public class Tests
     //It's all in one place, yes... but I really don't want to spend more time on this stuff. It was a painful learning experience.
     [Test]
     [Ignore("It tests protected methods. If you change their implementation, enable again")]
-    public async Task TestTheSoftDeleteFunctionalityBecauseItsSketchy()
+    public /* async Task // Surpress Warning */ void TestTheSoftDeleteFunctionalityBecauseItsSketchy()
     {
         /*
         db.GoodHabits.AddRange(localData);

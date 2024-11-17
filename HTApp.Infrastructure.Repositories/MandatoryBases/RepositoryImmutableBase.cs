@@ -21,4 +21,16 @@ public abstract class RepositoryImmutableBase<Entity, IdType>
     {
         return db.Set<Entity>();
     }
+
+    protected void Add(Entity entity)
+    {
+        db.Set<Entity>().Add(entity);
+    }
+
+    //pretty pointless, but maybe in the future it may do more.
+    protected void Update(Entity entity)
+    {
+        //probably adds nothing
+        db.Update(entity);
+    }
 }
