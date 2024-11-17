@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HTApp.Infrastructure.Repositories;
 
 public class GoodHabitRepository
-    : RepositoryBase<GoodHabit, int>,
+    : RepositoryBaseSoftDelete<GoodHabit, int>,
       IGoodHabitRepository<string, int, GoodHabit>
 {
     public GoodHabitRepository(ApplicationDbContext db) : base(db)
@@ -27,21 +27,41 @@ public class GoodHabitRepository
             })
             .ToArrayAsync();
     }
-    protected override async ValueTask<GoodHabit?> Get(int id)
+    //protected override async ValueTask<GoodHabit?> Get(int id)
+    //{
+    //    var res = await db.GoodHabits.FindAsync(id);
+    //    if (res?.IsDeleted ?? false) res = null;
+    //   return res;
+    //}
+
+    //protected override IQueryable<GoodHabit> GetAll()
+    //{
+    //    return base.GetAll().Where(x => x.IsDeleted == false);
+    //}
+
+    //protected override void Delete(GoodHabit entity)
+    //{
+    //    entity.IsDeleted = true;
+    //    db.Update(entity);
+    //}
+
+    public Task<GoodHabitModel> Get(string userId)
     {
-        var res = await db.GoodHabits.FindAsync(id);
-        if (res?.IsDeleted ?? false) res = null;
-        return res;
+        throw new NotImplementedException();
     }
 
-    protected override IQueryable<GoodHabit> GetAll()
+    public ValueTask Add(GoodHabitModel model)
     {
-        return base.GetAll().Where(x => x.IsDeleted == false);
+        throw new NotImplementedException();
     }
 
-    protected override void Delete(GoodHabit entity)
+    public ValueTask Update(int id, GoodHabitModel model)
     {
-        entity.IsDeleted = true;
-        db.Update(entity);
+        throw new NotImplementedException();
+    }
+
+    public ValueTask Delete(int id)
+    {
+        throw new NotImplementedException();
     }
 }

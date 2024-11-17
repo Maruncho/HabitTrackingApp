@@ -18,10 +18,10 @@ namespace HTApp.Infrastructure.EntityModels
         }
 
         [Required]
-        public required int Credits { get; set; }
+        public int Credits { get; set; }
 
         [Required]
-        public required byte RefundsPerSession { get; set; }
+        public byte RefundsPerSession { get; set; }
 
         public ICollection<GoodHabit> GoodHabits { get; set; } = null!;
         public ICollection<BadHabit> BadHabits { get; set; } = null!;

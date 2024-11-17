@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,4 +11,10 @@ namespace HTApp.Infrastructure.EntityModels;
 public interface ISoftDeletable
 {
     public bool IsDeleted { get; set; }
+}
+
+//ef core requires classes in templates
+public abstract class SoftDeletable : ISoftDeletable
+{
+    public abstract bool IsDeleted { get; set; }
 }

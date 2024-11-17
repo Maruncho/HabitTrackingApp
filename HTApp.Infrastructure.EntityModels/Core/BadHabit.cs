@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {
-    public class BadHabit : ISoftDeletable
+    public class BadHabit : SoftDeletable
     {
         public BadHabit()
         {
@@ -24,7 +24,7 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [Required]
         public int CreditsFail { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
+        public override bool IsDeleted { get; set; } = false;
 
         [Required]
         public required string UserId { get; set; }

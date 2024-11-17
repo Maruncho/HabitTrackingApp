@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {
-    public class GoodHabit : ISoftDeletable
+    public class GoodHabit : SoftDeletable
     {
         public GoodHabit()
         {
@@ -27,12 +27,12 @@ namespace HTApp.Infrastructure.EntityModels.Core
 
         public bool IsActive { get; set; } = true;
 
-        public bool IsDeleted { get; set; } = false;
+        public override bool IsDeleted { get; set; }
 
         [Required]
-        public required string UserId { get; set; }
+        public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
-        public required AppUser User { get; set; }
+        public AppUser User { get; set; }
 
         public ICollection<SessionGoodHabit> SessionGoodHabits { get; set; } = null!;
     }

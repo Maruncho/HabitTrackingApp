@@ -129,7 +129,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BadHabits");
+                    b.ToTable("BadHabits", (string)null);
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.Core.GoodHabit", b =>
@@ -169,7 +169,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GoodHabits");
+                    b.ToTable("GoodHabits", (string)null);
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.Core.Transaction", b =>
@@ -198,7 +198,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.Core.TransactionType", b =>
@@ -212,7 +212,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TransactionTypes");
+                    b.ToTable("TransactionTypes", (string)null);
 
                     b.HasData(
                         new
@@ -306,7 +306,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Treats");
+                    b.ToTable("Treats", (string)null);
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.Session", b =>
@@ -334,7 +334,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Sessions");
+                    b.ToTable("Sessions", (string)null);
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.SessionBadHabit", b =>
@@ -354,7 +354,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("BadHabitId");
 
-                    b.ToTable("SessionBadHabits");
+                    b.ToTable("SessionBadHabits", (string)null);
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.SessionGoodHabit", b =>
@@ -374,7 +374,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("GoodHabitId");
 
-                    b.ToTable("SessionGoodHabits");
+                    b.ToTable("SessionGoodHabits", (string)null);
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.SessionTransaction", b =>
@@ -389,7 +389,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("TransactionId");
 
-                    b.ToTable("SessionTransactions");
+                    b.ToTable("SessionTransactions", (string)null);
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.SessionTreat", b =>
@@ -407,7 +407,7 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.HasIndex("TreatId");
 
-                    b.ToTable("SessionTreats");
+                    b.ToTable("SessionTreats", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

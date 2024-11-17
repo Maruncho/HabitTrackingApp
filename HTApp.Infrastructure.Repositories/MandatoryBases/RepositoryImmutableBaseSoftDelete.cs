@@ -3,7 +3,7 @@
 namespace HTApp.Infrastructure.Repositories;
 
 public abstract class RepositoryImmutableBaseSoftDelete<Entity, IdType>
-    where Entity : class//, ISoftDeletable
+    where Entity : SoftDeletable//, ISoftDeletable
 {
     protected ApplicationDbContext db;
 
@@ -11,18 +11,17 @@ public abstract class RepositoryImmutableBaseSoftDelete<Entity, IdType>
     {
         this.db = db;
     }
-    protected async ValueTask<Entity?> Get(int id)
+    public async ValueTask<Entity?> Get(int id)
     {
         Entity? res = await db.FindAsync<Entity>(id);
-        if (res is null) return res;
-        var x = (ISoftDeletable) res; //🤨🤨🤨 It has to be done
-        return x.IsDeleted ? res : null;
+        if (res is null) return null;
+        return res.IsDeleted ? null : res;
     }
 
-    protected IQueryable<Entity> GetAll()
+    public IQueryable<Entity> GetAll()
     {
         return db.Set<Entity>()
-            .Where(x => ((ISoftDeletable)x).IsDeleted == false); //🤨🤨🤨 It has to be done
+            .Where(x => x.IsDeleted == false);
     }
 
 }

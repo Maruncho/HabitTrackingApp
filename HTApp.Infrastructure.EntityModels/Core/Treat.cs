@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {
-    public class Treat : ISoftDeletable
+    public class Treat : SoftDeletable
     {
         public Treat()
         {
@@ -24,7 +24,7 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [Required]
         public int CreditsPrice { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
+        public override bool IsDeleted { get; set; } = false;
 
         [Required]
         public required string UserId { get; set; }

@@ -43,4 +43,19 @@ public class TreatRepository
         entity.IsDeleted = true;
         db.Update(entity);
     }
+
+    public ValueTask Add(TreatModel model)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ValueTask Update(int id, TreatModel model)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ValueTask Delete(int id)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -18,6 +18,11 @@ public class TransactionRepository
     {
     }
 
+    public ValueTask Add(TransactionInputModel model)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<TransactionModel[]> GetAll(string userId)
     {
         return db.Transactions
