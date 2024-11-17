@@ -15,7 +15,7 @@ public class GoodHabitRepository
 
     public Task<GoodHabitModel[]> GetAll(string userId)
     {
-        return db.GoodHabits
+        return GetAll()
             .Where(x => x.IsDeleted == false && x.User.Id == userId)
             .Select(x => new GoodHabitModel
             {
@@ -27,23 +27,6 @@ public class GoodHabitRepository
             })
             .ToArrayAsync();
     }
-    //protected override async ValueTask<GoodHabit?> Get(int id)
-    //{
-    //    var res = await db.GoodHabits.FindAsync(id);
-    //    if (res?.IsDeleted ?? false) res = null;
-    //   return res;
-    //}
-
-    //protected override IQueryable<GoodHabit> GetAll()
-    //{
-    //    return base.GetAll().Where(x => x.IsDeleted == false);
-    //}
-
-    //protected override void Delete(GoodHabit entity)
-    //{
-    //    entity.IsDeleted = true;
-    //    db.Update(entity);
-    //}
 
     public Task<GoodHabitModel> Get(string userId)
     {

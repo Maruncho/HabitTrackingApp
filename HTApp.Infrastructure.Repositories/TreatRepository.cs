@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HTApp.Infrastructure.Repositories;
 
 public class TreatRepository
-    : RepositoryBase<Treat, int>,
+    : RepositoryBaseSoftDelete<Treat, int>,
       ITreatRepository<string, int, Treat>
 {
     public TreatRepository(ApplicationDbContext db) : base(db)
@@ -25,23 +25,6 @@ public class TreatRepository
                 QuantityPerSession = x.QuantityPerSession,
             })
             .ToArrayAsync();
-    }
-    protected override async ValueTask<Treat?> Get(int id)
-    {
-        var res = await db.Treats.FindAsync(id);
-        if (res?.IsDeleted ?? false) res = null;
-        return res;
-    }
-
-    protected override IQueryable<Treat> GetAll()
-    {
-        return base.GetAll().Where(x => x.IsDeleted == false);
-    }
-
-    protected override void Delete(Treat entity)
-    {
-        entity.IsDeleted = true;
-        db.Update(entity);
     }
 
     public ValueTask Add(TreatModel model)

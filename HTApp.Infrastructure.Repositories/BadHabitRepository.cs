@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HTApp.Infrastructure.Repositories;
 
 public class BadHabitRepository
-    : RepositoryBase<EntityModels.Core.BadHabit, int>,
+    : RepositoryBaseSoftDelete<BadHabit, int>,
       IBadHabitRepository<string, int, BadHabit>
 {
     public BadHabitRepository(ApplicationDbContext db) : base(db)
@@ -20,7 +20,7 @@ public class BadHabitRepository
 
     public Task<BadHabitModel[]> GetAll(string userId)
     {
-        return db.BadHabits
+        return GetAll()
             .Where(x => x.IsDeleted == false && x.User.Id == userId)
             .Select(x => new BadHabitModel
             {
@@ -34,7 +34,11 @@ public class BadHabitRepository
 
     public ValueTask Add(BadHabitModel model)
     {
-        throw new NotImplementedException();
+        BadHabit entity = new BadHabit
+        {
+            Name = model.Name,
+
+        }
     }
 
     public ValueTask Update(int id, BadHabitModel model)
@@ -45,11 +49,5 @@ public class BadHabitRepository
     public ValueTask Delete(int id)
     {
         throw new NotImplementedException();
-    }
-
-    protected override void Delete(BadHabit entity)
-    {
-        entity.IsDeleted = true;
-        db.Update(entity);
     }
 }

@@ -7,5 +7,5 @@ public interface ITransactionRepository<UserIdType, ModelIdType, SourceEntity>
 
     public Task<string[]> GetTypeNames();
 
-    public ValueTask Add(TransactionInputModel model);
+    public ValueTask Add(TransactionInputModel<UserIdType> model);
 }

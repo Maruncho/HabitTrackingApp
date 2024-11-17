@@ -1,12 +1,10 @@
 ﻿using HTApp.Core.Contracts;
 using HTApp.Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
-using static HTApp.Core.Contracts.ApplicationInvariants; 
 
 namespace HTApp.Infrastructure.Repositories;
 
+//This is an exception to the MandatoryBases
 public class UserDataRepository : IUserDataRepository<string>
 {
     private ApplicationDbContext db;
