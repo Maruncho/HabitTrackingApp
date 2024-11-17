@@ -10,11 +10,11 @@ namespace HTApp.Infrastructure.EntityModels.SessionModels
     {
         public int SessionId { get; set; }
         [ForeignKey(nameof(SessionId))]
-        public required Session Session { get; set; }
+        public Session Session { get; set; } = null!;
 
         public int BadHabitId { get; set; }
         [ForeignKey(nameof(BadHabitId))]
-        public required BadHabit BadHabit { get; set; }
+        public BadHabit BadHabit { get; set; } = null!;
 
         [Required]
         public bool Failed { get; set; } = false;

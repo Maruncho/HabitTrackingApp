@@ -16,7 +16,7 @@ namespace HTApp.Infrastructure.EntityModels.Core
 
         [MaxLength(32)]
         [Required]
-        public required string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [Required]
         public int CreditsSuccess { get; set; }
@@ -27,9 +27,9 @@ namespace HTApp.Infrastructure.EntityModels.Core
         public override bool IsDeleted { get; set; } = false;
 
         [Required]
-        public required string UserId { get; set; }
+        public string UserId { get; set; } = null!;
         [ForeignKey(nameof(UserId))]
-        public required AppUser User { get; set; }
+        public AppUser User { get; set; } = null!;
 
         public ICollection<SessionBadHabit> SessionBadHabits { get; set; } = null!;
     }

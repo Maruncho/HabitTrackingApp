@@ -25,9 +25,9 @@ namespace HTApp.Infrastructure.EntityModels.SessionModels
         public byte Refunds { get; set; }
 
         [Required]
-        public required string UserId { get; set; }
+        public string UserId { get; set; } = null!;
         [ForeignKey(nameof(UserId))]
-        public required AppUser User { get; set; }
+        public AppUser User { get; set; } = null!;
 
         public ICollection<SessionGoodHabit> SessionGoodHabits { get; set; } = null!;
         public ICollection<SessionBadHabit> SessionBadHabits { get; set; } = null!;

@@ -9,10 +9,10 @@ namespace HTApp.Infrastructure.EntityModels.SessionModels
     {
         public int SessionId { get; set; }
         [ForeignKey(nameof(SessionId))]
-        public required Session Session { get; set; }
+        public Session Session { get; set; } = null!;
 
         public int TransactionId { get; set; }
         [ForeignKey(nameof(TransactionId))]
-        public required Transaction Transaction { get; set; }
+        public Transaction Transaction { get; set; } = null!;
     }
 }

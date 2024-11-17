@@ -16,8 +16,8 @@ namespace HTApp.Infrastructure.EntityModels.Core
         public TransactionType? Type { get; set; }
 
         [Required]
-        public required string UserId { get; set; }
+        public string UserId { get; set; } = null!;
         [ForeignKey(nameof(UserId))]
-        public required AppUser User { get; set; }
+        public AppUser User { get; set; } = null!;
     }
 }
