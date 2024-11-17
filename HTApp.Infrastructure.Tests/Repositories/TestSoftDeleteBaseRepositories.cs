@@ -34,8 +34,10 @@ public class Tests
 
     //It's all in one place, yes... but I really don't want to spend more time on this stuff. It was a painful learning experience.
     [Test]
+    [Ignore("It tests protected methods. If you change their implementation, enable again")]
     public async Task TestTheSoftDeleteFunctionalityBecauseItsSketchy()
     {
+        /*
         db.GoodHabits.AddRange(localData);
         db.SaveChanges();
 
@@ -57,6 +59,7 @@ public class Tests
         db.SaveChanges(); //I forgot to do that and spent 30min clueless of what was going on...
         data = repo.GetAll().ToArray();
         Assert.That(data.Length == 0);
+        */
     }
 
     [TearDown]

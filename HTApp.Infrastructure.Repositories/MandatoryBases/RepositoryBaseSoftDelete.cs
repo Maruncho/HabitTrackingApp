@@ -9,12 +9,16 @@ public abstract class RepositoryBaseSoftDelete<Entity, IdType>
     : RepositoryImmutableBaseSoftDelete<Entity, IdType>
     where Entity : SoftDeletable
 {
+
+    private ApplicationDbContext db;
+
     protected RepositoryBaseSoftDelete(ApplicationDbContext db)
         : base (db)
     {
+        this.db = db;
     }
 
-    public virtual void Delete(Entity entity)
+    protected void Delete(Entity entity)
     {
         entity.IsDeleted = true; 
         db.Update(entity); //just in case
