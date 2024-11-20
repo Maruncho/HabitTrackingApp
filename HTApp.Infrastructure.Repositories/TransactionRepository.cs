@@ -23,11 +23,11 @@ public class TransactionRepository
     {
     }
 
-    public Task<TransactionModel[]> GetAll(string userId)
+    public Task<TransactionModel<int>[]> GetAll(string userId)
     {
         return GetAll()
             .Where(t => t.UserId == userId)
-            .Select(t => new TransactionModel
+            .Select(t => new TransactionModel<int>
             {
                 Id = t.Id,
                 Type = intToStringEnum[t.TypeId],

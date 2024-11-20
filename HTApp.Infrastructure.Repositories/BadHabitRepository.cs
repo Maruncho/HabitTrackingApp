@@ -13,11 +13,11 @@ public class BadHabitRepository
     {
     }
 
-    public Task<BadHabitModel[]> GetAll(string userId)
+    public Task<BadHabitModel<int>[]> GetAll(string userId)
     {
         return GetAll()
             .Where(x => x.User.Id == userId)
-            .Select(x => new BadHabitModel
+            .Select(x => new BadHabitModel<int>
             {
                 Id = x.Id,
                 Name = x.Name,

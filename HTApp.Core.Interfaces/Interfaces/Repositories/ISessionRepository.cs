@@ -1,6 +1,6 @@
-﻿namespace HTApp.Core.Contracts.Interfaces.Repositories;
+﻿namespace HTApp.Core.Contracts;
 
-public interface ISessionRepository
+public interface ISessionRepository<UserIdType, ModelId>
 {
 
 }

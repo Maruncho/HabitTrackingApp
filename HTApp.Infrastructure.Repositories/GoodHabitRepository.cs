@@ -13,11 +13,11 @@ public class GoodHabitRepository
     {
     }
 
-    public Task<GoodHabitModel[]> GetAll(string userId)
+    public Task<GoodHabitModel<int>[]> GetAll(string userId)
     {
         return GetAll()
-            .Where(x => x.IsDeleted == false && x.User.Id == userId)
-            .Select(x => new GoodHabitModel
+            .Where(x => x.User.Id == userId)
+            .Select(x => new GoodHabitModel<int>
             {
                 Id = x.Id,
                 Name = x.Name,

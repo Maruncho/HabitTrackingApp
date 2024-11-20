@@ -1,11 +1,12 @@
 ﻿namespace HTApp.Core.Contracts;
 
 //Sadly I cannot make it internal, because public ones inherit it.
-public interface _ICommon<ModelIdType, InputModel> : ICommon_AddableOnly<ModelIdType, InputModel>
+public interface _ICommon<ModelId, InputModel> : ICommon_AddableOnly<ModelId, InputModel>
 {
-    public ValueTask<InputModel?> GetInputModel(ModelIdType id);
+    public ValueTask<InputModel?> GetInputModel(ModelId id);
 
-    public ValueTask<bool> Update(ModelIdType id, InputModel model);
+    //Update is more like a PUT, than a PATCH. 
+    public ValueTask<bool> Update(ModelId id, InputModel model);
 
-    public ValueTask<bool> Delete(ModelIdType id);
+    public ValueTask<bool> Delete(ModelId id);
 }

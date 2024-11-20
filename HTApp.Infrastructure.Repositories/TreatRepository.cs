@@ -13,11 +13,11 @@ public class TreatRepository
     {
     }
 
-    public Task<TreatModel[]> GetAll(string userId)
+    public Task<TreatModel<int>[]> GetAll(string userId)
     {
         return GetAll()
             .Where(x => x.User.Id == userId)
-            .Select(x => new TreatModel
+            .Select(x => new TreatModel<int>
             {
                 Id = x.Id,
                 Name = x.Name,

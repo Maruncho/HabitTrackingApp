@@ -1,8 +1,8 @@
 ﻿
 namespace HTApp.Core.Contracts;
 
-public interface IGoodHabitRepository<UserIdType, ModelIdType>
-    : _ICommon<ModelIdType, GoodHabitInputModel<UserIdType>>
+public interface IGoodHabitRepository<UserIdType, ModelId>
+    : _ICommon<ModelId, GoodHabitInputModel<UserIdType>>
 {
-    public Task<GoodHabitModel[]> GetAll(UserIdType userId);
+    public Task<GoodHabitModel<ModelId>[]> GetAll(UserIdType userId);
 }
