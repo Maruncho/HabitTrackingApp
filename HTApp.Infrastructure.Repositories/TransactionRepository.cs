@@ -7,7 +7,7 @@ namespace HTApp.Infrastructure.Repositories;
 
 public class TransactionRepository
     : RepositoryImmutableBase<Transaction, int>
-    , ITransactionRepository<string, int, Transaction>
+    , ITransactionRepository<string, int>
 {
     private static Dictionary<int, string> intToStringEnum =
         Enum.GetValues(typeof(TransactionEnum))

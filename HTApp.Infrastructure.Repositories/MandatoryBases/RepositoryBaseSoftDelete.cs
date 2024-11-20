@@ -1,7 +1,4 @@
-﻿using HTApp.Core.Contracts;
-using HTApp.Infrastructure.EntityModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using HTApp.Infrastructure.EntityModels;
 
 namespace HTApp.Infrastructure.Repositories;
 

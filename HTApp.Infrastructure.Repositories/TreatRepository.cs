@@ -7,7 +7,7 @@ namespace HTApp.Infrastructure.Repositories;
 
 public class TreatRepository
     : RepositoryBaseSoftDelete<Treat, int>,
-      ITreatRepository<string, int, Treat>
+      ITreatRepository<string, int>
 {
     public TreatRepository(ApplicationDbContext db) : base(db)
     {

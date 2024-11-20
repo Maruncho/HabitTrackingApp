@@ -7,7 +7,7 @@ namespace HTApp.Infrastructure.Repositories;
 
 public class BadHabitRepository
     : RepositoryBaseSoftDelete<BadHabit, int>,
-      IBadHabitRepository<string, int, BadHabit>
+      IBadHabitRepository<string, int>
 {
     public BadHabitRepository(ApplicationDbContext db) : base(db)
     {
