@@ -29,6 +29,10 @@ namespace HTApp.Infrastructure.EntityModels.SessionModels
         [ForeignKey(nameof(UserId))]
         public AppUser User { get; set; } = null!;
 
+        public int? PreviousSessionId { get; set; }
+        [ForeignKey(nameof(PreviousSessionId))]
+        public Session? PreviousSession { get; set; }
+
         public ICollection<SessionGoodHabit> SessionGoodHabits { get; set; } = null!;
         public ICollection<SessionBadHabit> SessionBadHabits { get; set; } = null!;
         public ICollection<SessionTransaction> SessionTransactions { get; set; } = null!;

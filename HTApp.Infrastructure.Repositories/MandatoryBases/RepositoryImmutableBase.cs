@@ -14,7 +14,7 @@ public abstract class RepositoryImmutableBase<Entity, IdType>
 
     protected ValueTask<Entity?> Get(IdType id)
     {
-        return db.FindAsync<Entity>(id);
+        return db.Set<Entity>().FindAsync(id);
     }
 
     protected IQueryable<Entity> GetAll()
