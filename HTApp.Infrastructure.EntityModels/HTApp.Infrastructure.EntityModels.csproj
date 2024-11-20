@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HTApp.Core.Interfaces\HTApp.Core.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

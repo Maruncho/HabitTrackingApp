@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using static HTApp.Core.Contracts.ApplicationInvariants;
+
 namespace HTApp.Infrastructure.EntityModels.Core
 {
     public class TransactionType
@@ -11,7 +13,7 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        [MaxLength(64)]
+        [MaxLength(TransactionMessageLengthMax)]
         public string? Message { get; set; }
     }
 

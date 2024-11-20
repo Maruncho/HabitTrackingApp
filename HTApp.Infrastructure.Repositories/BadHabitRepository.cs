@@ -47,7 +47,7 @@ public class BadHabitRepository
         return model;
     }
 
-    public ValueTask Add(BadHabitInputModel<string> model)
+    public ValueTask<bool> Add(BadHabitInputModel<string> model)
     {
         BadHabit entity = new BadHabit
         {
@@ -59,7 +59,7 @@ public class BadHabitRepository
         };
 
         Add(entity);
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(true);
     }
 
     public async ValueTask<bool> Update(int id, BadHabitInputModel<string> model)

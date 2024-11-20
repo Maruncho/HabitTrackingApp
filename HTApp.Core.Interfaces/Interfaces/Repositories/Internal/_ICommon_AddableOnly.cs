@@ -2,5 +2,5 @@
 
 public interface ICommon_AddableOnly<ModelIdType, InputModel>
 {
-    public ValueTask Add(InputModel model);
+    public ValueTask<bool> Add(InputModel model);
 }

@@ -44,7 +44,7 @@ public class TransactionRepository
             .ToArrayAsync();
     }
 
-    public ValueTask Add(TransactionInputModel<string> model)
+    public ValueTask<bool> Add(TransactionInputModel<string> model)
     {
         Transaction entity = new Transaction
         {
@@ -54,6 +54,6 @@ public class TransactionRepository
         };
 
         Add(entity);
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(true);
     }
 }

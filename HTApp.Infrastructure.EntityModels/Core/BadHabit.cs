@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using static HTApp.Core.Contracts.ApplicationInvariants;
+
 namespace HTApp.Infrastructure.EntityModels.Core
 {
     public class BadHabit : SoftDeletable
@@ -14,7 +16,7 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [Key]
         public int Id { get; set; }
 
-        [MaxLength(32)]
+        [MaxLength(BadHabitNameLengthMax)]
         [Required]
         public string Name { get; set; } = null!;
 

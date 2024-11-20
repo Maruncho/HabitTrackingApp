@@ -47,7 +47,7 @@ public class TreatRepository
         return model;
     }
 
-    public ValueTask Add(TreatInputModel<string> model)
+    public ValueTask<bool> Add(TreatInputModel<string> model)
     {
         Treat entity = new Treat
         {
@@ -59,7 +59,7 @@ public class TreatRepository
         };
 
         Add(entity);
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(true);
     }
 
     public async ValueTask<bool> Update(int id, TreatInputModel<string> model)

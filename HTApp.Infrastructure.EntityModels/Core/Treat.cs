@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using static HTApp.Core.Contracts.ApplicationInvariants;
+
 namespace HTApp.Infrastructure.EntityModels.Core
 {
     public class Treat : SoftDeletable
@@ -15,7 +17,7 @@ namespace HTApp.Infrastructure.EntityModels.Core
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(32)]
+        [MaxLength(TreatNameLengthMax)]
         public string Name { get; set; } = null!;
 
         [Required]

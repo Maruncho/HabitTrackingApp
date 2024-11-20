@@ -49,7 +49,7 @@ public class GoodHabitRepository
         return model;
     }
 
-    public ValueTask Add(GoodHabitInputModel<string> model)
+    public ValueTask<bool> Add(GoodHabitInputModel<string> model)
     {
         GoodHabit entity = new GoodHabit
         {
@@ -62,7 +62,7 @@ public class GoodHabitRepository
         };
 
         Add(entity);
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(true);
     }
 
     public async ValueTask<bool> Update(int id, GoodHabitInputModel<string> model)
