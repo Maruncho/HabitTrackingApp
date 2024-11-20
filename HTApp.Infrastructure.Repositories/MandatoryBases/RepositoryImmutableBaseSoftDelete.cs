@@ -1,4 +1,5 @@
 ﻿using HTApp.Infrastructure.EntityModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace HTApp.Infrastructure.Repositories;
 

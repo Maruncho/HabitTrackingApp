@@ -1,9 +1,7 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class SessionModel<ModelId, GdHId, BdHId, TrsId, TrtId>
+public class SessionInputModel<UserIdType, GdHId, BdHId, TrsId, TrtId>
 {
-    public required ModelId Id { get; set; }
-
     public DateTime StartDate { get; set; }
 
     public DateTime? EndData { get; set; }
@@ -17,4 +15,6 @@ public class SessionModel<ModelId, GdHId, BdHId, TrsId, TrtId>
     public required TrsId[] TransactionIds { get; set; }
 
     public required (TrtId, byte)[] TreatIdUnitsLeftPairs { get; set; }
+
+    public required UserIdType UserId { get; set; }
 }
