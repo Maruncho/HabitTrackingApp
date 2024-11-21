@@ -1,5 +1,6 @@
 ﻿namespace HTApp.Core.Contracts;
 
+//Not meant to be used as an abstraction (polymorphism).
 //Sadly I cannot make it internal, because public ones inherit it.
 public interface _ICommon<ModelId, InputModel> : ICommon_AddableOnly<ModelId, InputModel>
 {

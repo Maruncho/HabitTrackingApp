@@ -78,6 +78,7 @@ public class GoodHabitRepository
         entity.CreditsSuccess = model.CreditsSuccess;
         entity.CreditsFail = model.CreditsFail;
         entity.IsActive = model.IsActive;
+        //entity.UserId = model.UserId; //leave it for now, too much potential chaos
 
         Update(entity);
         return true;
