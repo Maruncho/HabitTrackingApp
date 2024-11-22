@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace HTApp.Infrastructure.Tests.Repositories;
 
-internal class Tests : DbContextSetupBase
+internal class GoodHabitRepositoryTest : DbContextSetupBase
 {
     [Test]
     public async Task GetAllHappyCase()
@@ -13,18 +13,15 @@ internal class Tests : DbContextSetupBase
         foreach (string userId in new string[] { user1.Id, user2.Id })
         {
             GoodHabitModel<int>[] fromRepo = await GoodHabitRepository.GetAll(userId);
-            fromRepo = fromRepo.OrderBy(x => x.Id).ToArray();
 
             var expected = DbGoodHabits
                 .Where(x => x.UserId == userId && x.IsDeleted == false)
-                .OrderBy(x => x.Id)
-                .ToArray();
+                .ToDictionary(x => x.Id);
 
-            Assert.That(expected.Length, Is.EqualTo(fromRepo.Length));
-            for(int i = 0; i < fromRepo.Length; i++)
+            Assert.That(expected.Count, Is.EqualTo(fromRepo.Length));
+            foreach(GoodHabitModel<int> re in fromRepo)
             {
-                var ex = expected[i];
-                var re = fromRepo[i];
+                var ex = expected[re.Id];
 
                 bool result = ex.Id == re.Id && ex.Name == re.Name && ex.CreditsSuccess == re.CreditsSuccess && ex.CreditsFail == re.CreditsFail && ex.IsActive == re.IsActive;
                 Assert.That(result, Is.True);

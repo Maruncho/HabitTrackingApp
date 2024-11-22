@@ -74,6 +74,7 @@ public class BadHabitRepository
         entity.Name = model.Name;
         entity.CreditsSuccess = model.CreditsSuccess;
         entity.CreditsFail = model.CreditsFail;
+        //entity.UserId = model.UserId; //leave it for now, too much potential chaos
 
         Update(entity);
         return true;

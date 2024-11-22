@@ -37,10 +37,11 @@ public class TransactionRepository
             .ToArrayAsync();
     }
 
-    public Task<string[]> GetTypeNames()
+    public Task<string[]> GetUsedTypeNames()
     {
         return GetAll()
             .Select(t => intToStringEnum[t.TypeId])
+            .Distinct()
             .ToArrayAsync();
     }
 

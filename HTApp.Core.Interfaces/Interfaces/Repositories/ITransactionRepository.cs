@@ -6,5 +6,5 @@ public interface ITransactionRepository<UserIdType, ModelId>
 {
     public Task<TransactionModel<ModelId>[]> GetAll(UserIdType userId);
 
-    public Task<string[]> GetTypeNames();
+    public Task<string[]> GetUsedTypeNames();
 }
