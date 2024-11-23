@@ -93,7 +93,7 @@ namespace HTApp.Infrastructure.EntityModels
 
 
             modelBuilder.Entity<SessionTransaction>()
-                .HasOne(s => s.Session)
+                .HasOne(s => s.Transaction)
                 .WithMany(s => s.SessionTransactions)
                 .OnDelete(DeleteBehavior.NoAction);
 

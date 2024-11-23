@@ -2,13 +2,12 @@
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.EntityModels.SessionModels;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 
 namespace HTApp.Infrastructure.Repositories;
 
 public class SessionRepository
     : RepositoryBase<Session, int>,
-      ISessionRepository<string, int, int, int, int, int>
+      ISessionRepository<string, int, int?, int, int, int, int>
 {
 
     public SessionRepository(ApplicationDbContext db) : base(db)
@@ -42,29 +41,52 @@ public class SessionRepository
             .FirstOrDefaultAsync();
     }
 
-    public Task<SessionUpdateModel<int, string, int, int, int, int>?> GetCurrentSessionUpdateModel(string userId)
+    public Task<int?> GetCurrentSessionId(string userId)
     {
-        return GetAll()
-            .Where(x => x.UserId == userId)
-            .Where(x => x.EndDate == null) //maybe a bit obscure, but that's how you know it's the current
-            .Select(x => new SessionUpdateModel<int, string, int, int, int, int>
-            {
-                Id = x.Id,
-                UserId = x.UserId,
-                EndDate = x.EndDate,
-                Refunds = x.Refunds,
-                PreviousSessionId = x.PreviousSessionId.GetValueOrDefault(), //templates cannot resolve this...
-                GoodHabitIdCompletedPairs = x.SessionGoodHabits
-                    .ToDictionary(gh => gh.GoodHabitId, gh => gh.Completed),
-                BadHabitIdFailedPairs = x.SessionBadHabits
-                    .ToDictionary(bh => bh.BadHabitId, bh => bh.Failed),
-                TreatIdUnitsLeftPairs = x.SessionTreats
-                    .ToDictionary(tr => tr.TreatId, tr => tr.UnitsLeft)
-            })
-            .FirstOrDefaultAsync();
+        return GetAll().Where(x => x.UserId == userId && x.EndDate == null).Select(x => (int?)x.Id ).FirstOrDefaultAsync();
     }
 
-    public ValueTask<bool> Add(SessionAddModel<int, string, int, int, int, int> model)
+    public async Task<SessionUpdateModel<int, int?, string, int, int, int, int>?> GetCurrentSessionUpdateModel(string userId)
+    {
+        var x = await GetAll()
+            .Where(x => x.UserId == userId)
+            .Where(x => x.EndDate == null) //maybe a bit obscure, but that's how you know it's the current
+            //This select is because EF Core is not flexible enough.
+            .Select(x => new
+            {
+                x.Id, x.UserId, x.EndDate, x.Refunds, x.PreviousSessionId,
+                SessionGoodHabits = x.SessionGoodHabits
+                    .Select(x => new { x.GoodHabitId, x.Completed }),
+                SessionBadHabits = x.SessionBadHabits
+                    .Select(x => new { x.BadHabitId, x.Failed }),
+                SessionTreats = x.SessionTreats
+                    .Select(x => new { x.TreatId, x.UnitsLeft }),
+                SessionTransactions = x.SessionTransactions
+                    .Select(x => x.TransactionId)
+            })
+            .FirstOrDefaultAsync();
+
+        if (x is null) return null;
+
+        var model = new SessionUpdateModel<int, int?, string, int, int, int, int>
+        {
+            Id = x.Id,
+            UserId = x.UserId,
+            Refunds = x.Refunds,
+            PreviousSessionId = x.PreviousSessionId,
+            GoodHabitIdCompletedPairs = x.SessionGoodHabits
+                .ToDictionary(gh => gh.GoodHabitId, gh => gh.Completed),
+            BadHabitIdFailedPairs = x.SessionBadHabits
+                .ToDictionary(bh => bh.BadHabitId, bh => bh.Failed),
+            TreatIdUnitsLeftPairs = x.SessionTreats
+                .ToDictionary(tr => tr.TreatId, tr => tr.UnitsLeft),
+            TransactionIds = x.SessionTransactions.ToHashSet(),
+        };
+
+        return model;
+    }
+
+    public async ValueTask<bool> AddAndMakeCurrent(SessionAddModel<int?, string, int, int, int, int> model)
     {
         Session entity = new Session
         {
@@ -74,42 +96,65 @@ public class SessionRepository
             UserId = model.UserId,
             PreviousSessionId = model.PreviousSessionId,
         };
+        Add(entity);
+
         foreach(var id in model.GoodHabitIds)
         {
             entity.SessionGoodHabits.Add(new SessionGoodHabit
             {
+                SessionId = entity.Id,
                 GoodHabitId = id,
                 Completed = false
             });
         }
         foreach(var id in model.BadHabitIds)
         {
-            entity.SessionGoodHabits.Add(new SessionGoodHabit
+            entity.SessionBadHabits.Add(new SessionBadHabit
             {
-                GoodHabitId = id,
-                Completed = false
+                BadHabitId = id,
+                Failed = false
             });
         }
         foreach(var IdAndUnitsPerSession in model.TreatIdUnitPerSessionPairs)
         {
             entity.SessionTreats.Add(new SessionTreat
             {
+                SessionId = entity.Id,
                 TreatId = IdAndUnitsPerSession.Item1,
                 UnitsLeft = IdAndUnitsPerSession.Item2
             });
         }
 
-        Add(entity);
-        return ValueTask.FromResult(true);
+        //finish previous
+        if(model.PreviousSessionId is not null)
+        {
+            var prev = await Get(model.PreviousSessionId.Value);
+            if (prev is null)
+            {
+                return false;
+            }
+            Add(entity);
+            prev.EndDate = model.StartDate;
+            Update(prev);
+        }
+        else
+        {
+            //just add, it's the first session overall
+            Add(entity);
+        }
+
+        return true;
     }
 
-    public async ValueTask<bool> Update(SessionUpdateModel<int, string, int, int, int, int> model)
+    //Big boy. There is no functionality to share, so splitting is not necessary.
+    public async ValueTask<bool> Update(SessionUpdateModel<int, int?, string, int, int, int, int> model)
     {
         Session? entity = await GetAll()
-            .Where(x => x.UserId == model.UserId)
+            .Where(x => x.Id == model.Id)
             .Include(x => x.SessionGoodHabits)
             .Include(x => x.SessionBadHabits)
             .Include(x => x.SessionTreats)
+            .Include(x => x.SessionTransactions)
             .FirstOrDefaultAsync();
 
         if (entity == null)
@@ -117,21 +162,76 @@ public class SessionRepository
             return false;
         }
 
-        entity.EndDate = model.EndDate;
         entity.Refunds = model.Refunds;
         entity.PreviousSessionId = model.PreviousSessionId;
         foreach (var gh in entity.SessionGoodHabits)
         {
-            gh.Completed = model.GoodHabitIdCompletedPairs[gh.GoodHabitId];
+            var exists = model.GoodHabitIdCompletedPairs.TryGetValue(gh.GoodHabitId, out var value);
+            if (!exists) Delete(gh);
+            gh.Completed = value;
         }
+        //Add new ones
+        entity.SessionGoodHabits = entity.SessionGoodHabits.Concat(
+            model.GoodHabitIdCompletedPairs
+                .Select(x => x.Key)
+                .Except(entity.SessionGoodHabits.Select(x => x.GoodHabitId))
+                .Select(key => new SessionGoodHabit
+                {
+                    GoodHabitId = key,
+                    Completed = model.GoodHabitIdCompletedPairs[key]
+                })
+        ).ToHashSet();
+
         foreach (var bh in entity.SessionBadHabits)
         {
-            bh.Failed = model.BadHabitIdFailedPairs[bh.BadHabitId];
+            var exists = model.BadHabitIdFailedPairs.TryGetValue(bh.BadHabitId, out var value);
+            if (!exists) Delete(bh);
+            bh.Failed = value;
         }
+        //Add new ones
+        entity.SessionBadHabits = entity.SessionBadHabits.Concat(
+            model.BadHabitIdFailedPairs
+                .Select(x => x.Key)
+                .Except(entity.SessionBadHabits.Select(x => x.BadHabitId))
+                .Select(key => new SessionBadHabit
+                {
+                    BadHabitId = key,
+                    Failed = model.BadHabitIdFailedPairs[key]
+                })
+        ).ToHashSet();
+
         foreach (var tr in entity.SessionTreats)
         {
-            tr.UnitsLeft = model.TreatIdUnitsLeftPairs[tr.TreatId];
+            var exists = model.TreatIdUnitsLeftPairs.TryGetValue(tr.TreatId, out var value);
+            if (!exists) Delete(tr);
+            tr.UnitsLeft = value;
         }
+        //Add new ones
+        entity.SessionTreats = entity.SessionTreats.Concat(
+            model.TreatIdUnitsLeftPairs
+                .Select(x => x.Key)
+                .Except(entity.SessionTreats.Select(x => x.TreatId))
+                .Select(key => new SessionTreat
+                {
+                    TreatId = key,
+                    UnitsLeft = model.TreatIdUnitsLeftPairs[key]
+                })
+        ).ToHashSet();
+
+        foreach (var tr in entity.SessionTransactions)
+        {
+            var exists = model.TransactionIds.TryGetValue(tr.TransactionId, out var value);
+            if (!exists) Delete(tr);
+        }
+        //Add new ones
+        entity.SessionTransactions = entity.SessionTransactions.Concat(
+            model.TransactionIds
+                .Except(entity.SessionTransactions.Select(x => x.TransactionId))
+                .Select(key => new SessionTransaction
+                {
+                    TransactionId = key,
+                })
+        ).ToHashSet();
 
         Update(entity);
         return true;
@@ -161,7 +261,7 @@ public class SessionRepository
         }
         else
         {
-            //do nothing, it's for the best
+            //do nothing, Business Logic requires one active Session.
             return false;
         }
     }

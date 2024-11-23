@@ -19,4 +19,9 @@ public abstract class RepositoryBase<Entity, IdType>
     {
         db.Remove<Entity>(entity);
     }
+
+    protected void Delete<T>(T entity) where T : class
+    {
+        db.Remove<T>(entity);
+    }
 }

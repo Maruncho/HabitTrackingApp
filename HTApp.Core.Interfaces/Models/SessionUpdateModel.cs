@@ -1,13 +1,13 @@
-﻿namespace HTApp.Core.Contracts;
+﻿using System.Data.SqlTypes;
 
-public class SessionUpdateModel<ModelId, UserIdType, GdHId, BdHId, TrsId, TrtId>
+namespace HTApp.Core.Contracts;
+
+public class SessionUpdateModel<ModelId, ModelIdNullable, UserIdType, GdHId, BdHId, TrsId, TrtId>
     where GdHId : notnull
     where BdHId : notnull
     where TrtId : notnull
 {
     public required ModelId Id { get; set; }
-
-    public DateTime? EndDate { get; set; }
 
     public byte Refunds { get; set; }
 
@@ -17,7 +17,9 @@ public class SessionUpdateModel<ModelId, UserIdType, GdHId, BdHId, TrsId, TrtId>
 
     public required Dictionary<TrtId, byte> TreatIdUnitsLeftPairs { get; set; }
 
-    public ModelId? PreviousSessionId { get; set; }
+    public required HashSet<TrsId> TransactionIds { get; set; }
+
+    public ModelIdNullable? PreviousSessionId { get; set; }
 
     public required UserIdType UserId { get; set; }
 }

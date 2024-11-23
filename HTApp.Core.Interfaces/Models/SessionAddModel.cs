@@ -1,6 +1,6 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class SessionAddModel<ModelId, UserIdType, GdHId, BdHId, TrsId, TrtId>
+public class SessionAddModel<ModelIdNullable, UserIdType, GdHId, BdHId, TrsId, TrtId>
 {
     public DateTime StartDate { get; set; }
 
@@ -14,5 +14,5 @@ public class SessionAddModel<ModelId, UserIdType, GdHId, BdHId, TrsId, TrtId>
 
     public required UserIdType UserId { get; set; }
 
-    public required ModelId? PreviousSessionId { get; set; }
+    public ModelIdNullable? PreviousSessionId { get; set; }
 }

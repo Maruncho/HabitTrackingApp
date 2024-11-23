@@ -103,6 +103,7 @@ internal class DbContextSetupBase
 
         DbTransactionTypes = db.TransactionTypes.ToArray();
 
+
         var localTransactions = new Transaction[]
         {
             new Transaction {Amount = 100, Type = DbTransactionTypes[0], User = user1},
@@ -118,25 +119,27 @@ internal class DbContextSetupBase
 
         var localSessions = new Session[]
         {
-            new Session {StartDate = DateTime.Now, EndDate = DateTime.Now, Refunds = 1, User = user1 },
-            new Session {StartDate = DateTime.Now, EndDate = DateTime.Now, Refunds = 2, User = user1 },
+            new Session {StartDate = DateTime.Now, EndDate = DateTime.Now, Refunds = 1, User = user1, PreviousSessionId = null},
+            new Session {StartDate = DateTime.Now, EndDate = DateTime.Now, Refunds = 2, User = user1, },
             new Session {StartDate = DateTime.Now, EndDate = null, Refunds = 3, User = user1,
                 SessionGoodHabits = localGoodHabits.Where(x => x.User == user1 && x.IsActive && !x.IsDeleted).Select(x => new SessionGoodHabit{GoodHabit = x, Completed = false}).ToArray(),
                 SessionBadHabits = localBadHabits.Where(x => x.User == user1 && !x.IsDeleted).Select(x => new SessionBadHabit{BadHabit = x, Failed = false}).ToArray(),
                 SessionTreats = localTreats.Where(x => x.User == user1 && !x.IsDeleted).Select(x => new SessionTreat{Treat = x, UnitsLeft = 3}).ToArray(),
                 SessionTransactions = localTransactions.Where(x => x.User == user1).Select(x => new SessionTransaction{Transaction = x}).ToArray(),
             },
-            new Session {StartDate = DateTime.Now, EndDate = null, Refunds = 1, User = user2 },
+            new Session {StartDate = DateTime.Now, EndDate = null, Refunds = 1, User = user2, PreviousSessionId = null },
         };
+        localSessions[1].PreviousSession = localSessions[0];
+        localSessions[2].PreviousSession = localSessions[1];
         db.AddRange(localSessions);
 
 
         db.SaveChanges();
-        DbGoodHabits = db.GoodHabits.ToArray();
-        DbBadHabits = db.BadHabits.ToArray();
-        DbTreats = db.Treats.ToArray();
-        DbTransactions = db.Transactions.ToArray();
-        DbSessions = db.Sessions.Include(x => x.SessionGoodHabits).Include(x => x.SessionBadHabits).Include(x => x.SessionTransactions).Include(x => x.SessionTreats).ToArray();
+        DbGoodHabits = db.GoodHabits.AsNoTracking().ToArray();
+        DbBadHabits = db.BadHabits.AsNoTracking().ToArray();
+        DbTreats = db.Treats.AsNoTracking().ToArray();
+        DbTransactions = db.Transactions.AsNoTracking().ToArray();
+        DbSessions = db.Sessions.AsNoTracking().Include(x => x.SessionGoodHabits).Include(x => x.SessionBadHabits).Include(x => x.SessionTransactions).Include(x => x.SessionTreats).ToArray();
 
         GoodHabitRepository = new GoodHabitRepository(db);
         BadHabitRepository = new BadHabitRepository(db);
