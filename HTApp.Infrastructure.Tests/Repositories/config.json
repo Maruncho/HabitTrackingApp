@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "Testing" :  "Server=(localdb)\\mssqllocaldb;Database=aspnet-HabitTrackingApp-Testing;Trusted_Connection=True;MultipleActiveResultSets=true;Integrated Security=true"
+  }
+}

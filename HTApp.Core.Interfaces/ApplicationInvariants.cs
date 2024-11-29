@@ -9,7 +9,7 @@ namespace HTApp.Core.Contracts;
 public static class ApplicationInvariants
 {
     //UserData
-    public const int UserDataCreditsMin = 0;
+    public const int UserDataCreditsMin = int.MinValue; // we will allow negative credits and call it a feature. It's not lazy programmer stuff.
     public const int UserDataCreditsMax = int.MaxValue;
 
     public const byte UserDataRefundsMin = 0;

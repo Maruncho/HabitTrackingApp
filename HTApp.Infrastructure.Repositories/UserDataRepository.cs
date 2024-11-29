@@ -51,24 +51,4 @@ public class UserDataRepository : IUserDataRepository<string>
         var user = await db.AppUsers.FindAsync(userId);
         user!.RefundsPerSession = newValue;
     }
-
-    //public Task<bool> SaveChangesAsync()
-    //{
-    //    try
-    //    {
-    //        bool hasChanges = db.ChangeTracker.HasChanges();
-    //        int res = db.SaveChanges();
-
-    //        //Some simple quick check
-    //        //if hasChanges == false -> true
-    //        //else check if the SQL transaction from SaveChanges() saved something.
-    //        return Task.FromResult(!hasChanges || res > 0); 
-    //    }
-    //    catch(DbUpdateException e)
-    //    {
-    //        //I'm new to ASP.Net, so I don't know if there is a better way to log with more useful information.
-    //        logger.LogError(e, "EF Core said this, trying to save:");
-    //        return Task.FromResult(false);
-    //    }
-    //}
 }

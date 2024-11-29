@@ -21,6 +21,7 @@ public interface IUnitOfWork<UserIdType, GoodHabitModelId, BadHabitModelId, Trea
     public ITreatRepository<UserIdType, TreatModelId> TreatRepository { get; init; }
     public ITransactionRepository<UserIdType, TransactionModelId> TransactionRepository { get; init; }
     public ISessionRepository<UserIdType, SessionModelId, SessionModelIdNullable, GoodHabitModelId, BadHabitModelId, TransactionModelId, TreatModelId> SessionRepository { get; init; }
+    public IUserDataRepository<UserIdType> UserDataRepository { get; init; }
 
     public Task<bool> SaveChangesAsync();
 }
