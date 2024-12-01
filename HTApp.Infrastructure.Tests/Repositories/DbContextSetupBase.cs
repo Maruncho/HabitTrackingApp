@@ -34,7 +34,7 @@ internal class DbContextSetupBase
     public static ApplicationDbContext SetUpAndGetDbContext()
     {
         var config = new ConfigurationBuilder();
-        config.AddJsonFile("./config.json");
+        config.AddJsonFile("./Repositories/config.json");
         var connectionString = config.Build().GetConnectionString("Testing");
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 
-using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +10,8 @@ builder.Services.AddHTAppContext(connectionString);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddHTAppIdentity();
+
+builder.Services.AddHTAppRepositories();
 
 builder.Services.AddControllersWithViews();
 
@@ -36,8 +37,12 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapRazorPages();
 
 app.Run();

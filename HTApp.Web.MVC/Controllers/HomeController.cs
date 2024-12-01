@@ -15,6 +15,7 @@ namespace HTApp.Web.MVC.Controllers
 
         public IActionResult Index()
         {
+            ViewData["Title"] = "HabitTrackingApp";
             return View();
         }
 

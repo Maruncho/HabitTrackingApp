@@ -1,8 +1,46 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@using HTApp.Infrastructure.EntityModels
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+  <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+    <div class="p-lg-5 mx-auto my-5 text-center">
+      <h1 class="display-4 fw-normal">Habit Tracking App</h1>
+      <p class="lead fw-normal">Struggling to maintain habits and too lazy to write stuff down? This app solves this problem, but leaves total freedom to its users. Read the short manual below and then you are ready to go!</p>
+        @if (!SignInManager.IsSignedIn(User))
+        {
+        <div>
+          <a class="btn btn-lg btn-dark px-4 mx-2" asp-area="Identity" asp-page="/Account/Register">Create an Account</a>
+          <a class="btn btn-lg btn-dark px-4 mx-2" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </div>
+        }
+    </div>
+  </div>
+
+  <div class="bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+    <div class="my-3 py-3">
+      <h2 class="pb-4 display-5">List Your Good and Bad Habits</h2>
+      <p class="lead">Create the list of habits you want to track. After you log in, you will see the respective buttons at the top. There you will find further guidance.</p>
+    </div>
+  </div>
+
+  <div class="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+    <div class="my-3 p-3">
+      <h2 class="display-5">List Your Treats</h2>
+      <p class="lead">Keeping up the good work requires motivation. By completing habits, you collect credits. Fill the "shopping catalogue" with your favorite things!</p>
+    </div>
+  </div>
+
+  <div class="bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+    <div class="my-3 py-3">
+      <h2 class="pb-4 display-5">Track Your Transactions</h2>
+      <p class="lead">This is the place where you can track where you're getting and losing your credits from.</p>
+    </div>
+  </div>
+
+  <div class="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+    <div class="my-3 p-3">
+      <h2 class="display-5">Current Session</h2>
+      <p class="lead">This is your current session, where your habits and treat "shopping catalogue" will appear. You can mark each habit as either completed or failed, and spend your credits on treats.</p>
+    </div>
+  </div>

@@ -1,14 +1,23 @@
-﻿namespace HTApp.Core.Contracts;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
+
+using static HTApp.Core.Contracts.ApplicationInvariants;
+
+namespace HTApp.Core.Contracts;
 
 public class GoodHabitInputModel
 {
-    public required string Name { get; set; }
+    [Length(GoodHabitNameLengthMin, GoodHabitNameLengthMax)]
+    public string Name { get; set; } = null!;
 
+    [Range(GoodHabitCreditsSuccessMin, GoodHabitCreditsSuccessMax)]
     public int CreditsSuccess { get; set; }
 
+    [Range(GoodHabitCreditsFailMin, GoodHabitCreditsFailMax)]
     public int CreditsFail { get; set; }
 
     public bool IsActive { get; set; } = true;
 
-    public required string UserId { get; set; }
+    [ValidateNever]
+    public string UserId { get; set; } = null!;
 }

@@ -31,54 +31,12 @@ namespace HTApp.Infrastructure.EntityModels
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<AppUser>()
-                .Property(a => a.Credits)
-                .HasDefaultValue(0);
-
-            modelBuilder.Entity<AppUser>()
-                .Property(a => a.RefundsPerSession)
-                .HasDefaultValue(5);
-
-            modelBuilder.Entity<GoodHabit>()
-                .Property(g => g.IsActive)
-                .HasDefaultValue(true);
-
-            modelBuilder.Entity<GoodHabit>()
-                .Property(g => g.IsDeleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<BadHabit>()
-                .Property(g => g.IsDeleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<Treat>()
-                .Property(t => t.QuantityPerSession)
-                .HasDefaultValue(1);
-
-            modelBuilder.Entity<Treat>()
-                .Property(t => t.IsDeleted)
-                .HasDefaultValue(0);
-
-            modelBuilder.Entity<Transaction>()
-                .Property(t => t.TypeId)
-                .HasDefaultValue(0);
-
             modelBuilder.ApplyConfiguration(new TransactionTypeConfiguration());
-
-
-            modelBuilder.Entity<SessionGoodHabit>()
-                .Property(s => s.Completed)
-                .HasDefaultValue(0);
 
             modelBuilder.Entity<SessionGoodHabit>()
                 .HasOne(s => s.GoodHabit)
                 .WithMany(s => s.SessionGoodHabits)
                 .OnDelete(DeleteBehavior.NoAction);
-
-
-            modelBuilder.Entity<SessionBadHabit>()
-                .Property(s => s.Failed)
-                .HasDefaultValue(0);
 
             modelBuilder.Entity<SessionBadHabit>()
                 .HasOne(s => s.BadHabit)
