@@ -10,13 +10,13 @@ internal class TreatRepositoryTest : DbContextSetupBase
     {
         foreach (string userId in new string[] { user1.Id, user2.Id })
         {
-            TreatModel<int>[] fromRepo = await TreatRepository.GetAll(userId);
+            TreatModel[] fromRepo = await TreatRepository.GetAll(userId);
             var expected = DbTreats
                 .Where(x => x.UserId == userId && x.IsDeleted == false)
                 .ToDictionary(x => x.Id);
 
             Assert.That(expected.Count, Is.EqualTo(fromRepo.Length));
-            foreach(TreatModel<int> re in fromRepo)
+            foreach(TreatModel re in fromRepo)
             {
                 var ex = expected[re.Id];
 
@@ -33,7 +33,7 @@ internal class TreatRepositoryTest : DbContextSetupBase
         var userIds = Enumerable.Range(1, 10).Select(x => new Guid().ToString());
         foreach(var userId in userIds)
         {
-            TreatModel<int>[] empty = await TreatRepository.GetAll(userId);
+            TreatModel[] empty = await TreatRepository.GetAll(userId);
             Assert.That(empty, Is.Empty);
         }
     }
@@ -45,7 +45,7 @@ internal class TreatRepositoryTest : DbContextSetupBase
         foreach(var id in ids)
         {
             Treat ex = DbTreats.First(x => x.Id == id);
-            TreatInputModel<string>? re = await TreatRepository.GetInputModel(id);
+            TreatInputModel? re = await TreatRepository.GetInputModel(id);
 
             if(ex.IsDeleted == true)
             {
@@ -67,7 +67,7 @@ internal class TreatRepositoryTest : DbContextSetupBase
         var name = Guid.NewGuid().ToString();
         name = name.Substring(0, Math.Min(name.Length, ApplicationInvariants.TreatNameLengthMax));
 
-        var model = new TreatInputModel<string>
+        var model = new TreatInputModel
         {
             Name = name,
             Price = ApplicationInvariants.TreatPriceMax,
@@ -89,7 +89,7 @@ internal class TreatRepositoryTest : DbContextSetupBase
 
         Treat something = DbTreats.First();
 
-        var model = new TreatInputModel<string>
+        var model = new TreatInputModel
         {
             Name = name,
             Price = ApplicationInvariants.TreatPriceMax,

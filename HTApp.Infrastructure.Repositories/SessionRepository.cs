@@ -7,19 +7,19 @@ namespace HTApp.Infrastructure.Repositories;
 
 public class SessionRepository
     : RepositoryBase<Session, int>,
-      ISessionRepository<string, int, int?, int, int, int, int>
+      ISessionRepository
 {
 
     public SessionRepository(ApplicationDbContext db) : base(db)
     {
     }
 
-    public Task<SessionModel<int, int, int, int, int>?> GetCurrentSession(string userId)
+    public Task<SessionModel?> GetCurrentSession(string userId)
     {
         return GetAll()
             .Where(x => x.UserId == userId)
             .Where(x => x.EndDate == null) //maybe a bit obscure, but that's how you know it's the current
-            .Select(x => new SessionModel<int, int, int, int, int>
+            .Select(x => new SessionModel
             {
                 Id = x.Id,
                 StartDate = x.StartDate,
@@ -46,7 +46,7 @@ public class SessionRepository
         return GetAll().Where(x => x.UserId == userId && x.EndDate == null).Select(x => (int?)x.Id ).FirstOrDefaultAsync();
     }
 
-    public async Task<SessionUpdateModel<int, int?, string, int, int, int, int>?> GetCurrentSessionUpdateModel(string userId)
+    public async Task<SessionUpdateModel?> GetCurrentSessionUpdateModel(string userId)
     {
         var x = await GetAll()
             .Where(x => x.UserId == userId)
@@ -68,7 +68,7 @@ public class SessionRepository
 
         if (x is null) return null;
 
-        var model = new SessionUpdateModel<int, int?, string, int, int, int, int>
+        var model = new SessionUpdateModel
         {
             Id = x.Id,
             UserId = x.UserId,
@@ -86,7 +86,7 @@ public class SessionRepository
         return model;
     }
 
-    public async ValueTask<bool> AddAndMakeCurrent(SessionAddModel<int?, string, int, int, int, int> model)
+    public async ValueTask<bool> AddAndMakeCurrent(SessionAddModel model)
     {
         Session entity = new Session
         {
@@ -147,7 +147,7 @@ public class SessionRepository
     }
 
     //Big boy. There is no functionality to share, so splitting is not necessary.
-    public async ValueTask<bool> Update(SessionUpdateModel<int, int?, string, int, int, int, int> model)
+    public async ValueTask<bool> Update(SessionUpdateModel model)
     {
         Session? entity = await GetAll()
             .Where(x => x.Id == model.Id)

@@ -7,7 +7,7 @@ namespace HTApp.Infrastructure.Repositories;
 
 public class TransactionRepository
     : RepositoryImmutableBase<Transaction, int>
-    , ITransactionRepository<string, int>
+    , ITransactionRepository
 {
     private static Dictionary<int, string> intToStringEnum =
         Enum.GetValues(typeof(TransactionEnum))
@@ -23,11 +23,11 @@ public class TransactionRepository
     {
     }
 
-    public Task<TransactionModel<int>[]> GetAll(string userId)
+    public Task<TransactionModel[]> GetAll(string userId)
     {
         return GetAll()
             .Where(t => t.UserId == userId)
-            .Select(t => new TransactionModel<int>
+            .Select(t => new TransactionModel
             {
                 Id = t.Id,
                 Type = intToStringEnum[t.TypeId],
@@ -45,7 +45,7 @@ public class TransactionRepository
             .ToArrayAsync();
     }
 
-    public ValueTask<bool> Add(TransactionInputModel<string> model)
+    public ValueTask<bool> Add(TransactionInputModel model)
     {
         Transaction entity = new Transaction
         {

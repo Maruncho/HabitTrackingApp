@@ -1,6 +1,6 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class TreatInputModel<UserIdType>
+public class TreatInputModel
 {
     public required string Name { get; set; }
 
@@ -8,5 +8,5 @@ public class TreatInputModel<UserIdType>
 
     public int Price { get; set; }
 
-    public required UserIdType UserId { get; set; }
+    public required string UserId { get; set; }
 }

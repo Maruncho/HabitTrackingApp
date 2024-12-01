@@ -12,14 +12,14 @@ internal class GoodHabitRepositoryTest : DbContextSetupBase
     {
         foreach (string userId in new string[] { user1.Id, user2.Id })
         {
-            GoodHabitModel<int>[] fromRepo = await GoodHabitRepository.GetAll(userId);
+            GoodHabitModel[] fromRepo = await GoodHabitRepository.GetAll(userId);
 
             var expected = DbGoodHabits
                 .Where(x => x.UserId == userId && x.IsDeleted == false)
                 .ToDictionary(x => x.Id);
 
             Assert.That(expected.Count, Is.EqualTo(fromRepo.Length));
-            foreach(GoodHabitModel<int> re in fromRepo)
+            foreach(GoodHabitModel re in fromRepo)
             {
                 var ex = expected[re.Id];
 
@@ -36,7 +36,7 @@ internal class GoodHabitRepositoryTest : DbContextSetupBase
         var userIds = Enumerable.Range(1, 10).Select(x => new Guid().ToString());
         foreach(var userId in userIds)
         {
-            GoodHabitModel<int>[] empty = await GoodHabitRepository.GetAll(userId);
+            GoodHabitModel[] empty = await GoodHabitRepository.GetAll(userId);
             Assert.That(empty, Is.Empty);
         }
     }
@@ -48,7 +48,7 @@ internal class GoodHabitRepositoryTest : DbContextSetupBase
         foreach(var id in ids)
         {
             GoodHabit ex = DbGoodHabits.First(x => x.Id == id);
-            GoodHabitInputModel<string>? re = await GoodHabitRepository.GetInputModel(id);
+            GoodHabitInputModel? re = await GoodHabitRepository.GetInputModel(id);
 
             if(ex.IsDeleted == true)
             {
@@ -70,7 +70,7 @@ internal class GoodHabitRepositoryTest : DbContextSetupBase
         var name = Guid.NewGuid().ToString();
         name = name.Substring(0, Math.Min(name.Length, ApplicationInvariants.GoodHabitNameLengthMax));
 
-        var model = new GoodHabitInputModel<string>
+        var model = new GoodHabitInputModel
         {
             Name = name,
             CreditsSuccess = ApplicationInvariants.GoodHabitCreditsSuccessMax,
@@ -93,7 +93,7 @@ internal class GoodHabitRepositoryTest : DbContextSetupBase
 
         GoodHabit something = DbGoodHabits.First();
 
-        var model = new GoodHabitInputModel<string>
+        var model = new GoodHabitInputModel
         {
             Name = name,
             CreditsSuccess = ApplicationInvariants.GoodHabitCreditsSuccessMax,

@@ -22,13 +22,13 @@ internal class TransactionRepositoryTest : DbContextSetupBase
     {
         foreach (string userId in new string[] { user1.Id, user2.Id })
         {
-            TransactionModel<int>[] fromRepo = await TransactionRepository.GetAll(userId);
+            TransactionModel[] fromRepo = await TransactionRepository.GetAll(userId);
             var expected = DbTransactions
                 .Where(x => x.UserId == userId)
                 .ToDictionary(x => x.Id);
 
             Assert.That(expected.Count, Is.EqualTo(fromRepo.Length));
-            foreach(TransactionModel<int> re in fromRepo)
+            foreach(TransactionModel re in fromRepo)
             {
                 var ex = expected[re.Id];
 
@@ -45,7 +45,7 @@ internal class TransactionRepositoryTest : DbContextSetupBase
         var userIds = Enumerable.Range(1, 10).Select(x => new Guid().ToString());
         foreach(var userId in userIds)
         {
-            TransactionModel<int>[] empty = await TransactionRepository.GetAll(userId);
+            TransactionModel[] empty = await TransactionRepository.GetAll(userId);
             Assert.That(empty, Is.Empty);
         }
     }
@@ -69,7 +69,7 @@ internal class TransactionRepositoryTest : DbContextSetupBase
     {
         var typeString = TransactionEnum.GoodHabitSuccess.ToString();
         var typeInt = (int)TransactionEnum.GoodHabitSuccess;
-        var model = new TransactionInputModel<string>
+        var model = new TransactionInputModel
         {
             Amount = ApplicationInvariants.TransactionAmountMax,
             Type = typeString,

@@ -7,17 +7,17 @@ namespace HTApp.Infrastructure.Repositories;
 
 public class TreatRepository
     : RepositoryBaseSoftDelete<Treat, int>,
-      ITreatRepository<string, int>
+      ITreatRepository
 {
     public TreatRepository(ApplicationDbContext db) : base(db)
     {
     }
 
-    public Task<TreatModel<int>[]> GetAll(string userId)
+    public Task<TreatModel[]> GetAll(string userId)
     {
         return GetAll()
             .Where(x => x.User.Id == userId)
-            .Select(x => new TreatModel<int>
+            .Select(x => new TreatModel
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -27,7 +27,7 @@ public class TreatRepository
             .ToArrayAsync();
     }
 
-    public async ValueTask<TreatInputModel<string>?> GetInputModel(int id)
+    public async ValueTask<TreatInputModel?> GetInputModel(int id)
     {
         Treat? entity = await Get(id);
 
@@ -36,7 +36,7 @@ public class TreatRepository
             return null;
         }
 
-        var model = new TreatInputModel<string>
+        var model = new TreatInputModel
         {
             UserId = entity.UserId,
             Name = entity.Name,
@@ -47,7 +47,7 @@ public class TreatRepository
         return model;
     }
 
-    public ValueTask<bool> Add(TreatInputModel<string> model)
+    public ValueTask<bool> Add(TreatInputModel model)
     {
         Treat entity = new Treat
         {
@@ -62,7 +62,7 @@ public class TreatRepository
         return ValueTask.FromResult(true);
     }
 
-    public async ValueTask<bool> Update(int id, TreatInputModel<string> model)
+    public async ValueTask<bool> Update(int id, TreatInputModel model)
     {
         Treat? entity = await Get(id);
 

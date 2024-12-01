@@ -7,17 +7,17 @@ namespace HTApp.Infrastructure.Repositories;
 
 public class GoodHabitRepository
     : RepositoryBaseSoftDelete<GoodHabit, int>,
-      IGoodHabitRepository<string, int>
+      IGoodHabitRepository
 {
     public GoodHabitRepository(ApplicationDbContext db) : base(db)
     {
     }
 
-    public Task<GoodHabitModel<int>[]> GetAll(string userId)
+    public Task<GoodHabitModel[]> GetAll(string userId)
     {
         return GetAll()
             .Where(x => x.User.Id == userId)
-            .Select(x => new GoodHabitModel<int>
+            .Select(x => new GoodHabitModel
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -28,7 +28,7 @@ public class GoodHabitRepository
             .ToArrayAsync();
     }
 
-    public async ValueTask<GoodHabitInputModel<string>?> GetInputModel(int id)
+    public async ValueTask<GoodHabitInputModel?> GetInputModel(int id)
     {
         GoodHabit? entity = await Get(id);
 
@@ -37,7 +37,7 @@ public class GoodHabitRepository
             return null;
         }
 
-        var model = new GoodHabitInputModel<string>
+        var model = new GoodHabitInputModel
         {
             UserId = entity.UserId,
             Name = entity.Name,
@@ -49,7 +49,7 @@ public class GoodHabitRepository
         return model;
     }
 
-    public ValueTask<bool> Add(GoodHabitInputModel<string> model)
+    public ValueTask<bool> Add(GoodHabitInputModel model)
     {
         GoodHabit entity = new GoodHabit
         {
@@ -65,7 +65,7 @@ public class GoodHabitRepository
         return ValueTask.FromResult(true);
     }
 
-    public async ValueTask<bool> Update(int id, GoodHabitInputModel<string> model)
+    public async ValueTask<bool> Update(int id, GoodHabitInputModel model)
     {
         GoodHabit? entity = await Get(id);
 

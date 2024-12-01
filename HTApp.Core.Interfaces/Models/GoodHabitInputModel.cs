@@ -1,6 +1,6 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class GoodHabitInputModel<UserIdType>
+public class GoodHabitInputModel
 {
     public required string Name { get; set; }
 
@@ -10,5 +10,5 @@ public class GoodHabitInputModel<UserIdType>
 
     public bool IsActive { get; set; } = true;
 
-    public required UserIdType UserId { get; set; }
+    public required string UserId { get; set; }
 }

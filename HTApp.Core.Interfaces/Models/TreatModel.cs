@@ -1,8 +1,8 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class TreatModel<ModelId>
+public class TreatModel
 {
-    public required ModelId Id { get; set; }
+    public required int Id { get; set; }
 
     public required string Name { get; set; }
 

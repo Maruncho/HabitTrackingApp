@@ -6,27 +6,27 @@ using Microsoft.Extensions.Logging;
 
 namespace HTApp.Infrastructure.Repositories;
 
-public class UnitOfWork : IUnitOfWork<string, int, int, int, int, int, int?>
+public class UnitOfWork : IUnitOfWork
 {
     private ApplicationDbContext db;
-    private ILogger logger;
+    private ILogger<UnitOfWork> logger;
 
-    public IGoodHabitRepository<string, int> GoodHabitRepository { get; init; }
-    public IBadHabitRepository<string, int> BadHabitRepository { get; init; }
-    public ITreatRepository<string, int> TreatRepository { get; init; }
-    public ITransactionRepository<string, int> TransactionRepository { get; init; }
-    public ISessionRepository<string, int, int?, int, int, int, int> SessionRepository { get; init; }
-    public IUserDataRepository<string> UserDataRepository { get; init; }
+    public IGoodHabitRepository GoodHabitRepository { get; init; }
+    public IBadHabitRepository BadHabitRepository { get; init; }
+    public ITreatRepository TreatRepository { get; init; }
+    public ITransactionRepository TransactionRepository { get; init; }
+    public ISessionRepository SessionRepository { get; init; }
+    public IUserDataRepository UserDataRepository { get; init; }
 
     public UnitOfWork(
         ApplicationDbContext db,
-        ILogger logger,
-        IGoodHabitRepository<string, int> gh,
-        IBadHabitRepository<string, int> bh,
-        ITreatRepository<string, int> tt,
-        ITransactionRepository<string, int> ts,
-        ISessionRepository<string, int, int?, int, int, int, int> se,
-        IUserDataRepository<string> us
+        ILogger<UnitOfWork> logger,
+        IGoodHabitRepository gh,
+        IBadHabitRepository bh,
+        ITreatRepository tt,
+        ITransactionRepository ts,
+        ISessionRepository se,
+        IUserDataRepository us
     )
     {
         this.db = db;

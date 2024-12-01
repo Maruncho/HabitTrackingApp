@@ -1,8 +1,8 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class SessionModel<ModelId, GdHId, BdHId, TrsId, TrtId>
+public class SessionModel
 {
-    public required ModelId Id { get; set; }
+    public required int Id { get; set; }
 
     public DateTime StartDate { get; set; }
 
@@ -10,11 +10,11 @@ public class SessionModel<ModelId, GdHId, BdHId, TrsId, TrtId>
 
     public byte Refunds { get; set; }
 
-    public required Tuple<GdHId, bool>[] GoodHabitIdCompletedPairs { get; set; }
+    public required Tuple<int, bool>[] GoodHabitIdCompletedPairs { get; set; }
 
-    public required Tuple<BdHId, bool>[] BadHabitIdFailedPairs { get; set; }
+    public required Tuple<int, bool>[] BadHabitIdFailedPairs { get; set; }
 
-    public required TrsId[] TransactionIds { get; set; }
+    public required int[] TransactionIds { get; set; }
 
-    public required Tuple<TrtId, byte>[] TreatIdUnitsLeftPairs { get; set; }
+    public required Tuple<int, byte>[] TreatIdUnitsLeftPairs { get; set; }
 }

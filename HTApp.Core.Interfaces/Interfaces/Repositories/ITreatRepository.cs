@@ -1,7 +1,7 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public interface ITreatRepository<UserIdType, ModelId>
-    : _ICommon<ModelId, TreatInputModel<UserIdType>>
+public interface ITreatRepository
+    : _ICommon<int, TreatInputModel>
 {
-    public Task<TreatModel<ModelId>[]> GetAll(UserIdType userId);
+    public Task<TreatModel[]> GetAll(string userId);
 }

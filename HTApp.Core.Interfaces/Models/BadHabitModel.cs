@@ -1,8 +1,8 @@
 ﻿namespace HTApp.Core.Contracts;
 
-public class BadHabitModel<ModelId>
+public class BadHabitModel
 {
-    public required ModelId Id { get; set; }
+    public required int Id { get; set; }
 
     public required string Name { get; set; }
 

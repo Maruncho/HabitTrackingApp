@@ -12,7 +12,7 @@ class SessionRepositoryTest : DbContextSetupBase
         foreach(var userId in new string[] {user1.Id, user2.Id})
         {
             Session ex = DbSessions.First(x => x.UserId == userId && x.EndDate == null);
-            SessionModel<int, int, int, int, int>? re = await SessionRepository.GetCurrentSession(userId);
+            SessionModel? re = await SessionRepository.GetCurrentSession(userId);
 
             Assert.That(re, Is.Not.Null);
 
@@ -49,7 +49,7 @@ class SessionRepositoryTest : DbContextSetupBase
         foreach(var userId in new string[] {user1.Id, user2.Id})
         {
             Session ex = DbSessions.First(x => x.UserId == userId && x.EndDate == null);
-            SessionUpdateModel<int, int?, string, int, int, int, int>? re = await SessionRepository.GetCurrentSessionUpdateModel(userId);
+            SessionUpdateModel? re = await SessionRepository.GetCurrentSessionUpdateModel(userId);
 
             Assert.That(re, Is.Not.Null);
 
@@ -71,7 +71,7 @@ class SessionRepositoryTest : DbContextSetupBase
         foreach (var userId in new string[] { user1.Id, user2.Id })
         {
             var dbLast = DbSessions.Where(x => x.UserId == userId && x.EndDate == null).First();
-            var model = new SessionAddModel<int?, string, int, int, int, int>
+            var model = new SessionAddModel
             {
                 StartDate = DateTime.Now,
                 Refunds = 2,

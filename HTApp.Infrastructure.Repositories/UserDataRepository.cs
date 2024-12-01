@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HTApp.Infrastructure.Repositories;
 
 //This is an exception to the MandatoryBases
-public class UserDataRepository : IUserDataRepository<string>
+public class UserDataRepository : IUserDataRepository
 {
     private ApplicationDbContext db;
 

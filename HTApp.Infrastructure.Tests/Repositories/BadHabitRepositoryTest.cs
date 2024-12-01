@@ -10,13 +10,13 @@ internal class BadHabitRepositoryTest : DbContextSetupBase
     {
         foreach (string userId in new string[] { user1.Id, user2.Id })
         {
-            BadHabitModel<int>[] fromRepo = await BadHabitRepository.GetAll(userId);
+            BadHabitModel[] fromRepo = await BadHabitRepository.GetAll(userId);
             var expected = DbBadHabits
                 .Where(x => x.UserId == userId && x.IsDeleted == false)
                 .ToDictionary(x => x.Id);
 
             Assert.That(expected.Count, Is.EqualTo(fromRepo.Length));
-            foreach(BadHabitModel<int> re in fromRepo)
+            foreach(BadHabitModel re in fromRepo)
             {
                 var ex = expected[re.Id];
 
@@ -33,7 +33,7 @@ internal class BadHabitRepositoryTest : DbContextSetupBase
         var userIds = Enumerable.Range(1, 10).Select(x => new Guid().ToString());
         foreach(var userId in userIds)
         {
-            BadHabitModel<int>[] empty = await BadHabitRepository.GetAll(userId);
+            BadHabitModel[] empty = await BadHabitRepository.GetAll(userId);
             Assert.That(empty, Is.Empty);
         }
     }
@@ -45,7 +45,7 @@ internal class BadHabitRepositoryTest : DbContextSetupBase
         foreach(var id in ids)
         {
             BadHabit ex = DbBadHabits.First(x => x.Id == id);
-            BadHabitInputModel<string>? re = await BadHabitRepository.GetInputModel(id);
+            BadHabitInputModel? re = await BadHabitRepository.GetInputModel(id);
 
             if(ex.IsDeleted == true)
             {
@@ -67,7 +67,7 @@ internal class BadHabitRepositoryTest : DbContextSetupBase
         var name = Guid.NewGuid().ToString();
         name = name.Substring(0, Math.Min(name.Length, ApplicationInvariants.BadHabitNameLengthMax));
 
-        var model = new BadHabitInputModel<string>
+        var model = new BadHabitInputModel
         {
             Name = name,
             CreditsSuccess = ApplicationInvariants.BadHabitCreditsSuccessMax,
@@ -89,7 +89,7 @@ internal class BadHabitRepositoryTest : DbContextSetupBase
 
         BadHabit something = DbBadHabits.First();
 
-        var model = new BadHabitInputModel<string>
+        var model = new BadHabitInputModel
         {
             Name = name,
             CreditsSuccess = ApplicationInvariants.BadHabitCreditsSuccessMax,
