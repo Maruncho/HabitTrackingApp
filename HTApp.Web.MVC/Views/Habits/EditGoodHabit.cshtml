@@ -33,6 +33,10 @@
             <a asp-action="Index" class="btn btn-warning">Go Back</a>
           </div>
         </form>
+        @if (ViewData.ContainsKey("ErrorMessage"))
+        {
+            <p>@ViewData["ErrorMessage"]</p>
+        }
       </div>
   </main>
   <partial name="_ValidationScriptsPartial" />

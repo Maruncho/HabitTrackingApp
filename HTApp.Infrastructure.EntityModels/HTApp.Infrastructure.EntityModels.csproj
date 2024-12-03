@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HTApp.Core.Interfaces\HTApp.Core.Contracts.csproj" />
+    <ProjectReference Include="..\HTApp.Core.Interfaces\HTApp.Core.API.csproj" />
   </ItemGroup>
 
 </Project>

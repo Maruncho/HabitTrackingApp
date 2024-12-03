@@ -1,8 +1,8 @@
-﻿namespace HTApp.Core.Contracts;
+﻿namespace HTApp.Core.API;
 
 //Not meant to be used as an abstraction (polymorphism).
 //Sadly I cannot make it internal, because public ones inherit it.
-public interface _ICommon<ModelId, InputModel> : ICommon_AddableOnly<InputModel>
+public interface _ICommon<ModelId, InputModel> : ICommon_AddableOnly<InputModel, ModelId>
 {
     public ValueTask<InputModel?> GetInputModel(ModelId id);
 

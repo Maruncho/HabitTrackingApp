@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTApp.Infrastructure.Extens
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTApp.Infrastructure.Repositories", "HTApp.Infrastructure.Repositories\HTApp.Infrastructure.Repositories.csproj", "{B2C600EC-2819-49C3-86AE-34D67D6D60CB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTApp.Core.Contracts", "HTApp.Core.Interfaces\HTApp.Core.Contracts.csproj", "{54D4E3D1-BDF6-4B7F-9D6D-A2CD4849739D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTApp.Core.API", "HTApp.Core.Interfaces\HTApp.Core.API.csproj", "{54D4E3D1-BDF6-4B7F-9D6D-A2CD4849739D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTApp.Infrastructure.Tests", "HTApp.Infrastructure.Tests\HTApp.Infrastructure.Tests.csproj", "{90B0A995-2E5C-4E13-B8F5-46FC5821222A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTApp.Infrastructure.Tests", "HTApp.Infrastructure.Tests\HTApp.Infrastructure.Tests.csproj", "{90B0A995-2E5C-4E13-B8F5-46FC5821222A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTApp.Core.Services", "HTApp.Core.Services\HTApp.Core.Services.csproj", "{1FF45EE9-F499-401E-AC7D-B2F8C86F2BCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{90B0A995-2E5C-4E13-B8F5-46FC5821222A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90B0A995-2E5C-4E13-B8F5-46FC5821222A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90B0A995-2E5C-4E13-B8F5-46FC5821222A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF45EE9-F499-401E-AC7D-B2F8C86F2BCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF45EE9-F499-401E-AC7D-B2F8C86F2BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF45EE9-F499-401E-AC7D-B2F8C86F2BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF45EE9-F499-401E-AC7D-B2F8C86F2BCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 		{B2C600EC-2819-49C3-86AE-34D67D6D60CB} = {988A53DE-D78A-4DC3-B944-7255547562BE}
 		{54D4E3D1-BDF6-4B7F-9D6D-A2CD4849739D} = {F8DA38A3-1929-485E-B567-2932BEF02EC6}
 		{90B0A995-2E5C-4E13-B8F5-46FC5821222A} = {988A53DE-D78A-4DC3-B944-7255547562BE}
+		{1FF45EE9-F499-401E-AC7D-B2F8C86F2BCF} = {F8DA38A3-1929-485E-B567-2932BEF02EC6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {77DB466E-2FDA-4A7F-A997-0D1FC4F622C1}

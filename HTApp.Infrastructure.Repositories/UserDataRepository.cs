@@ -1,4 +1,4 @@
-﻿using HTApp.Core.Contracts;
+﻿using HTApp.Core.API;
 using HTApp.Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 

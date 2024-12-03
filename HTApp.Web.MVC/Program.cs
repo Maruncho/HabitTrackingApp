@@ -11,7 +11,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddHTAppIdentity();
 
-builder.Services.AddHTAppRepositories();
+//builder.Services.AddHTAppRepositories();
+builder.Services.AddHTAppServices();
 
 builder.Services.AddControllersWithViews();
 

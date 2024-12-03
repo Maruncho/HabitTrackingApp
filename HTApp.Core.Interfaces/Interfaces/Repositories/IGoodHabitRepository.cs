@@ -1,5 +1,5 @@
 ﻿
-namespace HTApp.Core.Contracts;
+namespace HTApp.Core.API;
 
 public interface IGoodHabitRepository
     : _ICommon<int, GoodHabitInputModel>

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HTApp.Infrastructure.Repositories;
 
-public abstract class RepositoryImmutableBaseSoftDelete<Entity, IdType>
+public abstract class RepositoryImmutableBaseSoftDelete<Entity, EntityId>
     where Entity : SoftDeletable
 {
     private ApplicationDbContext db;
@@ -12,7 +12,7 @@ public abstract class RepositoryImmutableBaseSoftDelete<Entity, IdType>
     {
         this.db = db;
     }
-    protected async ValueTask<Entity?> Get(IdType id)
+    protected async ValueTask<Entity?> Get(EntityId id)
     {
         Entity? res = await db.FindAsync<Entity>(id);
         if (res is null) return null;

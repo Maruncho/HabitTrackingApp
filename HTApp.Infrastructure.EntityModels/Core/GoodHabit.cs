@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using static HTApp.Core.Contracts.ApplicationInvariants;
+using static HTApp.Core.API.ApplicationInvariants;
 
 namespace HTApp.Infrastructure.EntityModels.Core
 {

@@ -1,4 +1,4 @@
-﻿using HTApp.Core.Contracts;
+﻿using HTApp.Core.API;
 
 namespace HTApp.Web.MVC.Models;
 

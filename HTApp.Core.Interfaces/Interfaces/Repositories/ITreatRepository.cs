@@ -1,4 +1,4 @@
-﻿namespace HTApp.Core.Contracts;
+﻿namespace HTApp.Core.API;
 
 public interface ITreatRepository
     : _ICommon<int, TreatInputModel>

@@ -1,8 +1,8 @@
 ﻿
-namespace HTApp.Core.Contracts;
+namespace HTApp.Core.API;
 
 public interface ITransactionRepository
-    : ICommon_AddableOnly<TransactionInputModel>
+    : ICommon_AddableOnly<TransactionInputModel, int>
 {
     public Task<TransactionModel[]> GetAll(string userId);
 

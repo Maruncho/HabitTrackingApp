@@ -2,7 +2,7 @@
 
 namespace HTApp.Infrastructure.Repositories;
 
-public abstract class RepositoryImmutableBase<Entity, IdType>
+public abstract class RepositoryImmutableBase<Entity, EntityId>
     where Entity : class
 {
     private ApplicationDbContext db;
@@ -12,7 +12,7 @@ public abstract class RepositoryImmutableBase<Entity, IdType>
         this.db = db;
     }
 
-    protected ValueTask<Entity?> Get(IdType id)
+    protected ValueTask<Entity?> Get(EntityId id)
     {
         return db.Set<Entity>().FindAsync(id);
     }

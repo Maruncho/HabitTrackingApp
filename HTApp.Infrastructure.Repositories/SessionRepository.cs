@@ -1,4 +1,4 @@
-﻿using HTApp.Core.Contracts;
+﻿using HTApp.Core.API;
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.EntityModels.SessionModels;
 using Microsoft.EntityFrameworkCore;
@@ -264,5 +264,15 @@ public class SessionRepository
             //do nothing, Business Logic requires one active Session.
             return false;
         }
+    }
+    public async ValueTask<bool> IsOwnerOf(int id, string userId)
+    {
+        var model = await Get(id);
+        return model is not null && model.UserId == userId;
+    }
+
+    public async ValueTask<bool> Exists(int id)
+    {
+        return (await Get(id)) is not null;
     }
 }

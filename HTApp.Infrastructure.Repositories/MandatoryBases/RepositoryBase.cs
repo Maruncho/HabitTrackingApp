@@ -2,8 +2,8 @@
 
 namespace HTApp.Infrastructure.Repositories;
 
-public abstract class RepositoryBase<Entity, IdType>
-    : RepositoryImmutableBase<Entity, IdType>
+public abstract class RepositoryBase<Entity, EntityId>
+    : RepositoryImmutableBase<Entity, EntityId>
     where Entity : class
 {
 

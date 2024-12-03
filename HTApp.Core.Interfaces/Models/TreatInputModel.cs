@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
-using static HTApp.Core.Contracts.ApplicationInvariants;
+using static HTApp.Core.API.ApplicationInvariants;
 
-namespace HTApp.Core.Contracts;
+namespace HTApp.Core.API;
 
 public class TreatInputModel
 {

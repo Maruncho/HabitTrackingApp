@@ -1,4 +1,4 @@
-﻿namespace HTApp.Core.Contracts;
+﻿namespace HTApp.Core.API;
 
 public class TreatModel
 {

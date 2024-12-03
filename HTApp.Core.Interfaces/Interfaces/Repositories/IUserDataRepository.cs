@@ -1,4 +1,4 @@
-﻿namespace HTApp.Core.Contracts;
+﻿namespace HTApp.Core.API;
 
 // This repository is meant to be more granular.
 public interface IUserDataRepository

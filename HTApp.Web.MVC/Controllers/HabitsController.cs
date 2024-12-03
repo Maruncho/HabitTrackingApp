@@ -1,4 +1,4 @@
-﻿using HTApp.Core.Contracts;
+﻿using HTApp.Core.API;
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Web.MVC.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,11 +10,13 @@ namespace HTApp.Web.MVC.Controllers
     [Authorize]
     public class HabitsController : Controller
     {
-        private IUnitOfWork repos;
+        private IGoodHabitService ghService;
+        private IBadHabitService bhService;
         private UserManager<AppUser> userManager;
-        public HabitsController(IUnitOfWork repos, UserManager<AppUser> userManager)
+        public HabitsController(IGoodHabitService ghService, IBadHabitService bhService, UserManager<AppUser> userManager)
         {
-            this.repos = repos;
+            this.ghService = ghService;
+            this.bhService = bhService;
             this.userManager = userManager;
         }
 
@@ -23,8 +25,8 @@ namespace HTApp.Web.MVC.Controllers
         {
             ViewData["Title"] = "Habits";
             HabitsViewModel model = new HabitsViewModel { BadHabits = [], GoodHabits = [] };
-            model.GoodHabits = await repos.GoodHabitRepository.GetAll(userManager.GetUserId(User)!);
-            model.BadHabits = await repos.BadHabitRepository.GetAll(userManager.GetUserId(User)!);
+            model.GoodHabits = (await ghService.GetAll(userManager.GetUserId(User)!)).Payload!;
+            model.BadHabits = (await bhService.GetAll(userManager.GetUserId(User)!)).Payload!;
             return View(model);
         }
 
@@ -45,11 +47,20 @@ namespace HTApp.Web.MVC.Controllers
                 return View(model);
             }
 
-            model.UserId = userManager.GetUserId(User)!;
-            await repos.GoodHabitRepository.Add(model);
-            await repos.SaveChangesAsync();
+            string userId = userManager.GetUserId(User)!;
+            Response response = await ghService.Add(model, userId);
 
-            return RedirectToAction("Index");
+            switch(response.Code)
+            {
+                case ResponseCode.InvalidField:
+                case ResponseCode.RepositoryError:
+                    ViewData["ErrorMessage"] = response.Message;
+                    return View(model);
+                case ResponseCode.Success:
+                    return RedirectToAction("Index");
+                default:
+                    throw new Exception("Unhandled ResponseCode");
+            }
         }
 
         [HttpGet]
@@ -69,19 +80,40 @@ namespace HTApp.Web.MVC.Controllers
                 return View(model);
             }
 
-            model.UserId = userManager.GetUserId(User)!;
-            await repos.BadHabitRepository.Add(model);
-            await repos.SaveChangesAsync();
+            string userId = userManager.GetUserId(User)!;
+            Response response = await bhService.Add(model, userId);
 
-            return RedirectToAction("Index");
+            switch(response.Code)
+            {
+                case ResponseCode.InvalidField:
+                case ResponseCode.RepositoryError:
+                    ViewData["ErrorMessage"] = response.Message;
+                    return View(model);
+                case ResponseCode.Success:
+                    return RedirectToAction("Index");
+                default:
+                    throw new Exception("Unhandled ResponseCode");
+            }
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditGoodHabitAsync(int id)
+        public async Task<IActionResult> EditGoodHabit(int id)
         {
             ViewData["Title"] = "Edit Good Habit";
-            var model = await repos.GoodHabitRepository.GetInputModel(id);
-            return View(model);
+            string userId = userManager.GetUserId(User)!;
+            Response<GoodHabitInputModel> response = await ghService.GetInputModel(id, userId);
+
+            switch(response.Code)
+            {
+                case ResponseCode.NotFound:
+                    return NotFound();
+                case ResponseCode.Unauthorized:
+                    return Unauthorized();
+                case ResponseCode.Success:
+                    return View(response.Payload);
+                default:
+                    throw new Exception("Unhandled ResponseCode");
+            }
         }
 
         [HttpPost]
@@ -93,19 +125,46 @@ namespace HTApp.Web.MVC.Controllers
                 return View(model);
             }
 
-            model.UserId = userManager.GetUserId(User)!;
-            await repos.GoodHabitRepository.Update(id, model);
-            await repos.SaveChangesAsync();
+            string userId = userManager.GetUserId(User)!;
+            Response response = await ghService.Update(id, model, userId);
 
-            return RedirectToAction("Index");
+            switch (response.Code)
+            {
+                case ResponseCode.InvalidField:
+                    ViewData["ErrorMessage"] = response.Message;
+                    return View(model);
+                case ResponseCode.NotFound:
+                    return NotFound();
+                case ResponseCode.Unauthorized:
+                    return Unauthorized();
+                case ResponseCode.RepositoryError:
+                    ViewData["ErrorMessage"] = response.Message;
+                    return View(model);
+                case ResponseCode.Success:
+                    return RedirectToAction("Index");
+                default:
+                    throw new Exception("Unhandled ResponseCode");
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> EditBadHabit(int id)
         {
             ViewData["Title"] = "Edit Bad Habit";
-            var model = await repos.BadHabitRepository.GetInputModel(id);
-            return View(model);
+            string userId = userManager.GetUserId(User)!;
+            Response<BadHabitInputModel> response = await bhService.GetInputModel(id, userId);
+
+            switch(response.Code)
+            {
+                case ResponseCode.NotFound:
+                    return NotFound();
+                case ResponseCode.Unauthorized:
+                    return Unauthorized();
+                case ResponseCode.Success:
+                    return View(response.Payload);
+                default:
+                    throw new Exception("Unhandled ResponseCode");
+            }
         }
 
         [HttpPost]
@@ -117,29 +176,66 @@ namespace HTApp.Web.MVC.Controllers
                 return View(model);
             }
 
-            model.UserId = userManager.GetUserId(User)!;
-            await repos.BadHabitRepository.Update(id, model);
-            await repos.SaveChangesAsync();
+            string userId = userManager.GetUserId(User)!;
+            Response response = await bhService.Update(id, model, userId);
 
-            return RedirectToAction("Index");
+            switch (response.Code)
+            {
+                case ResponseCode.InvalidField:
+                    ViewData["ErrorMessage"] = response.Message;
+                    return View(model);
+                case ResponseCode.NotFound:
+                    return NotFound();
+                case ResponseCode.Unauthorized:
+                    return Unauthorized();
+                case ResponseCode.RepositoryError:
+                    ViewData["ErrorMessage"] = response.Message;
+                    return View(model);
+                case ResponseCode.Success:
+                    return RedirectToAction("Index");
+                default:
+                    throw new Exception("Unhandled ResponseCode");
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> DeleteGoodHabit(int id)
         {
             ViewData["Title"] = "Delete Good Habit";
-            await repos.GoodHabitRepository.Delete(id);
-            await repos.SaveChangesAsync();
-            return RedirectToAction("Index");
+            string userId = userManager.GetUserId(User)!;
+            Response response = await ghService.Delete(id, userId);
+
+            switch(response.Code)
+            {
+                case ResponseCode.NotFound:
+                    return NotFound();
+                case ResponseCode.Unauthorized:
+                    return Unauthorized();
+                case ResponseCode.Success:
+                    return RedirectToAction("Index");
+                default:
+                    throw new Exception("Unhandled ResponseCode");
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> DeleteBadHabit(int id)
         {
             ViewData["Title"] = "Delete Good Habit";
-            await repos.BadHabitRepository.Delete(id);
-            await repos.SaveChangesAsync();
-            return RedirectToAction("Index");
+            string userId = userManager.GetUserId(User)!;
+            Response response = await bhService.Delete(id, userId);
+
+            switch(response.Code)
+            {
+                case ResponseCode.NotFound:
+                    return NotFound();
+                case ResponseCode.Unauthorized:
+                    return Unauthorized();
+                case ResponseCode.Success:
+                    return RedirectToAction("Index");
+                default:
+                    throw new Exception("Unhandled ResponseCode");
+            }
         }
     }
 }

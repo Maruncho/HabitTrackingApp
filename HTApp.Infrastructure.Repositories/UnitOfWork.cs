@@ -1,7 +1,6 @@
-﻿using HTApp.Core.Contracts;
+﻿using HTApp.Core.API;
 using HTApp.Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Logging;
 
 namespace HTApp.Infrastructure.Repositories;
@@ -11,32 +10,13 @@ public class UnitOfWork : IUnitOfWork
     private ApplicationDbContext db;
     private ILogger<UnitOfWork> logger;
 
-    public IGoodHabitRepository GoodHabitRepository { get; init; }
-    public IBadHabitRepository BadHabitRepository { get; init; }
-    public ITreatRepository TreatRepository { get; init; }
-    public ITransactionRepository TransactionRepository { get; init; }
-    public ISessionRepository SessionRepository { get; init; }
-    public IUserDataRepository UserDataRepository { get; init; }
-
     public UnitOfWork(
         ApplicationDbContext db,
-        ILogger<UnitOfWork> logger,
-        IGoodHabitRepository gh,
-        IBadHabitRepository bh,
-        ITreatRepository tt,
-        ITransactionRepository ts,
-        ISessionRepository se,
-        IUserDataRepository us
+        ILogger<UnitOfWork> logger
     )
     {
         this.db = db;
         this.logger = logger;
-        GoodHabitRepository = gh;
-        BadHabitRepository = bh;
-        TreatRepository = tt;
-        TransactionRepository = ts;
-        SessionRepository = se;
-        UserDataRepository = us;
     }
 
     public Task<bool> SaveChangesAsync()

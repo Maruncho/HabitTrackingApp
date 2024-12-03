@@ -2,8 +2,8 @@
 
 namespace HTApp.Infrastructure.Repositories;
 
-public abstract class RepositoryBaseSoftDelete<Entity, IdType>
-    : RepositoryImmutableBaseSoftDelete<Entity, IdType>
+public abstract class RepositoryBaseSoftDelete<Entity, EntityId>
+    : RepositoryImmutableBaseSoftDelete<Entity, EntityId>
     where Entity : SoftDeletable
 {
 

@@ -1,4 +1,4 @@
-using HTApp.Core.Contracts;
+using HTApp.Core.API;
 using HTApp.Infrastructure.EntityModels.Core;
 using HTApp.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;

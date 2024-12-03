@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HTApp.Core.Interfaces\HTApp.Core.Contracts.csproj" />
+    <ProjectReference Include="..\HTApp.Core.Interfaces\HTApp.Core.API.csproj" />
+    <ProjectReference Include="..\HTApp.Core.Services\HTApp.Core.Services.csproj" />
     <ProjectReference Include="..\HTApp.Infrastructure.EntityModels\HTApp.Infrastructure.EntityModels.csproj" />
     <ProjectReference Include="..\HTApp.Infrastructure.Repositories\HTApp.Infrastructure.Repositories.csproj" />
   </ItemGroup>
