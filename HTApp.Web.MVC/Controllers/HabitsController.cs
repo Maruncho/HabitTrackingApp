@@ -34,12 +34,12 @@ namespace HTApp.Web.MVC.Controllers
         public IActionResult AddGoodHabit()
         {
             ViewData["Title"] = "Add Good Habit";
-            var model = new GoodHabitInputModel();
+            var model = new GoodHabitFormModel();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddGoodHabit(GoodHabitInputModel model)
+        public async Task<IActionResult> AddGoodHabit(GoodHabitFormModel model)
         {
             ViewData["Title"] = "Add Good Habit";
             if(!ModelState.IsValid)
@@ -67,12 +67,12 @@ namespace HTApp.Web.MVC.Controllers
         public IActionResult AddBadHabit()
         {
             ViewData["Title"] = "Add Bad Habit";
-            var model = new BadHabitInputModel();
+            var model = new BadHabitFormModel();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddBadHabit(BadHabitInputModel model)
+        public async Task<IActionResult> AddBadHabit(BadHabitFormModel model)
         {
             ViewData["Title"] = "Add Bad Habit";
             if(!ModelState.IsValid)
@@ -110,14 +110,14 @@ namespace HTApp.Web.MVC.Controllers
                 case ResponseCode.Unauthorized:
                     return Unauthorized();
                 case ResponseCode.Success:
-                    return View(response.Payload);
+                    return View((GoodHabitFormModel)response.Payload!); //sadly the views do not implicitly convert
                 default:
                     throw new Exception("Unhandled ResponseCode");
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditGoodHabit(GoodHabitInputModel model, int id)
+        public async Task<IActionResult> EditGoodHabit(GoodHabitFormModel model, int id)
         {
             ViewData["Title"] = "Edit Good Habit";
             if(!ModelState.IsValid)
@@ -161,14 +161,14 @@ namespace HTApp.Web.MVC.Controllers
                 case ResponseCode.Unauthorized:
                     return Unauthorized();
                 case ResponseCode.Success:
-                    return View(response.Payload);
+                    return View((BadHabitFormModel)response.Payload!);
                 default:
                     throw new Exception("Unhandled ResponseCode");
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditBadHabit(BadHabitInputModel model, int id)
+        public async Task<IActionResult> EditBadHabit(BadHabitFormModel model, int id)
         {
             ViewData["Title"] = "Edit Bad Habit";
             if(!ModelState.IsValid)

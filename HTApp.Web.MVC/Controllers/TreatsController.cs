@@ -26,12 +26,12 @@ public class TreatsController : Controller
     public IActionResult AddTreat()
     {
         ViewData["Title"] = "Add Treat";
-        var model = new TreatInputModel();
+        var model = new TreatFormModel();
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddTreat(TreatInputModel model)
+    public async Task<IActionResult> AddTreat(TreatFormModel model)
     {
         ViewData["Title"] = "Add Treat";
         if(!ModelState.IsValid)
@@ -69,14 +69,14 @@ public class TreatsController : Controller
             case ResponseCode.Unauthorized:
                 return Unauthorized();
             case ResponseCode.Success:
-                return View(response.Payload);
+                return View((TreatFormModel)response.Payload!);
             default:
                 throw new Exception("Unhandled ResponseCode");
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditTreat(TreatInputModel model, int id)
+    public async Task<IActionResult> EditTreat(TreatFormModel model, int id)
     {
         ViewData["Title"] = "Edit Treat";
         if(!ModelState.IsValid)
