@@ -59,7 +59,40 @@ public static class ApplicationInvariants
     public const int TransactionMessageLengthMax = 64;
     public static readonly string TransactionMessageLengthError = $"Message length should be in the range [{TransactionMessageLengthMin}:{TransactionMessageLengthMax}]";
 
-    public const int TransactionAmountMin = 0;
+    public const int TransactionAmountMin = int.MinValue;
     public const int TransactionAmountMax = int.MaxValue;
     public static readonly string TransactionAmountError = $"Amount should be in the range [{TransactionAmountMin}:{TransactionAmountMax}]";
+
+    public static readonly string[] TransactionTypes = {
+        "Unknown",
+        "Manual",
+        "DeletedTransactionType",
+
+        "GoodHabitSuccess",
+        "GoodHabitFail",
+        "GoodHabitSuccessCancel",
+
+        "BadHabitSuccess",
+        "BadHabitFail",
+        "BadHabitFailCancel",
+
+        "BuyingTreat",
+        "RefundTreat"
+    };
+    public enum TransactionTypesEnum {
+        Unknown,
+        Manual,
+        DeletedTransactionType,
+
+        GoodHabitSuccess,
+        GoodHabitFail,
+        GoodHabitSuccessCancel,
+
+        BadHabitSuccess,
+        BadHabitFail,
+        BadHabitFailCancel,
+
+        BuyingTreat,
+        RefundTreat
+    };
 }

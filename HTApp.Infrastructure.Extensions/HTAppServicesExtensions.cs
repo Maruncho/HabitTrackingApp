@@ -12,6 +12,7 @@ public static class HTAppServicesExtensions
         services.AddScoped<IGoodHabitService, GoodHabitService>();
         services.AddScoped<IBadHabitService, BadHabitService>();
         services.AddScoped<ITreatService, TreatService>();
+        services.AddScoped<ITransactionService, TransactionService>();
         return services;
     }
 }

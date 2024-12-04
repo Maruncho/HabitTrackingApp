@@ -1,0 +1,110 @@
+﻿@model TransactionsViewModel
+@{
+    int begin = Model.PageBeginIndex;
+    bool hasPrev = begin > Model.PageCount;
+}
+
+<div id="transactions" class="row">
+    <div class="row px-5 bg-dark text-light my-3 rounded-3">
+      <div class="container-fluid py-4 row">
+        <h1 class="fw-bold col-4">Transactions</h1>
+        <div class="col-8">
+          <a asp-action="AddManual" class="px-4 btn btn-lg btn-warning">Add/Subtract Credits Manually</a>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+    <!--Buttons-->
+    @if(hasPrev)
+    {
+      <a class="col-2 btn btn-lg btn-warning" asp-action="Index"
+      asp-route-pageNumberParam=@(Model.PageNumber-1)
+      asp-route-filterTypeName=@Model.FilterTypeName>Prev</a>
+    }
+    else
+    {
+      <a class="col-2 btn btn-lg btn-warning disabled" disabled>Prev</a>
+    }
+    @if(Model.HasNext)
+    {
+      <a class="col-2 btn btn-lg btn-warning" asp-action="Index"
+      asp-route-pageNumberParam=@(Model.PageNumber+1)
+      asp-route-filterTypeName=@Model.FilterTypeName>Next</a>
+    }
+    else
+    {
+      <a class="col-2 btn btn-lg btn-warning disabled" disabled>Next</a>
+    }
+    <div class="col-4"></div>
+    @if(Model.PageNumber != 1)
+    {
+      <a class="col-2 btn btn-lg btn-warning" asp-action="Index"
+      asp-route-pageNumberParam="1"
+      asp-route-filterTypeName=@Model.FilterTypeName>First</a>
+    }
+    else
+    {
+      <a class="col-2 btn btn-lg btn-warning disabled" disabled>First</a>
+    }
+    @if(Model.HasNext)
+    {
+      <a class="col-2 btn btn-lg btn-warning" asp-action="Index"
+      asp-route-pageNumberParam="last"
+      asp-route-filterTypeName=@Model.FilterTypeName>Last</a>
+    }
+    else
+    {
+      <a class="col-2 btn btn-lg btn-warning disabled" disabled>Last</a>
+    }
+    <!--Buttons End-->
+    <div class="row mt-4">
+      <form class="form" method="get">
+        <div class="form-group col-4">
+          <select asp-for="@Model.FilterTypeName" class="form-control">
+          @if(string.IsNullOrEmpty(Model.FilterTypeName))
+          {
+            <option value="" selected>No Filter</option>
+          }
+          else
+          {
+            <option value="">No Filter</option>
+          }
+          @foreach(string type in Model.TypeNames) {
+          if(type == Model.FilterTypeName)
+          {
+            <option value=@type selected>@type</option>
+          }
+          else
+          {
+            <option value=@type>@type</option>
+          }}
+          </select>
+        </div>
+        <button class="btn btn-warning mt-1" type="submit">Filter</button>
+      </form>
+    </div>
+    </div>
+    <div class="row mb-4 align-items-md-stretch g-3">
+      <table class="table table-striped table-bordered border border-secondary">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Type</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach(var t in Model.Models)
+          {
+          <tr>
+            <th class="table-warning" scope="col">@(begin++)</th>
+            <td>@t.Type</td>
+            <td>@t.Amount</td>
+            <td>@t.Message</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+</div>

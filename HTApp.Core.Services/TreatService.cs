@@ -65,7 +65,7 @@ public class TreatService : ITreatService
         return new Response(ResponseCode.Success, "Success");
     }
 
-    public async Task<Response<TreatModel[]>> GetAll(string userId)
+    public async ValueTask<Response<TreatModel[]>> GetAll(string userId)
     {
         return new Response<TreatModel[]>(ResponseCode.Success, "Success.", await repo.GetAll(userId));
     }

@@ -65,7 +65,7 @@ public class GoodHabitService : IGoodHabitService
         return new Response(ResponseCode.Success, "Success");
     }
 
-    public async Task<Response<GoodHabitModel[]>> GetAll(string userId)
+    public async ValueTask<Response<GoodHabitModel[]>> GetAll(string userId)
     {
         return new Response<GoodHabitModel[]>(ResponseCode.Success, "Success.", await repo.GetAll(userId));
     }

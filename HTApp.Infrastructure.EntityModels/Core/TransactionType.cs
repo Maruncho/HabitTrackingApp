@@ -25,6 +25,8 @@ namespace HTApp.Infrastructure.EntityModels.Core
 
 
     //Bad name, sorry! ;) Oh well! ;]
+
+    //IT MIMICS THE ONE IN HTApp.Core.API.ApplicationInvariants
     public enum TransactionEnum
     {
         Unknown = 0,

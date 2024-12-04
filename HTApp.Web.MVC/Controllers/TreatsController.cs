@@ -1,10 +1,12 @@
 ﻿using HTApp.Core.API;
 using HTApp.Infrastructure.EntityModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HTApp.Web.MVC.Controllers;
 
+[Authorize]
 public class TreatsController : Controller
 {
     private ITreatService treatService;
@@ -31,6 +33,7 @@ public class TreatsController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddTreat(TreatFormModel model)
     {
         ViewData["Title"] = "Add Treat";
@@ -75,7 +78,8 @@ public class TreatsController : Controller
         }
     }
 
-    [HttpPost]
+    [HttpPut]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditTreat(TreatFormModel model, int id)
     {
         ViewData["Title"] = "Edit Treat";
@@ -106,7 +110,8 @@ public class TreatsController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpDelete]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteTreat(int id)
     {
         ViewData["Title"] = "Delete Treat";

@@ -37,9 +37,37 @@ public class TransactionRepository
             .ToArrayAsync();
     }
 
-    public Task<string[]> GetUsedTypeNames()
+    public Task<TransactionModel[]> GetAll(string userId, int pageCount, int pageNumber, int additionalEntries = 0, string filterTypeName = "")
+    {
+        var x = GetAll().Where(t => t.UserId == userId);
+        if(!string.IsNullOrEmpty(filterTypeName))
+        {
+            x = x.Where(t => t.TypeId == stringToIntEnum[filterTypeName]);
+        }
+
+        return x
+            .OrderByDescending(t => t.Id) //that's the order for now
+            .Skip(pageCount*(pageNumber-1))
+            .Take(pageCount+additionalEntries)
+            .Select(t => new TransactionModel
+            {
+                Id = t.Id,
+                Type = intToStringEnum[t.TypeId],
+                Message = t.Type!.Message ?? string.Empty,
+                Amount = t.Amount
+            })
+            .ToArrayAsync();
+    }
+
+    public Task<int> GetCount(string userId)
+    {
+        return GetAll().Where(t => t.UserId == userId).CountAsync();
+    }
+
+    public Task<string[]> GetUsedTypeNames(string userId)
     {
         return GetAll()
+            .Where(t => t.UserId == userId)
             .Select(t => intToStringEnum[t.TypeId])
             .Distinct()
             .ToArrayAsync();
