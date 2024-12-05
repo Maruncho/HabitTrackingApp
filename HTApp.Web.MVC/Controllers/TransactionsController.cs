@@ -4,20 +4,23 @@ using HTApp.Web.MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace HTApp.Web.MVC.Controllers
 {
     [Authorize]
     public class TransactionsController : Controller
     {
-        const int pageCount = 25;
+        const int pageCount = 20;
 
         ITransactionService transactionService;
+        IUserDataService userDataService;
         UserManager<AppUser> userManager;
 
-        public TransactionsController(ITransactionService transactionService, UserManager<AppUser> userManager)
+        public TransactionsController(ITransactionService transactionService, IUserDataService userDataService, UserManager<AppUser> userManager)
         {
             this.transactionService = transactionService;
+            this.userDataService = userDataService;
             this.userManager = userManager;
         }
 
@@ -28,8 +31,11 @@ namespace HTApp.Web.MVC.Controllers
 
             TransactionServiceResponse response = (await ParsePageNumberParameter(pageNumberParam, userId, filterTypeName ?? "")).Payload!;
 
+            int userCredits = (await userDataService.GetCredits(userId)).Payload!;
+
             TransactionsViewModel viewModel = new TransactionsViewModel
             {
+                UserCredits = userCredits,
                 PageCount = pageCount,
                 HasNext = response.HasNext,
                 PageNumber = response.PageNumber,
@@ -79,29 +85,19 @@ namespace HTApp.Web.MVC.Controllers
 
         private async Task<Response<TransactionServiceResponse>> ParsePageNumberParameter(string? pageNumberParam, string userId, string? filterTypeName)
         {
-            Response<TransactionServiceResponse> response;
-            if(pageNumberParam is null)
+            if(pageNumberParam == "last")
             {
-                response = await transactionService.GetAll(userId, pageCount, 1, filterTypeName ?? "");
-            }
-            else if(pageNumberParam == "last")
-            {
-                response = await transactionService.GetAllLatest(userId, pageCount);
-            }
-            else
-            {
-                bool res = int.TryParse(pageNumberParam, out int pageNumber);
-                if (!res)
-                {
-                    response = await transactionService.GetAll(userId, pageCount, 1);
-                }
-                else
-                {
-                    response = await transactionService.GetAll(userId, pageCount, pageNumber);
-                }
+                return await transactionService.GetAllLatest(userId, pageCount, filterTypeName ?? "");
             }
 
-            return response;
+            //handles null too
+            bool res = int.TryParse(pageNumberParam, out int pageNumber);
+            if (!res)
+            {
+                pageNumber = 1;
+            }
+
+            return await transactionService.GetAll(userId, pageCount, pageNumber, filterTypeName ?? "");
         }
     }
 }

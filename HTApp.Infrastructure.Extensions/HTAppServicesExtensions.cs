@@ -13,6 +13,7 @@ public static class HTAppServicesExtensions
         services.AddScoped<IBadHabitService, BadHabitService>();
         services.AddScoped<ITreatService, TreatService>();
         services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<IUserDataService, UserDataService>();
         return services;
     }
 }

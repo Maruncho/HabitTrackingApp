@@ -9,11 +9,13 @@ public class TransactionService : ITransactionService
 
     ITransactionRepository repo { get; init; }
     IUnitOfWork unitOfWork;
+    IUserDataService userDataService { get; set; }
 
-    public TransactionService(ITransactionRepository repo, IUnitOfWork unitOfWork)
+    public TransactionService(ITransactionRepository repo, IUnitOfWork unitOfWork, IUserDataService userDataService)
     {
         this.repo = repo;
         this.unitOfWork = unitOfWork;
+        this.userDataService = userDataService;
     }
 
     public async ValueTask<Response<TransactionServiceResponse>> GetAll(string userId, int pageCount, int pageNumber, string filterTypeName = "")
@@ -64,13 +66,27 @@ public class TransactionService : ITransactionService
         {
             return new Response(ResponseCode.InvalidField, TransactionAmountError);
         }
-
         if(!transactionTypes.Contains(model.Type))
         {
             return new Response(ResponseCode.InvalidField, "Invalid Transaction Type. This is a dev mistake. He sucks if you see this.");
         }
 
         model.UserId = userId;
+
+        //Update the credits
+        //Note that it doesn't save changes.
+        Response<AppendCreditsResponse> UserCreditsResponse = await userDataService.AppendCredits(model.Amount, userId, false);
+        if(UserCreditsResponse.Code == ResponseCode.RepositoryError)
+        {
+            throw new Exception("Something went wrong. Please try again.");
+        }
+        if(UserCreditsResponse.Code != ResponseCode.Success)
+        {
+            throw new Exception("Unhandled Response Case.");
+        }
+
+        //Update the model according to the data returned
+        model.Amount = UserCreditsResponse.Payload!.Diff;
 
         bool success = await repo.Add(model) && await unitOfWork.SaveChangesAsync();
         if(!success)

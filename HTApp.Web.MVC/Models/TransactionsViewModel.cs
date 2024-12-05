@@ -4,6 +4,9 @@ namespace HTApp.Web.MVC.Models;
 
 public class TransactionsViewModel
 {
+    public int UserCredits { get; set; }
+
+
     public int PageBeginIndex { get; set; }
 
     public int PageCount { get; set; }
