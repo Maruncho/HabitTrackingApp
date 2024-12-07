@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HTApp.Infrastructure.EntityModels.Core;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels.SessionModels
@@ -9,12 +10,15 @@ namespace HTApp.Infrastructure.EntityModels.SessionModels
         {
             SessionGoodHabits = new HashSet<SessionGoodHabit>();
             SessionBadHabits = new HashSet<SessionBadHabit>();
-            SessionTransactions = new HashSet<SessionTransaction>();
+            Transactions = new HashSet<Transaction>();
             SessionTreats = new HashSet<SessionTreat>();
         }
 
         [Key]
         public int Id { get; set; }
+
+        [Required]
+        public bool Last { get; set; }
 
         [Required]
         public DateTime StartDate { get; set; }
@@ -35,7 +39,7 @@ namespace HTApp.Infrastructure.EntityModels.SessionModels
 
         public ICollection<SessionGoodHabit> SessionGoodHabits { get; set; } = null!;
         public ICollection<SessionBadHabit> SessionBadHabits { get; set; } = null!;
-        public ICollection<SessionTransaction> SessionTransactions { get; set; } = null!;
+        public ICollection<Transaction> Transactions { get; set; } = null!;
         public ICollection<SessionTreat> SessionTreats { get; set; } = null!;
     }
 }

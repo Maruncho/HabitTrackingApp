@@ -7,4 +7,6 @@ public class TransactionInputModel
     public int Amount { get; set; }
 
     public string UserId { get; set; } = null!;
+
+    public int? SessionId { get; set; }
 }

@@ -4,6 +4,7 @@ using HTApp.Infrastructure.EntityModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HTApp.Infrastructure.EntityModels.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241205182718_AddFieldToSession")]
+    partial class AddFieldToSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,9 +176,6 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SessionId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TypeId")
                         .HasColumnType("int");
 
@@ -184,8 +184,6 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SessionId");
 
                     b.HasIndex("TypeId");
 
@@ -306,11 +304,11 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Current")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("Last")
-                        .HasColumnType("bit");
 
                     b.Property<int?>("PreviousSessionId")
                         .HasColumnType("int");
@@ -368,6 +366,21 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
                     b.HasIndex("GoodHabitId");
 
                     b.ToTable("SessionGoodHabits");
+                });
+
+            modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.SessionTransaction", b =>
+                {
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SessionId", "TransactionId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("SessionTransactions");
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.SessionTreat", b =>
@@ -549,10 +562,6 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.Core.Transaction", b =>
                 {
-                    b.HasOne("HTApp.Infrastructure.EntityModels.SessionModels.Session", "Session")
-                        .WithMany("Transactions")
-                        .HasForeignKey("SessionId");
-
                     b.HasOne("HTApp.Infrastructure.EntityModels.Core.TransactionType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
@@ -564,8 +573,6 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Session");
 
                     b.Navigation("Type");
 
@@ -636,6 +643,25 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
                     b.Navigation("GoodHabit");
 
                     b.Navigation("Session");
+                });
+
+            modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.SessionTransaction", b =>
+                {
+                    b.HasOne("HTApp.Infrastructure.EntityModels.SessionModels.Session", "Session")
+                        .WithMany("SessionTransactions")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HTApp.Infrastructure.EntityModels.Core.Transaction", "Transaction")
+                        .WithMany("SessionTransactions")
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Session");
+
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.SessionModels.SessionTreat", b =>
@@ -731,6 +757,11 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
                     b.Navigation("SessionGoodHabits");
                 });
 
+            modelBuilder.Entity("HTApp.Infrastructure.EntityModels.Core.Transaction", b =>
+                {
+                    b.Navigation("SessionTransactions");
+                });
+
             modelBuilder.Entity("HTApp.Infrastructure.EntityModels.Core.Treat", b =>
                 {
                     b.Navigation("SessionTreats");
@@ -742,9 +773,9 @@ namespace HTApp.Infrastructure.EntityModels.Migrations
 
                     b.Navigation("SessionGoodHabits");
 
-                    b.Navigation("SessionTreats");
+                    b.Navigation("SessionTransactions");
 
-                    b.Navigation("Transactions");
+                    b.Navigation("SessionTreats");
                 });
 #pragma warning restore 612, 618
         }

@@ -26,6 +26,32 @@ public class TreatRepository
             })
             .ToArrayAsync();
     }
+    public Task<Tuple<int, byte>[]> GetAllIdAndQuantityPerSessionPairs(string userId)
+    {
+        return GetAll()
+            .Where(x => x.UserId == userId)
+            .Select(x => new Tuple<int ,byte>(x.Id, x.QuantityPerSession))
+            .ToArrayAsync();   
+    }
+
+    public async Task<TreatLogicModel?> GetLogicModel(int id)
+    {
+        Treat? entity = await Get(id);
+
+        if(entity is null)
+        {
+            return null;
+        }
+
+        var model = new TreatLogicModel
+        {
+            Id = entity.Id,
+            UnitsPerSession = entity.QuantityPerSession,
+            Price = entity.CreditsPrice
+        };
+
+        return model;
+    }
 
     public async ValueTask<TreatInputModel?> GetInputModel(int id)
     {

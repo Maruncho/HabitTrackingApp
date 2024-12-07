@@ -10,6 +10,32 @@ public class Response
 
     public ResponseCode Code { get; init; }
     public string Message { get; init; } = null!;
+
+    /// <param name="messageSeparator">If ommited, Environment.NewLine</param>
+    /// <returns>If no errors, returns a ResponseCode.Success Response</returns>
+    public static Response AggregateErrors(IEnumerable<Response> responses, string? messageSeparator = null)
+    {
+        messageSeparator ??= Environment.NewLine;
+
+        List<string> messages = new();
+
+        bool error = false;
+
+        foreach(var response in responses)
+        {
+            if(response.Code != ResponseCode.Success)
+            {
+                error = true;
+                messages.Add(response.Message);
+            }
+        }
+
+        if(!error)
+        {
+            return new Response(ResponseCode.Success, "Success.");
+        }
+        return new Response(ResponseCode.ServiceError, string.Join(messageSeparator, messages));
+    }
 }
 
 public class Response<PayloadType> where PayloadType : class?
@@ -42,9 +68,14 @@ public class ResponseStruct<PayloadType> where PayloadType : struct
 
 public enum ResponseCode
 {
+    //Ideally, this is the only one success code, the payload provides extra info
+    //If not, fix some implementations mostly here and hopefully not somewhere there.
     Success,
+
     InvalidField,
     Unauthorized,
     NotFound,
-    RepositoryError
+    RepositoryError,
+    InvalidOperation,
+    ServiceError
 }

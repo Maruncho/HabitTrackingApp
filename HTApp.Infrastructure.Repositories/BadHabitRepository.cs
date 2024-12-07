@@ -27,6 +27,33 @@ public class BadHabitRepository
             .ToArrayAsync();
     }
 
+    public Task<int[]> GetAllIds(string userId)
+    {
+        return GetAll()
+            .Where(x => x.UserId == userId)
+            .Select(x => x.Id)
+            .ToArrayAsync();   
+    }
+
+    public async Task<BadHabitLogicModel?> GetLogicModel(int id)
+    {
+        BadHabit? entity = await Get(id);
+
+        if(entity is null)
+        {
+            return null;
+        }
+
+        var model = new BadHabitLogicModel
+        {
+            Id = entity.Id,
+            CreditsSuccess = entity.CreditsSuccess,
+            CreditsFail = entity.CreditsFail,
+        };
+
+        return model;
+    }
+
     public async ValueTask<BadHabitInputModel?> GetInputModel(int id)
     {
         BadHabit? entity = await Get(id);

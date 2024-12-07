@@ -5,33 +5,65 @@ namespace HTApp.Core.Services;
 
 public class TransactionService : ITransactionService
 {
-    private static HashSet<string> transactionTypes = TransactionTypes.ToHashSet();
+    private static HashSet<string> transactionTypes = Enum.GetNames<TransactionTypesEnum>().ToHashSet();
 
-    ITransactionRepository repo { get; init; }
+    ITransactionRepository repo;
     IUnitOfWork unitOfWork;
-    IUserDataService userDataService { get; set; }
 
-    public TransactionService(ITransactionRepository repo, IUnitOfWork unitOfWork, IUserDataService userDataService)
+    IUserDataService userDataService;
+
+    ISessionService sessionService;
+
+    public TransactionService(ITransactionRepository repo, IUnitOfWork unitOfWork, IUserDataService userDataService, ISessionService sessionService)
     {
         this.repo = repo;
         this.unitOfWork = unitOfWork;
+
         this.userDataService = userDataService;
+
+        this.sessionService = sessionService;
+        this.sessionService.SubscribeToMakeTransaction(this);
     }
 
-    public async ValueTask<Response<TransactionServiceResponse>> GetAll(string userId, int pageCount, int pageNumber, string filterTypeName = "")
+    ~TransactionService()
     {
+        sessionService.UnsubscribeToMakeTransaction(this);
+    }
 
+    public async ValueTask<Response<TransactionServiceResponse>> GetAll(string userId, int pageCount, int pageNumber, string filterTypeName = "", bool fromLastSession = false)
+    {
         if(!transactionTypes.Contains(filterTypeName))
         {
             filterTypeName = "";
         }
 
-        TransactionModel[] modelsPlusOne = await repo.GetAll(userId, pageCount, pageNumber, 1, filterTypeName);
-        if(modelsPlusOne.Length == 0 && pageNumber != 1)
+        int? lastSessionId = null;
+        if(fromLastSession)
         {
-            //some weird recursion ;p
-            return await GetAllLatest(userId, pageCount);
+            ResponseStruct<int> resp = await sessionService.GetLastSessionId(userId, false);
+            if(resp.Code == ResponseCode.NotFound)
+            {
+                //probably do nothing??
+            }
+            else if(resp.Code != ResponseCode.Success)
+            {
+                throw new Exception("Unhandled code in getting CurrentSessionId in GetAll from TransactionService.");
+            }
+            lastSessionId = resp.Payload;
         }
+
+        TransactionOptions opt = new TransactionOptions
+        {
+            AdditionalEntries = 1, //used to check whether we have a next page
+            FilterTypeName = filterTypeName,
+            FromSessionId = lastSessionId,
+        };
+
+        //check if pageCount is too big. And also prevent pageNumber == 0;
+        double count = await repo.GetCount(userId);
+        pageNumber = (int)Math.Max(1, Math.Min(pageNumber, Math.Ceiling(count/pageCount)));
+
+        TransactionModel[] modelsPlusOne = await repo.GetAll(userId, pageCount, pageNumber, opt);
 
         TransactionServiceResponse response = new TransactionServiceResponse()
         {
@@ -43,11 +75,11 @@ public class TransactionService : ITransactionService
         return new Response<TransactionServiceResponse>(ResponseCode.Success, "Success.", response);
     }
 
-    public async ValueTask<Response<TransactionServiceResponse>> GetAllLatest(string userId, int pageCount, string filterTypeName = "")
+    public async ValueTask<Response<TransactionServiceResponse>> GetAllLatest(string userId, int pageCount, string filterTypeName = "", bool fromLastSession = false)
     {
         double count = await repo.GetCount(userId);
         int pageNumber = (int)Math.Max(1, Math.Ceiling(count/pageCount));
-        return await GetAll(userId, pageCount, pageNumber, filterTypeName);
+        return await GetAll(userId, pageCount, pageNumber, filterTypeName, fromLastSession);
     }
 
     public async ValueTask<ResponseStruct<int>> GetCount(string userId)
@@ -60,7 +92,7 @@ public class TransactionService : ITransactionService
         return new Response<string[]>(ResponseCode.Success, "Success.", await repo.GetUsedTypeNames(userId));
     }
 
-    public async ValueTask<Response> Add(TransactionInputModel model, string userId)
+    public async ValueTask<Response> Add(TransactionInputModel model, string userId, bool saveChanges = true)
     {
         if(model.Amount < TransactionAmountMin || model.Amount > TransactionAmountMax)
         {
@@ -75,10 +107,11 @@ public class TransactionService : ITransactionService
 
         //Update the credits
         //Note that it doesn't save changes.
+        //Also Observer Pattern doesn't really work here, because I need the payload, so it's not 1-way communication.
         Response<AppendCreditsResponse> UserCreditsResponse = await userDataService.AppendCredits(model.Amount, userId, false);
         if(UserCreditsResponse.Code == ResponseCode.RepositoryError)
         {
-            throw new Exception("Something went wrong. Please try again.");
+            return new Response(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
         }
         if(UserCreditsResponse.Code != ResponseCode.Success)
         {
@@ -86,9 +119,12 @@ public class TransactionService : ITransactionService
         }
 
         //Update the model according to the data returned
+        //The cap might be hit, that's why.
         model.Amount = UserCreditsResponse.Payload!.Diff;
 
-        bool success = await repo.Add(model) && await unitOfWork.SaveChangesAsync();
+        bool success = await repo.Add(model) && 
+            (saveChanges ? await unitOfWork.SaveChangesAsync() : true);
+
         if(!success)
         {
             return new Response(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
@@ -97,14 +133,42 @@ public class TransactionService : ITransactionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public ValueTask<Response> AddManual(int amount, string userId)
+    public async ValueTask<Response> AddManual(int amount, string userId)
     {
+        //Get current session Id if any
+        int? lastSessionId = null;
+
+        //lastSessionId is null if no active session
+        var response = await sessionService.GetLastSessionId(userId, true);
+        if(response.Code == ResponseCode.NotFound){}
+        else if(response.Code == ResponseCode.Success)
+        {
+            lastSessionId = response.Payload;
+        }
+        else
+        {
+            throw new Exception("Unhandled response code");
+        }
+
         TransactionInputModel model = new TransactionInputModel
         {
             Type = nameof(TransactionTypesEnum.Manual),
             Amount = amount,
+            SessionId = lastSessionId
         };
 
-        return Add(model, userId);
+        return await Add(model, userId);
+    }
+
+    public ValueTask<Response> NotifyWhenMakeTransaction(MakeTransactionInfo info)
+    {
+        TransactionInputModel model = new TransactionInputModel
+        {
+            Type = nameof(info.TransactionType),
+            Amount = info.Amount,
+            SessionId = info.SessionId,
+        };
+
+        return Add(model, info.UserId, false);
     }
 }

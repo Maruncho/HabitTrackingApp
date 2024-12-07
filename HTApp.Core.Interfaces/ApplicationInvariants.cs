@@ -63,22 +63,6 @@ public static class ApplicationInvariants
     public const int TransactionAmountMax = int.MaxValue;
     public static readonly string TransactionAmountError = $"Amount should be in the range [{TransactionAmountMin}:{TransactionAmountMax}]";
 
-    public static readonly string[] TransactionTypes = {
-        "Unknown",
-        "Manual",
-        "DeletedTransactionType",
-
-        "GoodHabitSuccess",
-        "GoodHabitFail",
-        "GoodHabitSuccessCancel",
-
-        "BadHabitSuccess",
-        "BadHabitFail",
-        "BadHabitFailCancel",
-
-        "BuyingTreat",
-        "RefundTreat"
-    };
     public enum TransactionTypesEnum {
         Unknown,
         Manual,

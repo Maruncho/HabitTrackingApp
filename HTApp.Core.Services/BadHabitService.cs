@@ -8,10 +8,14 @@ public class BadHabitService : IBadHabitService
     IBadHabitRepository repo;
     IUnitOfWork unitOfWork;
 
+    private HashSet<IBadHabitObserver> changeStatusSubscribers;
+
     public BadHabitService(IBadHabitRepository repo, IUnitOfWork unitOfWork)
     {
         this.repo = repo;
         this.unitOfWork = unitOfWork;
+
+        changeStatusSubscribers = new();
     }
 
     public async ValueTask<Response> Add(BadHabitInputModel model, string userId)
@@ -33,11 +37,20 @@ public class BadHabitService : IBadHabitService
 
         model.UserId = userId;
 
+        //the notify requries access to the new ids. It's less than ideal, but has to suffice.
         bool success = await repo.Add(model) && await unitOfWork.SaveChangesAsync();
         if(!success)
         {
             return new Response(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
         }
+
+        //notify -----
+        var bigResponse = Response.AggregateErrors(await NotifyStatusChange(userId));
+        if(bigResponse.Code == ResponseCode.ServiceError)
+        {
+            //do nothing. The current architecture makes it hard to inform the user about errors from elsewhere in a general way.
+        }
+        await unitOfWork.SaveChangesAsync();
 
         return new Response(ResponseCode.Success, "Success.");
     }
@@ -56,11 +69,20 @@ public class BadHabitService : IBadHabitService
             return new Response(ResponseCode.Unauthorized, "Unauthorized");
         }
 
+        //the notify requries access to the new ids. It's less than ideal, but has to suffice.
         bool success = await repo.Delete(id) && await unitOfWork.SaveChangesAsync();
         if(!success)
         {
             return new Response(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
         }
+
+        //notify -----
+        var bigResponse = Response.AggregateErrors(await NotifyStatusChange(userId));
+        if(bigResponse.Code == ResponseCode.ServiceError)
+        {
+            //do nothing. The current architecture makes it hard to inform the user about errors from elsewhere in a general way.
+        }
+        await unitOfWork.SaveChangesAsync();
 
         return new Response(ResponseCode.Success, "Success");
     }
@@ -68,6 +90,10 @@ public class BadHabitService : IBadHabitService
     public async ValueTask<Response<BadHabitModel[]>> GetAll(string userId)
     {
         return new Response<BadHabitModel[]>(ResponseCode.Success, "Success.", await repo.GetAll(userId));
+    }
+    public async ValueTask<Response<int[]>> GetAllIds(string userId)
+    {
+        return new Response<int[]>(ResponseCode.Success, "Success.", await repo.GetAllIds(userId));
     }
 
     public async ValueTask<Response<BadHabitInputModel>> GetInputModel(int id, string userId)
@@ -87,6 +113,25 @@ public class BadHabitService : IBadHabitService
         BadHabitInputModel model = (await repo.GetInputModel(id))!;
 
         return new Response<BadHabitInputModel>(ResponseCode.Success, "Success", model);
+    }
+
+    public async ValueTask<Response<BadHabitLogicModel>> GetLogicModel(int id, string userId)
+    {
+        bool exists = await repo.Exists(id);
+        if(!exists)
+        {
+            return new Response<BadHabitLogicModel>(ResponseCode.NotFound, "Not Found");
+        }
+
+        bool allowed = await repo.IsOwnerOf(id, userId);
+        if(!allowed)
+        {
+            return new Response<BadHabitLogicModel>(ResponseCode.Unauthorized, "Unauthorized");
+        }
+
+        BadHabitLogicModel model = (await repo.GetLogicModel(id))!;
+
+        return new Response<BadHabitLogicModel>(ResponseCode.Success, "Success", model);
     }
 
     public async ValueTask<Response> Update(int id, BadHabitInputModel model, string userId)
@@ -119,12 +164,60 @@ public class BadHabitService : IBadHabitService
             return new Response(ResponseCode.Unauthorized, "Unauthorized");
         }
 
+        //the notify requries access to the new ids. It's less than ideal, but has to suffice.
         bool success = await repo.Update(id, model) && await unitOfWork.SaveChangesAsync();
         if(!success)
         {
             return new Response(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
         }
 
+        //notify -----
+        var bigResponse = Response.AggregateErrors(await NotifyStatusChange(userId));
+        if(bigResponse.Code == ResponseCode.ServiceError)
+        {
+            //do nothing. The current architecture makes it hard to inform the user about errors from elsewhere in a general way.
+        }
+        await unitOfWork.SaveChangesAsync();
+
         return new Response(ResponseCode.Success, "Success.");
+    }
+
+    public async Task<Response[]> NotifyStatusChange(string userId)
+    {
+        List<Response> list = new List<Response>();
+        foreach(var sub in changeStatusSubscribers)
+        {
+            list.Add(await sub.NotifyWhenStatusChange(userId));
+        }
+        return list.ToArray();
+    }
+
+    public void SubscribeToStatusChange(IBadHabitObserver observer)
+    {
+        if(observer == null)
+        {
+            throw new ArgumentNullException();
+        }
+        //should handle duplicates as a HashSet.
+        changeStatusSubscribers.Add(observer);
+    }
+
+    public void UnsubscribeToStatusChange(IBadHabitObserver observer)
+    {
+        if(observer == null)
+        {
+            throw new ArgumentNullException();
+        }
+        changeStatusSubscribers.Remove(observer);
+    }
+
+    public ValueTask<bool> Exists(int id)
+    {
+        return repo.Exists(id);
+    }
+
+    public ValueTask<bool> IsOwnerOf(int id, string userId)
+    {
+        return repo.IsOwnerOf(id, userId);
     }
 }

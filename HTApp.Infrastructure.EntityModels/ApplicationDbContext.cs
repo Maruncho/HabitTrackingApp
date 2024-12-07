@@ -19,7 +19,6 @@ namespace HTApp.Infrastructure.EntityModels
         public virtual DbSet<Session> Sessions { get; set; }
         public virtual DbSet<SessionGoodHabit> SessionGoodHabits { get; set; }
         public virtual DbSet<SessionBadHabit> SessionBadHabits { get; set; }
-        public virtual DbSet<SessionTransaction> SessionTransactions { get; set; }
         public virtual DbSet<SessionTreat> SessionTreats { get; set; }
 
 
@@ -43,16 +42,9 @@ namespace HTApp.Infrastructure.EntityModels
                 .WithMany(s => s.SessionBadHabits)
                 .OnDelete(DeleteBehavior.NoAction);
 
-
             modelBuilder.Entity<SessionTreat>()
                 .HasOne(s => s.Treat)
                 .WithMany(t => t.SessionTreats)
-                .OnDelete(DeleteBehavior.NoAction);
-
-
-            modelBuilder.Entity<SessionTransaction>()
-                .HasOne(s => s.Transaction)
-                .WithMany(s => s.SessionTransactions)
                 .OnDelete(DeleteBehavior.NoAction);
 
             base.OnModelCreating(modelBuilder);

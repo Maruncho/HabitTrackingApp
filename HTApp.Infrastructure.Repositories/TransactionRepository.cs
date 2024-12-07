@@ -2,6 +2,7 @@
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.EntityModels.Core;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace HTApp.Infrastructure.Repositories;
 
@@ -18,6 +19,7 @@ public class TransactionRepository
         Enum.GetValues(typeof(TransactionEnum))
             .Cast<TransactionEnum>()
             .ToDictionary(t => t.ToString(), t => (int)t);
+
 
     public TransactionRepository(ApplicationDbContext db) : base(db)
     {
@@ -37,18 +39,26 @@ public class TransactionRepository
             .ToArrayAsync();
     }
 
-    public Task<TransactionModel[]> GetAll(string userId, int pageCount, int pageNumber, int additionalEntries = 0, string filterTypeName = "")
+    public Task<TransactionModel[]> GetAll(string userId, int pageCount, int pageNumber, TransactionOptions? extra = null)
     {
-        var x = GetAll().Where(t => t.UserId == userId);
-        if(!string.IsNullOrEmpty(filterTypeName))
+        TransactionOptions opt = extra ?? new TransactionOptions();
+
+        var models = GetAll().Where(t => t.UserId == userId);
+
+        if(opt.FromSessionId is not null)
         {
-            x = x.Where(t => t.TypeId == stringToIntEnum[filterTypeName]);
+            models = models.Where(t => t.SessionId == opt.FromSessionId);
         }
 
-        return x
+        if(!string.IsNullOrEmpty(opt.FilterTypeName))
+        {
+            models = models.Where(t => t.TypeId == stringToIntEnum[opt.FilterTypeName]);
+        }
+
+        return models
             .OrderByDescending(t => t.Id) //that's the order for now
-            .Skip(pageCount*(pageNumber-1))
-            .Take(pageCount+additionalEntries)
+            .Skip(pageCount * (pageNumber - 1))
+            .Take(pageCount + opt.AdditionalEntries)
             .Select(t => new TransactionModel
             {
                 Id = t.Id,
@@ -80,6 +90,7 @@ public class TransactionRepository
             Amount = model.Amount,
             TypeId = stringToIntEnum[model.Type],
             UserId = model.UserId,
+            SessionId = model.SessionId,
         };
 
         Add(entity);

@@ -118,7 +118,7 @@ namespace HTApp.Web.MVC.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditGoodHabit(GoodHabitFormModel model, int id)
         {
@@ -170,7 +170,7 @@ namespace HTApp.Web.MVC.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBadHabit(BadHabitFormModel model, int id)
         {
@@ -202,8 +202,7 @@ namespace HTApp.Web.MVC.Controllers
             }
         }
 
-        [HttpDelete]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public async Task<IActionResult> DeleteGoodHabit(int id)
         {
             ViewData["Title"] = "Delete Good Habit";
@@ -223,8 +222,7 @@ namespace HTApp.Web.MVC.Controllers
             }
         }
 
-        [HttpDelete]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public async Task<IActionResult> DeleteBadHabit(int id)
         {
             ViewData["Title"] = "Delete Good Habit";

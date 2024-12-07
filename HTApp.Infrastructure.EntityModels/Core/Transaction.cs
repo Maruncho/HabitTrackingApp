@@ -6,11 +6,6 @@ namespace HTApp.Infrastructure.EntityModels.Core
 {
     public class Transaction
     {
-        public Transaction()
-        {
-            SessionTransactions = new HashSet<SessionTransaction>();
-        }
-
         [Key]
         public int Id { get; set; }
 
@@ -27,6 +22,9 @@ namespace HTApp.Infrastructure.EntityModels.Core
         [ForeignKey(nameof(UserId))]
         public AppUser User { get; set; } = null!;
 
-        public ICollection<SessionTransaction> SessionTransactions { get; set; }
+        //Manual Transactions don't have a session, so it's not required.
+        public int? SessionId { get; set; }
+        [ForeignKey(nameof(SessionId))]
+        public Session? Session { get; set; }
     }
 }

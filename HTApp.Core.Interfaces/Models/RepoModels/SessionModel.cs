@@ -10,11 +10,12 @@ public class SessionModel
 
     public byte Refunds { get; set; }
 
-    public required Tuple<int, bool>[] GoodHabitIdCompletedPairs { get; set; }
+    public required SessionGoodHabitModel[] GoodHabits { get; set; }
 
-    public required Tuple<int, bool>[] BadHabitIdFailedPairs { get; set; }
+    public required SessionBadHabitModel[] BadHabits { get; set; }
 
-    public required int[] TransactionIds { get; set; }
+    //change of plans
+    //public required TransactionModel[] Transactions { get; set; }
 
-    public required Tuple<int, byte>[] TreatIdUnitsLeftPairs { get; set; }
+    public required SessionTreatModel[] Treats { get; set; }
 }

@@ -78,7 +78,7 @@ public class TreatsController : Controller
         }
     }
 
-    [HttpPut]
+    [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditTreat(TreatFormModel model, int id)
     {
@@ -110,8 +110,7 @@ public class TreatsController : Controller
         }
     }
 
-    [HttpDelete]
-    [ValidateAntiForgeryToken]
+    [HttpGet]
     public async Task<IActionResult> DeleteTreat(int id)
     {
         ViewData["Title"] = "Delete Treat";

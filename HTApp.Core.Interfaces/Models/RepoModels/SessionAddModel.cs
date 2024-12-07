@@ -6,13 +6,11 @@ public class SessionAddModel
 
     public byte Refunds { get; set; }
 
-    public required int[] GoodHabitIds{ get; set; }
+    public int[] GoodHabitIds { get; set; } = null!;
 
-    public required int[] BadHabitIds { get; set; }
+    public int[] BadHabitIds { get; set; } = null!;
 
-    public required Tuple<int, byte>[] TreatIdUnitPerSessionPairs { get; set; }
+    public Tuple<int, byte>[] TreatIdUnitPerSessionPairs { get; set; } = null!;
 
-    public required string UserId { get; set; }
-
-    public int? PreviousSessionId { get; set; }
+    public string UserId { get; set; } = null!;
 }

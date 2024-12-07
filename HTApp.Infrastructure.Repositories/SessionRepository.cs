@@ -1,4 +1,5 @@
 ﻿using HTApp.Core.API;
+using HTApp.Core.API.Models.RepoModels;
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.EntityModels.SessionModels;
 using Microsoft.EntityFrameworkCore;
@@ -14,127 +15,295 @@ public class SessionRepository
     {
     }
 
-    public Task<SessionModel?> GetCurrentSession(string userId)
+    public Task<SessionModel?> GetLastSession(string userId, bool isNotFinished)
     {
-        return GetAll()
-            .Where(x => x.UserId == userId)
-            .Where(x => x.EndDate == null) //maybe a bit obscure, but that's how you know it's the current
-            .Select(x => new SessionModel
+        var model = GetAllLatest(userId);
+
+        if(isNotFinished)
+        {
+            model = model.Where(x => x.EndDate == null);
+        }
+
+        return model.Select(x => new SessionModel
             {
                 Id = x.Id,
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
                 Refunds = x.Refunds,
-                GoodHabitIdCompletedPairs = x.SessionGoodHabits
-                    .Select(gh => new Tuple<int, bool>(gh.GoodHabitId, gh.Completed))
-                    .ToArray(),
-                BadHabitIdFailedPairs = x.SessionBadHabits
-                    .Select(bh => new Tuple<int, bool>(bh.BadHabitId, bh.Failed))
-                    .ToArray(),
-                TransactionIds = x.SessionTransactions
-                    .Select(ts => ts.TransactionId)
-                    .ToArray(),
-                TreatIdUnitsLeftPairs = x.SessionTreats
-                    .Select(tr => new Tuple<int, byte>(tr.TreatId, tr.UnitsLeft))
-                    .ToArray()
+                GoodHabits = x.SessionGoodHabits
+                    .Select(gh => new SessionGoodHabitModel
+                    {
+                        Id = gh.GoodHabitId,
+                        Label = gh.GoodHabit.Name,
+                        Completed = gh.Completed
+                    }).ToArray(),
+                BadHabits = x.SessionBadHabits
+                    .Select(bh => new SessionBadHabitModel
+                    {
+                        Id = bh.BadHabitId,
+                        Label = bh.BadHabit.Name,
+                        Failed = bh.Failed
+                    }).ToArray(),
+                Treats = x.SessionTreats
+                    .Select(tr => new SessionTreatModel
+                    {
+                        Id = tr.TreatId,
+                        Label = tr.Treat.Name,
+                        UnitsLeft = tr.UnitsLeft,
+                        UnitsBought = (byte)(tr.Treat.QuantityPerSession - tr.UnitsLeft),
+                    }).ToArray()
             })
             .FirstOrDefaultAsync();
     }
 
-    public Task<int?> GetCurrentSessionId(string userId)
+    public Task<int?> GetLastSessionId(string userId)
     {
-        return GetAll().Where(x => x.UserId == userId && x.EndDate == null).Select(x => (int?)x.Id ).FirstOrDefaultAsync();
+        return GetAllLatest(userId).Select(x => (int?)/*make nullable*/x.Id ).FirstOrDefaultAsync();
     }
 
-    public async Task<SessionUpdateModel?> GetCurrentSessionUpdateModel(string userId)
+    public Task<SessionIsFinishedModel?> GetIsLastSessionFinished(string userId)
     {
-        var x = await GetAll()
-            .Where(x => x.UserId == userId)
-            .Where(x => x.EndDate == null) //maybe a bit obscure, but that's how you know it's the current
-            //This select is because EF Core is not flexible enough.
-            .Select(x => new
-            {
-                x.Id, x.UserId, x.EndDate, x.Refunds, x.PreviousSessionId,
-                SessionGoodHabits = x.SessionGoodHabits
-                    .Select(x => new { x.GoodHabitId, x.Completed }),
-                SessionBadHabits = x.SessionBadHabits
-                    .Select(x => new { x.BadHabitId, x.Failed }),
-                SessionTreats = x.SessionTreats
-                    .Select(x => new { x.TreatId, x.UnitsLeft }),
-                SessionTransactions = x.SessionTransactions
-                    .Select(x => x.TransactionId)
-            })
-            .FirstOrDefaultAsync();
+        return GetAllLatest(userId).Select(x => new SessionIsFinishedModel{ Id = x.Id, IsFinished = x.EndDate != null }).FirstOrDefaultAsync();
+    }
 
-        if (x is null) return null;
+    public Task<byte?> GetJustRefunds(string userId)
+    {
+        return GetAllLatest(userId).Select(x => (byte?)/*make nullable*/x.Refunds).FirstOrDefaultAsync();
+    }
 
-        var model = new SessionUpdateModel
+    public async Task<bool> DecrementRefunds(string userId)
+    {
+        Session? session = await GetLatest(userId);
+        if(session is null)
         {
-            Id = x.Id,
-            UserId = x.UserId,
-            Refunds = x.Refunds,
-            PreviousSessionId = x.PreviousSessionId,
-            GoodHabitIdCompletedPairs = x.SessionGoodHabits
-                .ToDictionary(gh => gh.GoodHabitId, gh => gh.Completed),
-            BadHabitIdFailedPairs = x.SessionBadHabits
-                .ToDictionary(bh => bh.BadHabitId, bh => bh.Failed),
-            TreatIdUnitsLeftPairs = x.SessionTreats
-                .ToDictionary(tr => tr.TreatId, tr => tr.UnitsLeft),
-            TransactionIds = x.SessionTransactions.ToHashSet(),
-        };
+            return false;
+        }
 
-        return model;
+        session.Refunds = (byte)(session.Refunds - 1);
+        Update(session);
+
+        return true;
     }
 
-    public async ValueTask<bool> AddAndMakeCurrent(SessionAddModel model)
+    public Task<int[]?> GetGoodHabitIds(string userId)
     {
+        return GetAllLatest(userId)
+            .Select(x => x.SessionGoodHabits
+                .Select(gh => gh.GoodHabitId)
+                .ToArray()
+            ).FirstOrDefaultAsync();
+    }
+    public Task<SessionHabitCreditsModel[]?> GetGoodHabitsFailed(string userId)
+    {
+        return GetAllLatest(userId)
+            .Select(x => x.SessionGoodHabits
+                .Where(gh => gh.Completed == false)
+                .Select(gh => new SessionHabitCreditsModel
+                {
+                    Id = gh.GoodHabitId,
+                    Credits = gh.GoodHabit.CreditsFail,
+                }).ToArray()
+            ).FirstOrDefaultAsync();
+    }
+
+    public async Task<bool?> GetGoodHabitCompleted(int id, string userId)
+    {
+        return (await GetAllLatest(userId)
+            .Select(x => x.SessionGoodHabits
+                .FirstOrDefault(gh => gh.GoodHabitId == id))
+            .FirstOrDefaultAsync())?.Completed;
+    }
+
+    public async Task<bool> UpdateGoodHabits(int[] ids, string userId)
+    {
+        Session? session = await GetLatest(userId);
+        if (session is null)
+        {
+            return false;
+        }
+
+        updateGoodHabits(ids, (await GetGoodHabitIds(userId))!, session);
+
+        Update(session);
+        return true;
+    }
+
+    public async Task<bool> UpdateGoodHabit(int id, bool success, string userId)
+    {
+        Session? session = await GetAllLatest(userId)
+            .Include(x => x.SessionGoodHabits
+                .Where(gh => gh.GoodHabitId == id))
+            .FirstOrDefaultAsync();
+
+        if(session is null)
+        {
+            return false;
+        }
+
+        //not checked for null, kind of sloppy, but it's not meant to be validated and it's an exception for the dev to handle.
+        session.SessionGoodHabits.First().Completed = success;
+        Update(session);
+        return true;
+    }
+
+    public Task<int[]?> GetBadHabitIds(string userId)
+    {
+        return GetAllLatest(userId)
+            .Select(x => x.SessionBadHabits
+                .Select(bh => bh.BadHabitId)
+                .ToArray()
+            ).FirstOrDefaultAsync();
+    }
+    public Task<SessionHabitCreditsModel[]?> GetBadHabitsSuccess(string userId)
+    {
+        return GetAllLatest(userId)
+            .Select(x => x.SessionBadHabits
+                .Where(bh => bh.Failed == true)
+                .Select(gh => new SessionHabitCreditsModel
+                {
+                    Id = gh.BadHabitId,
+                    Credits = gh.BadHabit.CreditsSuccess,
+                }).ToArray()
+            ).FirstOrDefaultAsync();
+    }
+
+    public async Task<bool?> GetBadHabitFailed(int id, string userId)
+    {
+        return (await GetAllLatest(userId)
+            .Select(x => x.SessionBadHabits
+                .FirstOrDefault(bh => bh.BadHabitId == id))
+            .FirstOrDefaultAsync())?.Failed;
+    }
+
+    public async Task<bool> UpdateBadHabits(int[] ids, string userId)
+    {
+        Session? session = await GetLatest(userId);
+        if (session is null)
+        {
+            return false;
+        }
+
+        updateBadHabits(ids, (await GetBadHabitIds(userId))!, session);
+
+        Update(session);
+        return true;
+    }
+
+    public async Task<bool> UpdateBadHabit(int id, bool fail, string userId)
+    {
+        Session? session = await GetAllLatest(userId)
+            .Include(x => x.SessionBadHabits
+                .Where(bh => bh.BadHabitId == id))
+            .FirstOrDefaultAsync();
+
+        if(session is null)
+        {
+            return false;
+        }
+
+        //not checked for null, kind of sloppy, but it's not meant to be validated and it's an exception for the dev to handle.
+        session.SessionBadHabits.First().Failed = fail;
+        Update(session);
+        return true;
+    }
+
+    public Task<int[]?> GetTreatIds(string userId)
+    {
+        return GetAllLatest(userId)
+            .Select(x => x.SessionTreats
+                .Select(tr => tr.TreatId)
+                .ToArray()
+            ).FirstOrDefaultAsync();
+    }
+
+    public async Task<byte?> GetTreatUnitsLeft(int id, string userId)
+    {
+        return (await GetAllLatest(userId)
+            .Select(x => x.SessionTreats
+                .FirstOrDefault(tr => tr.TreatId == id))
+            .FirstOrDefaultAsync())?.UnitsLeft;
+    }
+
+    public async Task<bool> UpdateTreats(Tuple<int, byte>[] idsAndUnitsPerSession, string userId)
+    {
+        Session? session = await GetLatest(userId);
+        if (session is null)
+        {
+            return false;
+        }
+
+        updateTreats(idsAndUnitsPerSession, (await GetTreatIds(userId))!, session);
+
+        Update(session);
+        return true;
+    }
+
+    public async Task<bool> DecrementTreat(int id, string userId)
+    {
+        Session? session = await GetAllLatest(userId)
+            .Include(x => x.SessionTreats
+                .Where(tr => tr.TreatId == id))
+            .FirstOrDefaultAsync();
+
+        if(session is null)
+        {
+            return false;
+        }
+
+        //not checked for null, kind of sloppy, but it's not meant to be validated and it's an exception for the dev to handle.
+        session.SessionTreats.First().UnitsLeft -= 1;
+        Update(session);
+        return true;
+    }
+    public async Task<bool> IncrementTreat(int id, string userId)
+    {
+        Session? session = await GetAllLatest(userId)
+            .Include(x => x.SessionTreats
+                .Where(tr => tr.TreatId == id))
+            .FirstOrDefaultAsync();
+
+        if(session is null)
+        {
+            return false;
+        }
+
+        //not checked for null, kind of sloppy, but it's not meant to be validated and it's an exception for the dev to handle.
+        session.SessionTreats.First().UnitsLeft += 1;
+        Update(session);
+        return true;
+    }
+
+    public async ValueTask<bool> StartNewSession(SessionAddModel model)
+    {
+
+        int? lastSessionId = await GetLastSessionId(model.UserId);
+
         Session entity = new Session
         {
             StartDate = model.StartDate,
             EndDate = null,
             Refunds = model.Refunds,
             UserId = model.UserId,
-            PreviousSessionId = model.PreviousSessionId,
+            PreviousSessionId = lastSessionId,
+            Last = true,
         };
         Add(entity);
 
-        foreach(var id in model.GoodHabitIds)
-        {
-            entity.SessionGoodHabits.Add(new SessionGoodHabit
-            {
-                SessionId = entity.Id,
-                GoodHabitId = id,
-                Completed = false
-            });
-        }
-        foreach(var id in model.BadHabitIds)
-        {
-            entity.SessionBadHabits.Add(new SessionBadHabit
-            {
-                BadHabitId = id,
-                Failed = false
-            });
-        }
-        foreach(var IdAndUnitsPerSession in model.TreatIdUnitPerSessionPairs)
-        {
-            entity.SessionTreats.Add(new SessionTreat
-            {
-                SessionId = entity.Id,
-                TreatId = IdAndUnitsPerSession.Item1,
-                UnitsLeft = IdAndUnitsPerSession.Item2
-            });
-        }
+        updateGoodHabits(model.GoodHabitIds, [], entity);
+        updateBadHabits(model.BadHabitIds, [], entity);
+        updateTreats(model.TreatIdUnitPerSessionPairs, [], entity);
 
-        //finish previous
-        if(model.PreviousSessionId is not null)
+        //make previous not last
+        if(lastSessionId is not null)
         {
-            var prev = await Get(model.PreviousSessionId.Value);
+            var prev = await Get(lastSessionId.Value);
             if (prev is null)
             {
+                //well, that's awkward. Should exist! Something happened!
                 return false;
             }
             Add(entity);
-            prev.EndDate = model.StartDate;
+            prev.Last = false;
             Update(prev);
         }
         else
@@ -146,103 +315,11 @@ public class SessionRepository
         return true;
     }
 
-    //Big boy. There is no functionality to share, so splitting is not necessary.
-    public async ValueTask<bool> Update(SessionUpdateModel model)
-    {
-        Session? entity = await GetAll()
-            .Where(x => x.Id == model.Id)
-            .Include(x => x.SessionGoodHabits)
-            .Include(x => x.SessionBadHabits)
-            .Include(x => x.SessionTreats)
-            .Include(x => x.SessionTransactions)
-            .FirstOrDefaultAsync();
-
-        if (entity == null)
-        {
-            return false;
-        }
-
-        entity.Refunds = model.Refunds;
-        entity.PreviousSessionId = model.PreviousSessionId;
-        foreach (var gh in entity.SessionGoodHabits)
-        {
-            var exists = model.GoodHabitIdCompletedPairs.TryGetValue(gh.GoodHabitId, out var value);
-            if (!exists) Delete(gh);
-            gh.Completed = value;
-        }
-        //Add new ones
-        entity.SessionGoodHabits = entity.SessionGoodHabits.Concat(
-            model.GoodHabitIdCompletedPairs
-                .Select(x => x.Key)
-                .Except(entity.SessionGoodHabits.Select(x => x.GoodHabitId))
-                .Select(key => new SessionGoodHabit
-                {
-                    GoodHabitId = key,
-                    Completed = model.GoodHabitIdCompletedPairs[key]
-                })
-        ).ToHashSet();
-
-        foreach (var bh in entity.SessionBadHabits)
-        {
-            var exists = model.BadHabitIdFailedPairs.TryGetValue(bh.BadHabitId, out var value);
-            if (!exists) Delete(bh);
-            bh.Failed = value;
-        }
-        //Add new ones
-        entity.SessionBadHabits = entity.SessionBadHabits.Concat(
-            model.BadHabitIdFailedPairs
-                .Select(x => x.Key)
-                .Except(entity.SessionBadHabits.Select(x => x.BadHabitId))
-                .Select(key => new SessionBadHabit
-                {
-                    BadHabitId = key,
-                    Failed = model.BadHabitIdFailedPairs[key]
-                })
-        ).ToHashSet();
-
-        foreach (var tr in entity.SessionTreats)
-        {
-            var exists = model.TreatIdUnitsLeftPairs.TryGetValue(tr.TreatId, out var value);
-            if (!exists) Delete(tr);
-            tr.UnitsLeft = value;
-        }
-        //Add new ones
-        entity.SessionTreats = entity.SessionTreats.Concat(
-            model.TreatIdUnitsLeftPairs
-                .Select(x => x.Key)
-                .Except(entity.SessionTreats.Select(x => x.TreatId))
-                .Select(key => new SessionTreat
-                {
-                    TreatId = key,
-                    UnitsLeft = model.TreatIdUnitsLeftPairs[key]
-                })
-        ).ToHashSet();
-
-        foreach (var tr in entity.SessionTransactions)
-        {
-            var exists = model.TransactionIds.TryGetValue(tr.TransactionId, out var value);
-            if (!exists) Delete(tr);
-        }
-        //Add new ones
-        entity.SessionTransactions = entity.SessionTransactions.Concat(
-            model.TransactionIds
-                .Except(entity.SessionTransactions.Select(x => x.TransactionId))
-                .Select(key => new SessionTransaction
-                {
-                    TransactionId = key,
-                })
-        ).ToHashSet();
-
-        Update(entity);
-        return true;
-    }
-
-    public async ValueTask<bool> DeleteCurrentAndMakePreviousCurrent(string userId)
+    public async ValueTask<bool> FinishCurrentSession(string userId)
     {
         Session? entity = await GetAll()
             .Where(x => x.UserId == userId)
-            .Where(x => x.EndDate == null) //maybe a bit obscure, but that's how you know it's the current
-            .Include(x => x.PreviousSession)
+            .Where(x => x.Last)
             .FirstOrDefaultAsync();
 
         if (entity is null)
@@ -250,21 +327,11 @@ public class SessionRepository
             return false;
         }
 
-        if(entity.PreviousSession is not null)
-        {
-            //Make the previous the current
-            entity.PreviousSession.EndDate = null;
-            Update(entity.PreviousSession);
-
-            Delete(entity);
-            return true;
-        }
-        else
-        {
-            //do nothing, Business Logic requires one active Session.
-            return false;
-        }
+        entity.EndDate = DateTime.Now;
+        Update(entity);
+        return true;
     }
+
     public async ValueTask<bool> IsOwnerOf(int id, string userId)
     {
         var model = await Get(id);
@@ -274,5 +341,75 @@ public class SessionRepository
     public async ValueTask<bool> Exists(int id)
     {
         return (await Get(id)) is not null;
+    }
+
+    private Task<Session?> GetLatest(string userId)
+    {
+        return GetAll().Where(x => x.UserId == userId && x.Last).FirstOrDefaultAsync();
+    }
+
+    //stupid name...
+    private IQueryable<Session> GetAllLatest(string userId)
+    {
+        return GetAll().Where(x => x.UserId == userId && x.Last);
+    }
+
+    private void updateGoodHabits(int[] ids, int[] oldIds, Session session)
+    {
+        int[] added = ids.Except(oldIds).ToArray();
+        int[] deleted = oldIds.Except(ids).ToArray();
+        
+        foreach(var id in added)
+        {
+            session.SessionGoodHabits.Add(new SessionGoodHabit
+            {
+                GoodHabitId = id,
+                Completed = false
+            });
+        }
+        foreach(var id in deleted)
+        {
+            session.SessionGoodHabits.Remove(new SessionGoodHabit { GoodHabitId = id });
+        }
+    }
+
+    private void updateBadHabits(int[] ids, int[] oldIds, Session session)
+    {
+        int[] added = ids.Except(oldIds).ToArray();
+        int[] deleted = oldIds.Except(ids).ToArray();
+        
+        foreach(var id in added)
+        {
+            session.SessionBadHabits.Add(new SessionBadHabit
+            {
+                BadHabitId = id,
+                Failed = false
+            });
+        }
+        foreach(var id in deleted)
+        {
+            session.SessionBadHabits.Remove(new SessionBadHabit { BadHabitId = id });
+        }
+    }
+
+    private void updateTreats(Tuple<int, byte>[] idsAndUnitsPerSession, int[] oldIds, Session session)
+    {
+        var ids = idsAndUnitsPerSession.Select(x => x.Item1);
+
+        Tuple<int, byte>[] added = idsAndUnitsPerSession.Where(x => !oldIds.Contains(x.Item1)).ToArray();
+        int[] deleted = oldIds.Except(ids).ToArray();
+
+        foreach(var IdAndUnitsPerSession in added)
+        {
+            session.SessionTreats.Add(new SessionTreat
+            {
+                TreatId = IdAndUnitsPerSession.Item1,
+                UnitsLeft = IdAndUnitsPerSession.Item2
+            });
+        }
+        foreach(var id in deleted)
+        {
+            session.SessionTreats.Remove(new SessionTreat { TreatId = id });
+        }
     }
 }

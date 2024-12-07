@@ -16,7 +16,7 @@ public class GoodHabitRepository
     public Task<GoodHabitModel[]> GetAll(string userId)
     {
         return GetAll()
-            .Where(x => x.User.Id == userId)
+            .Where(x => x.UserId == userId)
             .Select(x => new GoodHabitModel
             {
                 Id = x.Id,
@@ -26,6 +26,37 @@ public class GoodHabitRepository
                 IsActive = x.IsActive,
             })
             .ToArrayAsync();
+    }
+
+    public Task<int[]> GetAllIds(string userId, bool onlyActive)
+    {
+        var ids = GetAll().Where(x => x.UserId == userId);
+        if(onlyActive)
+        {
+            ids = ids.Where(x => x.IsActive);
+        }
+        return ids
+            .Select(x => x.Id)
+            .ToArrayAsync();
+    }
+
+    public async Task<GoodHabitLogicModel?> GetLogicModel(int id)
+    {
+        GoodHabit? entity = await Get(id);
+
+        if(entity is null)
+        {
+            return null;
+        }
+
+        var model = new GoodHabitLogicModel
+        {
+            Id = entity.Id,
+            CreditsSuccess = entity.CreditsSuccess,
+            CreditsFail = entity.CreditsFail,
+        };
+
+        return model;
     }
 
     public async ValueTask<GoodHabitInputModel?> GetInputModel(int id)

@@ -14,6 +14,7 @@ public static class HTAppServicesExtensions
         services.AddScoped<ITreatService, TreatService>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IUserDataService, UserDataService>();
+        services.AddScoped<ISessionService, SessionService>();
         return services;
     }
 }
