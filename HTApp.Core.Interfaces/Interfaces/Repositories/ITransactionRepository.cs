@@ -10,5 +10,5 @@ public interface ITransactionRepository
 
     public Task<int> GetCount(string userId, string filterTypeName = "", int? fromSessionId = null);
 
-    public Task<string[]> GetUsedTypeNames(string userId);
+    public Task<string[]> GetUsedTypeNames(string userId, string filterTypeName = "", int? fromSessionId = null);
 }

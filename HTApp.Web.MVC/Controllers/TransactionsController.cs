@@ -42,7 +42,7 @@ namespace HTApp.Web.MVC.Controllers
                 FilterTypeName = filterTypeName ?? "",
                 FromLastSession = fromLastSession ?? false,
                 Models = response.Models,
-                TypeNames = (await transactionService.GetTypeNames(userId)).Payload!,
+                TypeNames = (await transactionService.GetTypeNames(userId, filterTypeName ?? "", fromLastSession ?? false)).Payload!,
             };
 
             return View(viewModel);

@@ -80,14 +80,34 @@ public class TransactionService : ITransactionService
         return await GetAll(userId, pageCount, int.MaxValue, filterTypeName, fromLastSession);
     }
 
-    public async ValueTask<ResponseStruct<int>> GetCount(string userId)
-    {
-        return new ResponseStruct<int>(ResponseCode.Success, "Success.", await repo.GetCount(userId));
-    }
+    //public async ValueTask<ResponseStruct<int>> GetCount(string userId)
+    //{
+    //    return new ResponseStruct<int>(ResponseCode.Success, "Success.", await repo.GetCount(userId));
+    //}
 
-    public async ValueTask<Response<string[]>> GetTypeNames(string userId)
+    public async ValueTask<Response<string[]>> GetTypeNames(string userId, string filterTypeName = "", bool fromLastSession = false)
     {
-        return new Response<string[]>(ResponseCode.Success, "Success.", await repo.GetUsedTypeNames(userId));
+        if(!transactionTypes.Contains(filterTypeName))
+        {
+            filterTypeName = "";
+        }
+
+        int? lastSessionId = null;
+        if(fromLastSession)
+        {
+            ResponseStruct<int> resp = await sessionService.GetLastSessionId(userId, false);
+            if(resp.Code == ResponseCode.NotFound)
+            {
+                //probably do nothing??
+            }
+            else if(resp.Code != ResponseCode.Success)
+            {
+                throw new Exception("Unhandled code in getting CurrentSessionId in GetAll from TransactionService.");
+            }
+            lastSessionId = resp.Payload;
+        }
+
+        return new Response<string[]>(ResponseCode.Success, "Success.", await repo.GetUsedTypeNames(userId, filterTypeName, lastSessionId));
     }
 
     public async ValueTask<Response> Add(TransactionInputModel model, string userId, bool saveChanges = true)
