@@ -6,4 +6,5 @@ public class SessionTreatModel
     public string Label { get; set; } = null!;
     public byte UnitsLeft { get; set; }
     public byte UnitsBought { get; set; }
+    public int Price { get; set; }
 }

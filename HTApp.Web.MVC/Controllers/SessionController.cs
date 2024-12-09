@@ -66,6 +66,7 @@ public class SessionController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> StartNewSession()
     {
         string userId = userManager.GetUserId(User)!;
@@ -88,6 +89,7 @@ public class SessionController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> FinishSession()
     {
         string userId = userManager.GetUserId(User)!;
@@ -111,6 +113,7 @@ public class SessionController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateGoodHabit(int ghId, int success)
     {
         string userId = userManager.GetUserId(User)!;
@@ -128,6 +131,87 @@ public class SessionController : Controller
                 return RedirectToAction("Index");
             case ResponseCode.NotFound:
                 TempData["Error"] = "GoodHabit not in session. Maybe data is not in sync. You can refresh";
+                return RedirectToAction("Index");
+            case ResponseCode.Success:
+                return RedirectToAction("Index");
+            default:
+                throw new Exception("Unhandled Response.");
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateBadHabit(int bhId, int fail)
+    {
+        string userId = userManager.GetUserId(User)!;
+
+        var response = await sessionService.UpdateBadHabit(bhId, fail != 0, userId);
+
+        switch (response.Code)
+        {
+            case ResponseCode.InvalidOperation:
+                TempData["Error"] = "Not currently in session.";
+                return RedirectToAction("Index");
+            case ResponseCode.RepositoryError:
+            case ResponseCode.ServiceError: //spammy, but f&%! it!
+                TempData["Error"] = response.Message;
+                return RedirectToAction("Index");
+            case ResponseCode.NotFound:
+                TempData["Error"] = "BadHabit not in session. Maybe data is not in sync. You can refresh";
+                return RedirectToAction("Index");
+            case ResponseCode.Success:
+                return RedirectToAction("Index");
+            default:
+                throw new Exception("Unhandled Response.");
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> BuyTreat(int trId)
+    {
+        string userId = userManager.GetUserId(User)!;
+
+        var response = await sessionService.BuyTreat(trId, userId);
+
+        switch (response.Code)
+        {
+            case ResponseCode.InvalidOperation:
+                TempData["Error"] = response.Message;
+                return RedirectToAction("Index");
+            case ResponseCode.RepositoryError:
+            case ResponseCode.ServiceError: //spammy, but f&%! it!
+                TempData["Error"] = response.Message;
+                return RedirectToAction("Index");
+            case ResponseCode.NotFound:
+                TempData["Error"] = "Treat not in session. Maybe data is not in sync. You can refresh";
+                return RedirectToAction("Index");
+            case ResponseCode.Success:
+                return RedirectToAction("Index");
+            default:
+                throw new Exception("Unhandled Response.");
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RefundTreat(int trId)
+    {
+        string userId = userManager.GetUserId(User)!;
+
+        var response = await sessionService.RefundTreat(trId, userId);
+
+        switch (response.Code)
+        {
+            case ResponseCode.InvalidOperation:
+                TempData["Error"] = response.Message;
+                return RedirectToAction("Index");
+            case ResponseCode.RepositoryError:
+            case ResponseCode.ServiceError: //spammy, but f&%! it!
+                TempData["Error"] = response.Message;
+                return RedirectToAction("Index");
+            case ResponseCode.NotFound:
+                TempData["Error"] = "Treat not in session. Maybe data is not in sync. You can refresh";
                 return RedirectToAction("Index");
             case ResponseCode.Success:
                 return RedirectToAction("Index");

@@ -21,7 +21,7 @@ namespace HTApp.Infrastructure.EntityModels
         public int Credits { get; set; }
 
         [Required]
-        public byte RefundsPerSession { get; set; }
+        public byte RefundsPerSession { get; set; } = 5;
 
         public ICollection<GoodHabit> GoodHabits { get; set; } = null!;
         public ICollection<BadHabit> BadHabits { get; set; } = null!;

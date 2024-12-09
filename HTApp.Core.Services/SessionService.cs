@@ -249,6 +249,14 @@ public class SessionService : ISessionService
         }
         TreatLogicModel logicModel = lModelResponse.Payload!;
 
+        //Do we have enough credits?
+        int credits = (await userDataService.GetCredits(userId)).Payload!;
+        if(credits < logicModel.Price)
+        {
+            return new Response(ResponseCode.InvalidOperation, "Insufficient credits. Cannot buy this Treat.");
+        }
+
+
         MakeTransactionInfo info = new MakeTransactionInfo()
         {
             Amount = -logicModel.Price,

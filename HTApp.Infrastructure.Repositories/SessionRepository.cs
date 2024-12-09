@@ -51,6 +51,7 @@ public class SessionRepository
                         Label = tr.Treat.Name,
                         UnitsLeft = tr.UnitsLeft,
                         UnitsBought = (byte)(tr.Treat.QuantityPerSession - tr.UnitsLeft),
+                        Price = tr.Treat.CreditsPrice
                     }).ToArray()
             })
             .FirstOrDefaultAsync();
@@ -158,7 +159,7 @@ public class SessionRepository
     {
         return GetAllLatest(userId)
             .Select(x => x.SessionBadHabits
-                .Where(bh => bh.Failed == true)
+                .Where(bh => bh.Failed == false)
                 .Select(gh => new SessionHabitCreditsModel
                 {
                     Id = gh.BadHabitId,
