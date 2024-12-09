@@ -9,6 +9,8 @@ public class UserDataService : IUserDataService
     IUserDataRepository repo;
     IUnitOfWork unitOfWork;
 
+    private int? oldCreditsAcum = null;
+
     public UserDataService(IUserDataRepository repo, IUnitOfWork unitOfWork)
     {
         this.repo = repo;
@@ -27,21 +29,32 @@ public class UserDataService : IUserDataService
 
     public async ValueTask<Response<AppendCreditsResponse>> AppendCredits(int credits, string userId, bool saveChanges = true)
     {
-        int oldCredits = await repo.GetCredits(userId);
+        int oldCredits;
+        //so we can track multiple appendages before SaveChanges()
+        if(oldCreditsAcum is null)
+        {
+            oldCreditsAcum = await repo.GetCredits(userId);
+        }
+        oldCredits = oldCreditsAcum.Value;
 
         (int newCredits, bool capped) = CapIfOverflow(oldCredits, credits);
 
         await repo.SetCredits(userId, newCredits);
 
-        if(saveChanges)
+        if (saveChanges)
         {
             bool success = await unitOfWork.SaveChangesAsync();
-            if(!success)
+            if (!success)
             {
                 return new Response<AppendCreditsResponse>(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
             }
+            //update from db for the next call
+            oldCreditsAcum = null;
         }
-
+        else
+        {
+            oldCreditsAcum = newCredits;
+        }
         int diff = newCredits - oldCredits;
         return new Response<AppendCreditsResponse>(ResponseCode.Success, "Success", new AppendCreditsResponse { NewAmount = newCredits, Diff = diff, Capped = capped});
     }

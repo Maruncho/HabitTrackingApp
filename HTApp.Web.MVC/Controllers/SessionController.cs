@@ -88,6 +88,29 @@ public class SessionController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> FinishSession()
+    {
+        string userId = userManager.GetUserId(User)!;
+
+        var response = await sessionService.FinishCurrentSession(userId);
+
+        switch (response.Code)
+        {
+            case ResponseCode.InvalidOperation:
+                TempData["Error"] = response.Message;
+                return RedirectToAction("Index");
+            case ResponseCode.RepositoryError:
+            case ResponseCode.ServiceError:
+                TempData["Error"] = "Couldn't finish session. Please try again.";
+                return RedirectToAction("Index");
+            case ResponseCode.Success:
+                return RedirectToAction("Index");
+            default:
+                throw new Exception("Unhandled Response.");
+        }
+    }
+
+    [HttpPost]
     public async Task<IActionResult> UpdateGoodHabit(int ghId, int success)
     {
         string userId = userManager.GetUserId(User)!;
