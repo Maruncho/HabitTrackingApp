@@ -54,6 +54,7 @@ public class GoodHabitRepository
             Id = entity.Id,
             CreditsSuccess = entity.CreditsSuccess,
             CreditsFail = entity.CreditsFail,
+            IsActive = entity.IsActive
         };
 
         return model;

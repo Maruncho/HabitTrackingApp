@@ -8,4 +8,6 @@ public class GoodHabitLogicModel
     public int CreditsSuccess { get; set; }
 
     public int CreditsFail { get; set; }
+
+    public bool IsActive { get; set; }
 }

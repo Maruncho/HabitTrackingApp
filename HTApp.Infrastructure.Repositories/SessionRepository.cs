@@ -114,18 +114,18 @@ public class SessionRepository
             .FirstOrDefaultAsync())?.Completed;
     }
 
-    public async Task<bool> UpdateGoodHabits(int[] ids, string userId)
+    public async Task<UpdateInfo> UpdateGoodHabits(int[] ids, string userId)
     {
         Session? session = await GetLatest(userId);
         if (session is null)
         {
-            return false;
+            return new UpdateInfo { Success = false };
         }
 
-        updateGoodHabits(ids, (await GetGoodHabitIds(userId))!, session);
+        var updateInfo = await updateGoodHabits(ids, (await GetGoodHabitIds(userId))!, session);
 
         Update(session);
-        return true;
+        return updateInfo;
     }
 
     public async Task<bool> UpdateGoodHabit(int id, bool success, string userId)
@@ -175,18 +175,18 @@ public class SessionRepository
             .FirstOrDefaultAsync())?.Failed;
     }
 
-    public async Task<bool> UpdateBadHabits(int[] ids, string userId)
+    public async Task<UpdateInfo> UpdateBadHabits(int[] ids, string userId)
     {
         Session? session = await GetLatest(userId);
         if (session is null)
         {
-            return false;
+            return new UpdateInfo { Success = false };
         }
 
-        updateBadHabits(ids, (await GetBadHabitIds(userId))!, session);
+        var updateInfo = await updateBadHabits(ids, (await GetBadHabitIds(userId))!, session);
 
         Update(session);
-        return true;
+        return updateInfo;
     }
 
     public async Task<bool> UpdateBadHabit(int id, bool fail, string userId)
@@ -224,18 +224,18 @@ public class SessionRepository
             .FirstOrDefaultAsync())?.UnitsLeft;
     }
 
-    public async Task<bool> UpdateTreats(Tuple<int, byte>[] idsAndUnitsPerSession, string userId)
+    public async Task<UpdateInfo> UpdateTreats(Tuple<int, byte>[] idsAndUnitsPerSession, string userId)
     {
         Session? session = await GetLatest(userId);
         if (session is null)
         {
-            return false;
+            return new UpdateInfo { Success = false };
         }
 
-        updateTreats(idsAndUnitsPerSession, (await GetTreatIds(userId))!, session);
+        var updateInfo = await updateTreats(idsAndUnitsPerSession, (await GetTreatIds(userId))!, session);
 
         Update(session);
-        return true;
+        return updateInfo;
     }
 
     public async Task<bool> DecrementTreat(int id, string userId)
@@ -289,9 +289,9 @@ public class SessionRepository
         };
         Add(entity);
 
-        updateGoodHabits(model.GoodHabitIds, [], entity);
-        updateBadHabits(model.BadHabitIds, [], entity);
-        updateTreats(model.TreatIdUnitPerSessionPairs, [], entity);
+        await updateGoodHabits(model.GoodHabitIds, [], entity);
+        await updateBadHabits(model.BadHabitIds, [], entity);
+        await updateTreats(model.TreatIdUnitPerSessionPairs, [], entity);
 
         //make previous not last
         if(lastSessionId is not null)
@@ -354,8 +354,10 @@ public class SessionRepository
         return GetAll().Where(x => x.UserId == userId && x.Last);
     }
 
-    private void updateGoodHabits(int[] ids, int[] oldIds, Session session)
+    private async Task<UpdateInfo> updateGoodHabits(int[] ids, int[] oldIds, Session session)
     {
+        var updateInfo = new UpdateInfo { Success = true };
+
         int[] added = ids.Except(oldIds).ToArray();
         int[] deleted = oldIds.Except(ids).ToArray();
         
@@ -367,14 +369,33 @@ public class SessionRepository
                 Completed = false
             });
         }
-        foreach(var id in deleted)
+        updateInfo.Added = added;
+
+        //this didn't work
+        //foreach(var id in deleted)
+        //{
+        //    session.SessionGoodHabits.Remove(new SessionGoodHabit { GoodHabitId = id, SessionId = session.Id });
+        //}
+        if (deleted.Length == 0) return updateInfo;
+
+        var sghs = (await GetAllLatest(session.UserId)
+            .Include(x => x.SessionGoodHabits
+                .Where(x => deleted.Contains(x.GoodHabitId)))
+            .FirstOrDefaultAsync())!.SessionGoodHabits;
+
+        foreach(SessionGoodHabit sgh in sghs)
         {
-            session.SessionGoodHabits.Remove(new SessionGoodHabit { GoodHabitId = id });
+            session.SessionGoodHabits.Remove(sgh);
         }
+
+        updateInfo.Removed = deleted;
+        return updateInfo;
     }
 
-    private void updateBadHabits(int[] ids, int[] oldIds, Session session)
+    private async Task<UpdateInfo> updateBadHabits(int[] ids, int[] oldIds, Session session)
     {
+        var updateInfo = new UpdateInfo { Success = true };
+
         int[] added = ids.Except(oldIds).ToArray();
         int[] deleted = oldIds.Except(ids).ToArray();
         
@@ -386,14 +407,33 @@ public class SessionRepository
                 Failed = false
             });
         }
-        foreach(var id in deleted)
+        updateInfo.Added = added;
+
+        //this didn't work
+        //foreach(var id in deleted)
+        //{
+        //    session.SessionBadHabits.Remove(new SessionBadHabit { BadHabitId = id, SessionId = session.Id });
+        //}
+        if (deleted.Length == 0) return updateInfo;
+
+        var sbhs = (await GetAllLatest(session.UserId)
+            .Include(x => x.SessionBadHabits
+                .Where(x => deleted.Contains(x.BadHabitId)))
+            .FirstOrDefaultAsync())!.SessionBadHabits;
+
+        foreach(SessionBadHabit sbh in sbhs)
         {
-            session.SessionBadHabits.Remove(new SessionBadHabit { BadHabitId = id });
+            session.SessionBadHabits.Remove(sbh);
         }
+
+        updateInfo.Removed = deleted;
+        return updateInfo;
     }
 
-    private void updateTreats(Tuple<int, byte>[] idsAndUnitsPerSession, int[] oldIds, Session session)
+    private async Task<UpdateInfo> updateTreats(Tuple<int, byte>[] idsAndUnitsPerSession, int[] oldIds, Session session)
     {
+        var updateInfo = new UpdateInfo { Success = true };
+
         var ids = idsAndUnitsPerSession.Select(x => x.Item1);
 
         Tuple<int, byte>[] added = idsAndUnitsPerSession.Where(x => !oldIds.Contains(x.Item1)).ToArray();
@@ -407,9 +447,26 @@ public class SessionRepository
                 UnitsLeft = IdAndUnitsPerSession.Item2
             });
         }
-        foreach(var id in deleted)
+        updateInfo.Added = ids.ToArray();
+
+        //this didn't work
+        //foreach(var id in deleted)
+        //{
+        //    session.SessionTreats.Remove(new SessionTreat { TreatId = id, SessionId = session.Id });
+        //}
+        if (deleted.Length == 0) return updateInfo;
+
+        var strs = (await GetAllLatest(session.UserId)
+            .Include(x => x.SessionTreats
+                .Where(x => deleted.Contains(x.TreatId)))
+            .FirstOrDefaultAsync())!.SessionTreats;
+
+        foreach(SessionTreat str in strs)
         {
-            session.SessionTreats.Remove(new SessionTreat { TreatId = id });
+            session.SessionTreats.Remove(str);
         }
+
+        updateInfo.Removed = deleted;
+        return updateInfo;
     }
 }

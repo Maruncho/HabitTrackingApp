@@ -69,9 +69,21 @@ public class TransactionRepository
             .ToArrayAsync();
     }
 
-    public Task<int> GetCount(string userId)
+    public Task<int> GetCount(string userId, string filterTypeName = "", int? fromSessionId = null)
     {
-        return GetAll().Where(t => t.UserId == userId).CountAsync();
+        var x = GetAll().Where(t => t.UserId == userId);
+
+        if(fromSessionId is not null)
+        {
+            x = x.Where(t => t.SessionId == fromSessionId);
+        }
+
+        if(!string.IsNullOrEmpty(filterTypeName))
+        {
+            x = x.Where(t => t.TypeId == stringToIntEnum[filterTypeName]);
+        }
+
+        return x.CountAsync();
     }
 
     public Task<string[]> GetUsedTypeNames(string userId)

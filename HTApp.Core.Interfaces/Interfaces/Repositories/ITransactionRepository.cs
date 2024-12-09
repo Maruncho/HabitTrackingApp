@@ -8,7 +8,7 @@ public interface ITransactionRepository
 
     public Task<TransactionModel[]> GetAll(string userId, int pageCount, int pageNumber, TransactionOptions? extra = null);
 
-    public Task<int> GetCount(string userId);
+    public Task<int> GetCount(string userId, string filterTypeName = "", int? fromSessionId = null);
 
     public Task<string[]> GetUsedTypeNames(string userId);
 }

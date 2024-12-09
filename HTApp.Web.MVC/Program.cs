@@ -31,6 +31,10 @@ else
 }
 
 app.UseHttpsRedirection();
+
+//It's necessary :)
+app.EnableHTAppServicesObserverPattern();
+
 app.UseStaticFiles();
 
 app.UseRouting();

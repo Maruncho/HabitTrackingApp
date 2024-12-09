@@ -60,7 +60,7 @@ public class TransactionService : ITransactionService
         };
 
         //check if pageCount is too big. And also prevent pageNumber == 0;
-        double count = await repo.GetCount(userId);
+        double count = await repo.GetCount(userId, filterTypeName, lastSessionId);
         pageNumber = (int)Math.Max(1, Math.Min(pageNumber, Math.Ceiling(count/pageCount)));
 
         TransactionModel[] modelsPlusOne = await repo.GetAll(userId, pageCount, pageNumber, opt);
@@ -77,9 +77,7 @@ public class TransactionService : ITransactionService
 
     public async ValueTask<Response<TransactionServiceResponse>> GetAllLatest(string userId, int pageCount, string filterTypeName = "", bool fromLastSession = false)
     {
-        double count = await repo.GetCount(userId);
-        int pageNumber = (int)Math.Max(1, Math.Ceiling(count/pageCount));
-        return await GetAll(userId, pageCount, pageNumber, filterTypeName, fromLastSession);
+        return await GetAll(userId, pageCount, int.MaxValue, filterTypeName, fromLastSession);
     }
 
     public async ValueTask<ResponseStruct<int>> GetCount(string userId)
@@ -164,7 +162,7 @@ public class TransactionService : ITransactionService
     {
         TransactionInputModel model = new TransactionInputModel
         {
-            Type = nameof(info.TransactionType),
+            Type = Enum.GetName(info.TransactionType) ?? "",
             Amount = info.Amount,
             SessionId = info.SessionId,
         };

@@ -6,7 +6,6 @@ public class TransactionsViewModel
 {
     public int UserCredits { get; set; }
 
-
     public int PageBeginIndex { get; set; }
 
     public int PageCount { get; set; }
@@ -16,6 +15,8 @@ public class TransactionsViewModel
     public bool HasNext { get; set; }
 
     public string FilterTypeName { get; set; } = null!;
+
+    public bool FromLastSession { get; set; }
 
     public TransactionModel[] Models { get; set; } = null!;
 

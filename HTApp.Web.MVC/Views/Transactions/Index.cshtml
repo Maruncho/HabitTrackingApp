@@ -20,6 +20,7 @@
     {
       <a class="col-2 btn btn-lg btn-warning" asp-action="Index"
       asp-route-pageNumberParam=@(Model.PageNumber-1)
+      asp-route-fromLastSession=@Model.FromLastSession
       asp-route-filterTypeName=@Model.FilterTypeName>Prev</a>
     }
     else
@@ -30,6 +31,7 @@
     {
       <a class="col-2 btn btn-lg btn-warning" asp-action="Index"
       asp-route-pageNumberParam=@(Model.PageNumber+1)
+      asp-route-fromLastSession=@Model.FromLastSession
       asp-route-filterTypeName=@Model.FilterTypeName>Next</a>
     }
     else
@@ -41,6 +43,7 @@
     {
       <a class="col-2 btn btn-lg btn-warning" asp-action="Index"
       asp-route-pageNumberParam="1"
+      asp-route-fromLastSession=@Model.FromLastSession
       asp-route-filterTypeName=@Model.FilterTypeName>First</a>
     }
     else
@@ -51,6 +54,7 @@
     {
       <a class="col-2 btn btn-lg btn-warning" asp-action="Index"
       asp-route-pageNumberParam="last"
+      asp-route-fromLastSession=@Model.FromLastSession
       asp-route-filterTypeName=@Model.FilterTypeName>Last</a>
     }
     else
@@ -81,6 +85,18 @@
               <option value=@type>@type</option>
             }}
             </select>
+          </div>
+          <div class="form-check form-switch py-2">
+            <!--Use plain html to bypass query param duplication-->
+            @if(Model.FromLastSession)
+            {
+            <input id="fromLastSession" name="fromLastSession" class="form-check-input" type="checkbox" value="true" checked>
+            }
+            else
+            {
+            <input id="fromLastSession" name="fromLastSession" class="form-check-input" type="checkbox" value="true">
+            }
+            <label for="fromLastSession" class="form-check-label" value="true">From last session</label>
           </div>
           <button class="btn btn-warning mt-1" type="submit">Filter</button>
         </form>

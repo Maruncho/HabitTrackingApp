@@ -1,0 +1,79 @@
+﻿@model SessionViewModel
+@{
+    bool hasSession = Model.SessionModel != null;
+}
+<div id="session" class="row">
+    @if(ViewData.TryGetValue("Error", out var message))
+    {
+        <h2 class="text-danger mt-2">@message</h2>
+    }
+    <div class="row px-5 bg-dark text-light my-3 rounded-3">
+      <div class="container-fluid py-4 row">
+        <h1 class="fw-bold col-4">Session</h1>
+        <div class="col-4">
+        @if (hasSession)
+        {
+          <a asp-action="Refresh" class="px-4 btn btn-lg btn-warning">Refresh (if data is not in sync)</a>
+        }
+        </div>
+        <h1 class="col-4">Credits: @Model.UserCredits</h1>
+      </div>
+    </div>
+    <div class="row">
+    @if(!hasSession)
+    {
+      <form asp-action="StartNewSession" method="post" class="col-6">
+        <button type="submit" class="px-4 btn btn-lg btn-warning">Start New Session</button>
+      </form>
+    }
+    else
+    {
+      <form asp-action="FinishSession" method="post" class="col-6">
+        <button type="submit" class="px-4 btn btn-lg btn-warning">Finish Session</button>
+      </form>
+      <div class="col-6 bg-warning border-2 p-1 row border border-dark rounded-3">
+        <h2 class="fw-bold col-5">Refunds Left:</h2>
+        <h2 class="fw-bold col-7">@Model.SessionModel!.Refunds</h2>
+      </div>
+    }
+    </div>
+@if(Model.SessionModel is not null)
+{
+    <!--Good Habits-->
+    <div class="row px-5 bg-dark text-light my-3 rounded-3">
+      <div class="container-fluid py-4 row">
+        <h1 class="fw-bold col-4">Good Habits</h1>
+      </div>
+    </div>
+    <div class="row mb-2 align-items-md-stretch g-3">
+    @foreach(var gh in Model.SessionModel.GoodHabits)
+    {
+      <div class="col-md-6">
+      @if(gh.Completed)
+      {
+        <div class="h-100 p-4 text-white bg-dark border border-5 border-success rounded-3">
+          <h2>@gh.Label</h2>
+          <form asp-action="UpdateGoodHabit" method="post">
+            <button type="submit" class="px-4 btn btn-lg btn-warning">Uncomplete</button>
+            <input hidden name="ghId" type="number" value=@gh.Id />
+            <input hidden name="success" type="number" value=0 />
+          </form>
+        </div>
+          }
+      else
+      {
+        <div class="h-100 p-4 text-white bg-dark border border-5 border-danger rounded-3">
+          <h2>@gh.Label</h2>
+          <form asp-action="UpdateGoodHabit" method="post">
+            <button type="submit" class="px-4 btn btn-lg btn-warning">Complete</button>
+            <input hidden name="ghId" type="number" value=@gh.Id />
+            <input hidden name="success" type="number" value=1 />
+          </form>
+        </div>
+      }
+      </div>
+    }
+    </div>
+    <!--Good Habits End-->
+}
+</div>

@@ -4,7 +4,6 @@ using HTApp.Web.MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace HTApp.Web.MVC.Controllers
 {
@@ -24,12 +23,12 @@ namespace HTApp.Web.MVC.Controllers
             this.userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string? pageNumberParam, string? filterTypeName)
+        public async Task<IActionResult> Index(string? pageNumberParam, string? filterTypeName, bool? fromLastSession)
         {
             ViewData["Title"] = "Transactions";
             string userId = userManager.GetUserId(User)!;
 
-            TransactionServiceResponse response = (await ParsePageNumberParameter(pageNumberParam, userId, filterTypeName ?? "")).Payload!;
+            TransactionServiceResponse response = (await ParsePageNumberParameter(pageNumberParam, userId, filterTypeName ?? "", fromLastSession ?? false)).Payload!;
 
             int userCredits = (await userDataService.GetCredits(userId)).Payload!;
 
@@ -41,6 +40,7 @@ namespace HTApp.Web.MVC.Controllers
                 PageNumber = response.PageNumber,
                 PageBeginIndex = (response.PageNumber - 1) * pageCount + 1,
                 FilterTypeName = filterTypeName ?? "",
+                FromLastSession = fromLastSession ?? false,
                 Models = response.Models,
                 TypeNames = (await transactionService.GetTypeNames(userId)).Payload!,
             };
@@ -83,11 +83,11 @@ namespace HTApp.Web.MVC.Controllers
             }
         }
 
-        private async Task<Response<TransactionServiceResponse>> ParsePageNumberParameter(string? pageNumberParam, string userId, string? filterTypeName)
+        private async Task<Response<TransactionServiceResponse>> ParsePageNumberParameter(string? pageNumberParam, string userId, string? filterTypeName, bool? fromLastSession)
         {
             if(pageNumberParam == "last")
             {
-                return await transactionService.GetAllLatest(userId, pageCount, filterTypeName ?? "");
+                return await transactionService.GetAllLatest(userId, pageCount, filterTypeName ?? "", fromLastSession ?? false);
             }
 
             //handles null too
@@ -97,7 +97,7 @@ namespace HTApp.Web.MVC.Controllers
                 pageNumber = 1;
             }
 
-            return await transactionService.GetAll(userId, pageCount, pageNumber, filterTypeName ?? "");
+            return await transactionService.GetAll(userId, pageCount, pageNumber, filterTypeName ?? "", fromLastSession ?? false);
         }
     }
 }

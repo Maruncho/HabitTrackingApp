@@ -1,6 +1,5 @@
 ﻿using HTApp.Core.API;
 using HTApp.Core.API.Models.RepoModels;
-using System.Security.Cryptography.X509Certificates;
 using static HTApp.Core.API.ApplicationInvariants;
 
 namespace HTApp.Core.Services;
@@ -82,7 +81,7 @@ public class SessionService : ISessionService
         return new ResponseStruct<int>(ResponseCode.Success, "Success", id.Value);
     }
 
-    public async ValueTask<Response> UpdateGoodHabit(int id, bool success, string userId)
+    public async Task<Response> UpdateGoodHabit(int id, bool success, string userId)
     {
         //Don't allow to change if not in progress
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -104,6 +103,12 @@ public class SessionService : ISessionService
             return new Response(lModelResponse.Code, lModelResponse.Message);
         }
         GoodHabitLogicModel logicModel = lModelResponse.Payload!;
+
+        //check if it's not active
+        if(!logicModel.IsActive)
+        {
+            return new Response(ResponseCode.InvalidOperation, "Cannot update unactive good habit.");
+        }
 
         //check for redundancy
         bool oldSuccess = (await repo.GetGoodHabitCompleted(id, userId)).Value;
@@ -148,7 +153,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public async ValueTask<Response> UpdateBadHabit(int id, bool fail, string userId)
+    public async Task<Response> UpdateBadHabit(int id, bool fail, string userId)
     {
         //Don't allow to change if not in progress
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -426,7 +431,27 @@ public class SessionService : ISessionService
         }
 
         return new Response(ResponseCode.Success, "Success.");
+    }
 
+    public async ValueTask<Response> RefreshIfDataIsNotInSync(string userId)
+    {
+        SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
+        if(lastSession is null || lastSession.IsFinished)
+        {
+            return new Response(ResponseCode.Success, "No session. Nothing changed.");
+        }
+
+        //discard responses, probably are not very helpful if you call this function
+        await ghWhenChange(true, userId);
+        await bhWhenChange(userId);
+        await trWHenChange(userId);
+
+        if(!await unitOfWork.SaveChangesAsync())
+        {
+            return new Response(ResponseCode.RepositoryError, "Couldn't refresh data.");
+        }
+
+        return new Response(ResponseCode.Success, "Tried to refresh.");
     }
 
     async ValueTask<Response> IGoodHabitObserver.NotifyWhenStatusChange(bool isActive, string userId)
@@ -435,18 +460,21 @@ public class SessionService : ISessionService
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
         if(lastSession is null || lastSession.IsFinished)
         {
-            return new Response(ResponseCode.InvalidOperation, "Invalid Operation.");
+            return new Response(ResponseCode.Success, "No session. Nothing changed.");
         }
-
+        return await ghWhenChange(isActive, userId);
+    }
+    private async ValueTask<Response> ghWhenChange(bool isActive, string userId)
+    {
         if(!isActive)
         {
             return new Response(ResponseCode.Success, "Nothing changed.");
         }
         int[] ids = (await ghService.GetAllIds(userId, true)).Payload!;
 
-        bool success = await repo.UpdateGoodHabits(ids, userId);
+        UpdateInfo info = await repo.UpdateGoodHabits(ids, userId);
 
-        if(!success)
+        if(!info.Success)
         {
             return new Response(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
         }
@@ -460,14 +488,17 @@ public class SessionService : ISessionService
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
         if(lastSession is null || lastSession.IsFinished)
         {
-            return new Response(ResponseCode.InvalidOperation, "Invalid Operation.");
+            return new Response(ResponseCode.Success, "No session. Nothing changed.");
         }
-
+        return await bhWhenChange(userId);
+    }
+    private async ValueTask<Response> bhWhenChange(string userId)
+    {
         int[] ids = (await bhService.GetAllIds(userId)).Payload!;
 
-        bool success = await repo.UpdateBadHabits(ids, userId);
+        UpdateInfo info = await repo.UpdateBadHabits(ids, userId);
 
-        if(!success)
+        if(!info.Success)
         {
             return new Response(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
         }
@@ -481,14 +512,17 @@ public class SessionService : ISessionService
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
         if(lastSession is null || lastSession.IsFinished)
         {
-            return new Response(ResponseCode.InvalidOperation, "Invalid Operation.");
+            return new Response(ResponseCode.Success, "No session. Nothing changed.");
         }
-
+        return await trWHenChange(userId);
+    }
+    private async ValueTask<Response> trWHenChange(string userId)
+    {
         var pairs = (await trService.GetAllIdAndUnitsLeftPairs(userId)).Payload!;
 
-        bool success = await repo.UpdateTreats(pairs, userId);
+        UpdateInfo info = await repo.UpdateTreats(pairs, userId);
 
-        if(!success)
+        if(!info.Success)
         {
             return new Response(ResponseCode.RepositoryError, "Something went wrong. Please try again.");
         }
