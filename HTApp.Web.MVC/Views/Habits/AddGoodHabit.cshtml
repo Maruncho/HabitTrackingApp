@@ -13,7 +13,7 @@
             </div>
             <div class="col-sm-6 d-flex align-items-end justify-content-center">
               <div class="form-check">
-                <label asp-for=@Model.IsActive class="form-check-label h5">Active</label>
+                <label asp-for=@Model.IsActive class="form-check-label h5">Active (in current session)</label>
                 <input asp-for=@Model.IsActive type="checkbox" class="form-check-input" checked>
                 <span asp-validation-for=@Model.IsActive class="text-danger"></span>
               </div>

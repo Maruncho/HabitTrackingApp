@@ -37,7 +37,6 @@ public class EnableHtAppServicesObserverPatternMiddleware
         _next = next;
     }
 
-    // IMessageWriter is injected into InvokeAsync
     public async Task Invoke(HttpContext httpContext)
     {
         //please don't break it, whoever is refactoring this codebase.

@@ -35,6 +35,7 @@ app.UseHttpsRedirection();
 //It's necessary :)
 app.EnableHTAppServicesObserverPattern();
 
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -48,6 +49,13 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.UseStatusCodePagesWithReExecute("/StatusCode", "?statusCode={0}");
+
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    await EnsureRolesCreatedExtension.EnsureRolesCreated(scope.ServiceProvider, builder.Configuration);
+}
 
 app.Run();
