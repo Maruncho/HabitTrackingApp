@@ -24,30 +24,9 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 h5">
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Habits" asp-action="Index">Habits</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Treats" asp-action="Index">Treats</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Transactions" asp-action="Index">Transactions</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Session" asp-action="Index">Session</a>
-                        </li>
                         <li>
-                            <a class="nav-link text-light" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
+                            <a class="nav-link text-light" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                         </li>
-                        @if (await UserManager.IsInRoleAsync((await UserManager.GetUserAsync(User))!, "Admin"))
-                        {
-                        <li>
-                            <a class="nav-link text-light" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin</a>
-                        </li>
-                        }
-                    }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using HTApp.Infrastructure.Extensions;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -44,7 +45,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -59,3 +60,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+//Crazy sh*t. Admins only!!!!
+public static class Global
+{
+    public static string BACKGROUND_COLOR = "#ffffff";
+}

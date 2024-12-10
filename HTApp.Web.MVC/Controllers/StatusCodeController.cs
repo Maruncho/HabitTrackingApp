@@ -2,10 +2,11 @@
 
 namespace HTApp.Web.MVC.Controllers;
 
-public class StatusCode : Controller
+public class StatusCodeController : Controller
 {
     public IActionResult Index(int? statusCode)
     {
+        ViewData["Title"] = statusCode.ToString();
         switch(statusCode)
         {
             case 404:

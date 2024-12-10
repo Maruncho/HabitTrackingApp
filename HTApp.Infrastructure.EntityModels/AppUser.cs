@@ -1,8 +1,8 @@
-﻿using HTApp.Infrastructure.EntityModels.Core;
+﻿using HTApp.Core.API;
+using HTApp.Infrastructure.EntityModels.Core;
 using HTApp.Infrastructure.EntityModels.SessionModels;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HTApp.Infrastructure.EntityModels
 {
@@ -21,7 +21,7 @@ namespace HTApp.Infrastructure.EntityModels
         public int Credits { get; set; }
 
         [Required]
-        public byte RefundsPerSession { get; set; } = 5;
+        public byte RefundsPerSession { get; set; } = ApplicationInvariants.UserDataRefundsDefault;
 
         public ICollection<GoodHabit> GoodHabits { get; set; } = null!;
         public ICollection<BadHabit> BadHabits { get; set; } = null!;

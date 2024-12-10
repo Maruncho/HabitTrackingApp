@@ -27,7 +27,12 @@ namespace HTApp.Web.MVC.Controllers
             HabitsViewModel model = new HabitsViewModel { BadHabits = [], GoodHabits = [] };
             model.GoodHabits = (await ghService.GetAll(userManager.GetUserId(User)!)).Payload!;
             model.BadHabits = (await bhService.GetAll(userManager.GetUserId(User)!)).Payload!;
+
+            //easily get userid for admin adding (DEVELOPMENT/TESTING ONLY)
+            //Console.WriteLine("///////////////////////////////////////////////////// " + userManager.GetUserId(User));
+
             return View(model);
+
         }
 
         [HttpGet]

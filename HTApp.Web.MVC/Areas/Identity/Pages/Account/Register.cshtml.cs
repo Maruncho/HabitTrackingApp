@@ -2,23 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
+using HTApp.Core.API;
 using HTApp.Infrastructure.EntityModels;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 
 namespace HTApp.Web.MVC.Areas.Identity.Pages.Account
 {
@@ -26,17 +20,25 @@ namespace HTApp.Web.MVC.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
+        //private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserStore<AppUser> _userStore;
         private readonly IUserEmailStore<AppUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+
+        private IGoodHabitService goodHabitService;
+        private IBadHabitService badHabitService;
+        private ITreatService treatService;
 
         public RegisterModel(
             UserManager<AppUser> userManager,
             IUserStore<AppUser> userStore,
             SignInManager<AppUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IGoodHabitService goodHabitService,
+            IBadHabitService badHabitService,
+            ITreatService treatService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +46,9 @@ namespace HTApp.Web.MVC.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            this.goodHabitService = goodHabitService;
+            this.badHabitService = badHabitService;
+            this.treatService = treatService;
         }
 
         /// <summary>
@@ -100,6 +105,69 @@ namespace HTApp.Web.MVC.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
+        //We will ignore the errors. It's not fatal.
+        public async Task SeedData(string userId)
+        {
+            await goodHabitService.Add(new GoodHabitInputModel
+            {
+                Name = "20 Push-ups",
+                IsActive = true,
+                CreditsSuccess = 600,
+                CreditsFail = 1000,
+            }, userId);
+            await goodHabitService.Add(new GoodHabitInputModel
+            {
+                Name = "Work on SoftUni Project",
+                IsActive = true,
+                CreditsSuccess = 2000,
+                CreditsFail = 1000
+            }, userId);
+            await goodHabitService.Add(new GoodHabitInputModel
+            {
+                Name = "Read a Book Chapter",
+                IsActive = false,
+                CreditsSuccess = 500,
+                CreditsFail = 500
+            }, userId);
+
+            await badHabitService.Add(new BadHabitInputModel
+            {
+                Name = "Afternoon Snacking",
+                CreditsSuccess = 400,
+                CreditsFail = 700
+            }, userId);
+            await badHabitService.Add(new BadHabitInputModel
+            {
+                Name = "Watching Videos at Midnight",
+                CreditsSuccess = 0,
+                CreditsFail = 600
+            }, userId);
+
+            await treatService.Add(new TreatInputModel
+            {
+                Name = "Row of a Chocolate Bar",
+                Price = 5000,
+                QuantityPerSession = 6
+            }, userId);
+            await treatService.Add(new TreatInputModel
+            {
+                Name = "A Portion of Chips",
+                Price = 3000,
+                QuantityPerSession = 4
+            }, userId);
+            await treatService.Add(new TreatInputModel
+            {
+                Name = "1 Hour of Video Games",
+                Price = 1000,
+                QuantityPerSession = 3
+            }, userId);
+            await treatService.Add(new TreatInputModel
+            {
+                Name = "30 Mins of YouTube",
+                Price = 1200,
+                QuantityPerSession = 2
+            }, userId);
+        }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -134,6 +202,17 @@ namespace HTApp.Web.MVC.Areas.Identity.Pages.Account
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                    //add User role
+                    IdentityResult success = await _userManager.AddToRoleAsync(user, "User");
+                    if (!success.Succeeded)
+                    {
+                        //same as below-est
+                        return Page();
+                    }
+
+                    //seed some example ghs, bhs and trs
+                    await SeedData(userId);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

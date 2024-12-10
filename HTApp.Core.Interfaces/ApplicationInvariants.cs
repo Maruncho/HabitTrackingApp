@@ -7,6 +7,7 @@ public static class ApplicationInvariants
     public const int UserDataCreditsMax = int.MaxValue;
     public static readonly string UserDataCreditsError = $"Credits should be in the range [{UserDataCreditsMin}:{UserDataCreditsMax}]";
 
+    public const byte UserDataRefundsDefault = 5;
     public const byte UserDataRefundsMin = 0;
     public const byte UserDataRefundsMax = byte.MaxValue;
     public static readonly string UserDataRefundsError = $"Refunds should be in the range [{UserDataCreditsMin}:{UserDataCreditsMax}]";
