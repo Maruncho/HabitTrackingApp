@@ -67,14 +67,14 @@ namespace HTApp.Infrastructure.Tests.Repositories
         {
             foreach (var user in new [] {user1, user2})
             {
-                int newRefunds = (int)Math.Truncate(123*Random.Shared.NextDouble());
+                byte newRefunds = (byte)Math.Truncate(123*Random.Shared.NextDouble());
 
-                await UserDataRepository.SetCredits(user.Id, newRefunds);
+                await UserDataRepository.SetRefundsPerSession(user.Id, newRefunds);
                 db.SaveChanges();
 
                 var updUser = db.AppUsers.Find(user.Id);
 
-                Assert.That(newRefunds, Is.EqualTo(updUser!.Credits));
+                Assert.That(newRefunds, Is.EqualTo(updUser!.RefundsPerSession));
             }
         }
     }

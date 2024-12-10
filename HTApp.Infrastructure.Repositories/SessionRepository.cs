@@ -3,6 +3,7 @@ using HTApp.Core.API.Models.RepoModels;
 using HTApp.Infrastructure.EntityModels;
 using HTApp.Infrastructure.EntityModels.SessionModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace HTApp.Infrastructure.Repositories;
 
@@ -136,13 +137,13 @@ public class SessionRepository
                 .Where(gh => gh.GoodHabitId == id))
             .FirstOrDefaultAsync();
 
-        if(session is null)
+        if(session is null || session.SessionGoodHabits.Count == 0)
         {
             return false;
         }
 
         //not checked for null, kind of sloppy, but it's not meant to be validated and it's an exception for the dev to handle.
-        session.SessionGoodHabits.First().Completed = success;
+        session.SessionGoodHabits.First(x => x.GoodHabitId == id).Completed = success;
         Update(session);
         return true;
     }
@@ -197,13 +198,13 @@ public class SessionRepository
                 .Where(bh => bh.BadHabitId == id))
             .FirstOrDefaultAsync();
 
-        if(session is null)
+        if(session is null || session.SessionBadHabits.Count == 0)
         {
             return false;
         }
 
         //not checked for null, kind of sloppy, but it's not meant to be validated and it's an exception for the dev to handle.
-        session.SessionBadHabits.First().Failed = fail;
+        session.SessionBadHabits.First(x => x.BadHabitId == id).Failed = fail;
         Update(session);
         return true;
     }
@@ -246,7 +247,7 @@ public class SessionRepository
                 .Where(tr => tr.TreatId == id))
             .FirstOrDefaultAsync();
 
-        if(session is null)
+        if(session is null || session.SessionTreats.Count == 0 )
         {
             return false;
         }
@@ -263,7 +264,7 @@ public class SessionRepository
                 .Where(tr => tr.TreatId == id))
             .FirstOrDefaultAsync();
 
-        if(session is null)
+        if(session is null || session.SessionGoodHabits.Count == 0)
         {
             return false;
         }

@@ -13,6 +13,7 @@ internal class DbContextSetupBase
 
     public static AppUser user1;
     public static AppUser user2;
+    public static AppUser user3;
     public UserDataRepository UserDataRepository;
 
     public GoodHabit[] DbGoodHabits;
@@ -55,9 +56,11 @@ internal class DbContextSetupBase
 
         db.AppUsers.Add(new AppUser() { Credits = 100, RefundsPerSession = 1});
         db.AppUsers.Add(new AppUser() { Credits = 200, RefundsPerSession = 2});
+        db.AppUsers.Add(new AppUser() { Credits = 300, RefundsPerSession = 3});
         db.SaveChanges();
         user1 = db.AppUsers.First();
         user2 = db.AppUsers.First(x => x.Id != user1.Id);
+        user3 = db.AppUsers.First(x => x.Id != user1.Id && x.Id != user2.Id);
 
         UserDataRepository = new UserDataRepository(db);
 
@@ -119,15 +122,14 @@ internal class DbContextSetupBase
 
         var localSessions = new Session[]
         {
-            new Session {StartDate = DateTime.Now, EndDate = DateTime.Now, Refunds = 1, User = user1, PreviousSessionId = null},
-            new Session {StartDate = DateTime.Now, EndDate = DateTime.Now, Refunds = 2, User = user1, },
-            new Session {StartDate = DateTime.Now, EndDate = null, Refunds = 3, User = user1,
+            new Session {StartDate = DateTime.Now, EndDate = DateTime.Now, Refunds = 1, User = user1, PreviousSessionId = null, Last = false},
+            new Session {StartDate = DateTime.Now, EndDate = DateTime.Now, Refunds = 2, User = user1, Last = false},
+            new Session {StartDate = DateTime.Now, EndDate = null, Refunds = 3, User = user1, Last = true,
                 SessionGoodHabits = localGoodHabits.Where(x => x.User == user1 && x.IsActive && !x.IsDeleted).Select(x => new SessionGoodHabit{GoodHabit = x, Completed = false}).ToArray(),
                 SessionBadHabits = localBadHabits.Where(x => x.User == user1 && !x.IsDeleted).Select(x => new SessionBadHabit{BadHabit = x, Failed = false}).ToArray(),
-                SessionTreats = localTreats.Where(x => x.User == user1 && !x.IsDeleted).Select(x => new SessionTreat{Treat = x, UnitsLeft = 3}).ToArray(),
-                SessionTransactions = localTransactions.Where(x => x.User == user1).Select(x => new SessionTransaction{Transaction = x}).ToArray(),
+                SessionTreats = localTreats.Where(x => x.User == user1 && !x.IsDeleted).Select(x => new SessionTreat{Treat = x, UnitsLeft = x.QuantityPerSession}).ToArray(),
             },
-            new Session {StartDate = DateTime.Now, EndDate = null, Refunds = 1, User = user2, PreviousSessionId = null },
+            new Session {StartDate = DateTime.Now, EndDate = null, Refunds = 1, User = user2, PreviousSessionId = null, Last = true },
         };
         localSessions[1].PreviousSession = localSessions[0];
         localSessions[2].PreviousSession = localSessions[1];
@@ -139,7 +141,7 @@ internal class DbContextSetupBase
         DbBadHabits = db.BadHabits.AsNoTracking().ToArray();
         DbTreats = db.Treats.AsNoTracking().ToArray();
         DbTransactions = db.Transactions.AsNoTracking().ToArray();
-        DbSessions = db.Sessions.AsNoTracking().Include(x => x.SessionGoodHabits).Include(x => x.SessionBadHabits).Include(x => x.SessionTransactions).Include(x => x.SessionTreats).ToArray();
+        DbSessions = db.Sessions.AsNoTracking().Include(x => x.SessionGoodHabits).Include(x => x.SessionBadHabits).Include(x => x.Transactions).Include(x => x.SessionTreats).ToArray();
 
         GoodHabitRepository = new GoodHabitRepository(db);
         BadHabitRepository = new BadHabitRepository(db);
