@@ -30,7 +30,7 @@ public class UserDataService : IUserDataService
     public async ValueTask<Response<AppendCreditsResponse>> AppendCredits(int credits, string userId, bool saveChanges = true)
     {
         int oldCredits;
-        //so we can track multiple appendages before SaveChanges()
+        //so we can track multiple appends before SaveChanges()
         if(oldCreditsAcum is null)
         {
             oldCreditsAcum = await repo.GetCredits(userId);
