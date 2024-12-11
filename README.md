@@ -4,7 +4,8 @@ This is a simple app, where you keep track of your behaviour. The Back-end is th
 ## How to Run
 1. Build it yourself first, obviously. Either use the dotnet CLI build or just use Visual Studio. Build the MVC project and its dependencies will hit everything else necessary (everyting, that is).
 2. You need MS SQL Server (unless you want to change). All the configuration is in the corresponding JSONs. I didn't use User Secrets (and above security-wise), because there was no need to.
-If you want to deploy it, take the measures to hide everything sensitive. The cloud provides you with the ability to set ENV variables, so that's the most obvious option. In any case, it's simple, because ASP .NET Core IConfiguration looks everywhere anyway, with the appropriate 'source' precendence. 
+If you want to deploy it, take the measures to hide everything sensitive. The cloud provides you with the ability to set ENV variables, so that's the most obvious option. In any case, it's simple, because ASP .NET Core IConfiguration looks everywhere anyway, with the appropriate 'source' precendence.
+3. The Repository testing has a config, too, for the testing DB, so don't panic when EF Core complains. You can set the ENV variable anywhere else, if you find my ad-hoc json file annoying.
 
 ## Project Architecure
 The project follows somewhat of a "Clean Architecure" style architecture. It's simply divided intro three parts: Web, Infrastructure, Core.
