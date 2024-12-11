@@ -3,7 +3,7 @@ This is a simple app, where you keep track of your behaviour. The Back-end is th
 
 ## How to Run
 You need MS SQL Server (unless you want to change). All the configuration is in the corresponding JSONs. I didn't use User Secrets (and above security-wise), because there was no need to.
-If you want to deploy it, take the measures to hide everything sensitive. The cloud provides you with the ability to set ENV variables, so that's the most obvious option. In any case, it's simple, because ASP .NET Core IConfiguration looks everywhere anyway, with the appropriate 'source; precendence. 
+If you want to deploy it, take the measures to hide everything sensitive. The cloud provides you with the ability to set ENV variables, so that's the most obvious option. In any case, it's simple, because ASP .NET Core IConfiguration looks everywhere anyway, with the appropriate 'source' precendence. 
 
 ## Project Architecure
 The project follows somewhat of a "Clean Architecure" style architecture. It's simply divided intro three parts: Web, Infrastructure, Core.
