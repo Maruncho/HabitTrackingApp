@@ -20,7 +20,11 @@
   <div class="bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
     <div class="my-3 py-3">
       <h2 class="pb-4 display-5">List Your Good and Bad Habits</h2>
-      <p class="lead">Create the list of habits you want to track. After you log in, you will see the respective buttons at the top. There you will find further guidance.</p>
+      <p class="lead">Create the list of habits you want to track. Good habits are things you want in your life and Bad habits are the ones you want to get rid of.</p>
+      @if (SignInManager.IsSignedIn(User))
+      {
+        <p class="text-secondary lead">:: You can decide whether you want to track a Good Habit in the current Session by making it Active or Inactive.</p>
+      }
     </div>
   </div>
 
@@ -28,6 +32,10 @@
     <div class="my-3 p-3">
       <h2 class="display-5">List Your Treats</h2>
       <p class="lead">Keeping up the good work requires motivation. By completing habits, you collect credits. Fill the "shopping catalogue" with your favorite things!</p>
+      @if (SignInManager.IsSignedIn(User))
+      {
+        <p class="text-secondary lead">:: All Bad Habits are active all the time in the current session, because they are... bad.</p>
+      }
     </div>
   </div>
 
@@ -35,6 +43,10 @@
     <div class="my-3 py-3">
       <h2 class="pb-4 display-5">Track Your Transactions</h2>
       <p class="lead">This is the place where you can track where you're getting and losing your credits from.</p>
+      @if (SignInManager.IsSignedIn(User))
+      {
+        <p class="text-secondary lead">:: Transactions should be self-explanatory. Experiment with the buttons, nothing bad can happen.</p>
+      }
     </div>
   </div>
 
@@ -42,5 +54,19 @@
     <div class="my-3 p-3">
       <h2 class="display-5">Current Session</h2>
       <p class="lead">This is your current session, where your habits and treat "shopping catalogue" will appear. You can mark each habit as either completed or failed, and spend your credits on treats.</p>
+      @if (SignInManager.IsSignedIn(User))
+      {
+        <p class="text-secondary lead">:: Sessions are the core and the 'selling' point of the app. In the future, statistics could be implemented, because our architecture allows for it.</p>
+        <p class="text-secondary lead">:: Completing a GoodHabit or Failing a BadHabit changes your credits immediately.</p>
+        <p class="text-secondary lead">:: Failing a GoodHabit or Completing a BadHabit changes your credits when you finish the current session.</p>
+        <p class="text-secondary lead">:: You can't buy treats with insufficient credits. Refunding is limited and is set by the corresponding Setting</p>
+      }
+    </div>
+  </div>
+
+  <div class="bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+    <div class="my-3 p-3">
+      <h2 class="display-5">Settings</h2>
+      <p class="lead">The settings tab contains various things you can adjust, that are hidden behind the scenes.</p>
     </div>
   </div>
