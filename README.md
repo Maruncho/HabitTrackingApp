@@ -1,6 +1,10 @@
 ## Habit Tracking ASP .NET Core MVC App
 This is a simple app, where you keep track of your behaviour. The Back-end is the focus of the app, so do not judge my Front-end, you don't have the moral right to!
 
+## How to Run
+You need MS SQL Server (unless you want to change). All the configuration is in the corresponding JSONs. I didn't use User Secrets (and above security-wise), because there was no need to.
+If you want to deploy it, take the measures to hide everything sensitive. The cloud provides you with the ability to set ENV variables, so that's the most obvious option. In any case, it's simple, because ASP .NET Core IConfiguration looks everywhere anyway, with the appropriate 'source; precendence. 
+
 ## Project Architecure
 The project follows somewhat of a "Clean Architecure" style architecture. It's simply divided intro three parts: Web, Infrastructure, Core.
 1. The Web is basically the MVC part. It's job is simply to serve pages. It uses the Services from the Core to provide the necessary output from their operation.
