@@ -18,7 +18,7 @@ public class BadHabitService : IBadHabitService
         changeStatusSubscribers = new();
     }
 
-    public async ValueTask<Response> Add(BadHabitInputModel model, string userId)
+    public async Task<Response> Add(BadHabitInputModel model, string userId)
     {
         if(model.Name.Length < BadHabitNameLengthMin || model.Name.Length > BadHabitNameLengthMax)
         {
@@ -55,7 +55,7 @@ public class BadHabitService : IBadHabitService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public async ValueTask<Response> Delete(int id, string userId)
+    public async Task<Response> Delete(int id, string userId)
     {
         bool exists = await repo.Exists(id);
         if(!exists)
@@ -87,16 +87,16 @@ public class BadHabitService : IBadHabitService
         return new Response(ResponseCode.Success, "Success");
     }
 
-    public async ValueTask<Response<BadHabitModel[]>> GetAll(string userId)
+    public async Task<Response<BadHabitModel[]>> GetAll(string userId)
     {
         return new Response<BadHabitModel[]>(ResponseCode.Success, "Success.", await repo.GetAll(userId));
     }
-    public async ValueTask<Response<int[]>> GetAllIds(string userId)
+    public async Task<Response<int[]>> GetAllIds(string userId)
     {
         return new Response<int[]>(ResponseCode.Success, "Success.", await repo.GetAllIds(userId));
     }
 
-    public async ValueTask<Response<BadHabitInputModel>> GetInputModel(int id, string userId)
+    public async Task<Response<BadHabitInputModel>> GetInputModel(int id, string userId)
     {
         bool exists = await repo.Exists(id);
         if(!exists)
@@ -115,7 +115,7 @@ public class BadHabitService : IBadHabitService
         return new Response<BadHabitInputModel>(ResponseCode.Success, "Success", model);
     }
 
-    public async ValueTask<Response<BadHabitLogicModel>> GetLogicModel(int id, string userId)
+    public async Task<Response<BadHabitLogicModel>> GetLogicModel(int id, string userId)
     {
         bool exists = await repo.Exists(id);
         if(!exists)
@@ -134,7 +134,7 @@ public class BadHabitService : IBadHabitService
         return new Response<BadHabitLogicModel>(ResponseCode.Success, "Success", model);
     }
 
-    public async ValueTask<Response> Update(int id, BadHabitInputModel model, string userId)
+    public async Task<Response> Update(int id, BadHabitInputModel model, string userId)
     {
         if(model.Name.Length < BadHabitNameLengthMin || model.Name.Length > BadHabitNameLengthMax)
         {
@@ -211,12 +211,12 @@ public class BadHabitService : IBadHabitService
         changeStatusSubscribers.Remove(observer);
     }
 
-    public ValueTask<bool> Exists(int id)
+    public Task<bool> Exists(int id)
     {
         return repo.Exists(id);
     }
 
-    public ValueTask<bool> IsOwnerOf(int id, string userId)
+    public Task<bool> IsOwnerOf(int id, string userId)
     {
         return repo.IsOwnerOf(id, userId);
     }

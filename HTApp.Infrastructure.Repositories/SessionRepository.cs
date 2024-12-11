@@ -275,7 +275,7 @@ public class SessionRepository
         return true;
     }
 
-    public async ValueTask<bool> StartNewSession(SessionAddModel model)
+    public async Task<bool> StartNewSession(SessionAddModel model)
     {
 
         int? lastSessionId = await GetLastSessionId(model.UserId);
@@ -317,7 +317,7 @@ public class SessionRepository
         return true;
     }
 
-    public async ValueTask<bool> FinishCurrentSession(string userId)
+    public async Task<bool> FinishCurrentSession(string userId)
     {
         Session? entity = await GetAll()
             .Where(x => x.UserId == userId)
@@ -334,13 +334,13 @@ public class SessionRepository
         return true;
     }
 
-    public async ValueTask<bool> IsOwnerOf(int id, string userId)
+    public async Task<bool> IsOwnerOf(int id, string userId)
     {
         var model = await Get(id);
         return model is not null && model.UserId == userId;
     }
 
-    public async ValueTask<bool> Exists(int id)
+    public async Task<bool> Exists(int id)
     {
         return (await Get(id)) is not null;
     }

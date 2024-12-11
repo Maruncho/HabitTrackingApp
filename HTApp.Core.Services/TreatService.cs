@@ -18,7 +18,7 @@ public class TreatService : ITreatService
         changeStatusSubscribers = new();
     }
 
-    public async ValueTask<Response> Add(TreatInputModel model, string userId)
+    public async Task<Response> Add(TreatInputModel model, string userId)
     {
         if(model.Name.Length < TreatNameLengthMin || model.Name.Length > TreatNameLengthMax)
         {
@@ -56,7 +56,7 @@ public class TreatService : ITreatService
         return new Response(ResponseCode.Success, "Success");
     }
 
-    public async ValueTask<Response> Delete(int id, string userId)
+    public async Task<Response> Delete(int id, string userId)
     {
         bool exists = await repo.Exists(id);
         if(!exists)
@@ -88,17 +88,17 @@ public class TreatService : ITreatService
         return new Response(ResponseCode.Success, "Success");
     }
 
-    public async ValueTask<Response<TreatModel[]>> GetAll(string userId)
+    public async Task<Response<TreatModel[]>> GetAll(string userId)
     {
         return new Response<TreatModel[]>(ResponseCode.Success, "Success.", await repo.GetAll(userId));
     }
 
-    public async ValueTask<Response<Tuple<int, byte>[]>> GetAllIdAndUnitsLeftPairs(string userId)
+    public async Task<Response<Tuple<int, byte>[]>> GetAllIdAndUnitsLeftPairs(string userId)
     {
         return new Response<Tuple<int, byte>[]>(ResponseCode.Success, "Success.", await repo.GetAllIdAndQuantityPerSessionPairs(userId));
     }
 
-    public async ValueTask<Response<TreatInputModel>> GetInputModel(int id, string userId)
+    public async Task<Response<TreatInputModel>> GetInputModel(int id, string userId)
     {
         bool exists = await repo.Exists(id);
         if(!exists)
@@ -116,7 +116,7 @@ public class TreatService : ITreatService
 
         return new Response<TreatInputModel>(ResponseCode.Success, "Success", model);
     }
-    public async ValueTask<Response<TreatLogicModel>> GetLogicModel(int id, string userId)
+    public async Task<Response<TreatLogicModel>> GetLogicModel(int id, string userId)
     {
         bool exists = await repo.Exists(id);
         if(!exists)
@@ -135,7 +135,7 @@ public class TreatService : ITreatService
         return new Response<TreatLogicModel>(ResponseCode.Success, "Success", model);
     }
 
-    public async ValueTask<Response> Update(int id, TreatInputModel model, string userId)
+    public async Task<Response> Update(int id, TreatInputModel model, string userId)
     {
         if(model.Name.Length < TreatNameLengthMin || model.Name.Length > TreatNameLengthMax)
         {
@@ -212,12 +212,12 @@ public class TreatService : ITreatService
         changeStatusSubscribers.Remove(observer);
     }
 
-    public ValueTask<bool> Exists(int id)
+    public Task<bool> Exists(int id)
     {
         return repo.Exists(id);
     }
 
-    public ValueTask<bool> IsOwnerOf(int id, string userId)
+    public Task<bool> IsOwnerOf(int id, string userId)
     {
         return repo.IsOwnerOf(id, userId);
     }

@@ -106,7 +106,7 @@ public class TransactionRepository
             .ToArrayAsync();
     }
 
-    public ValueTask<bool> Add(TransactionInputModel model)
+    public Task<bool> Add(TransactionInputModel model)
     {
         Transaction entity = new Transaction
         {
@@ -117,15 +117,15 @@ public class TransactionRepository
         };
 
         Add(entity);
-        return ValueTask.FromResult(true);
+        return Task.FromResult(true);
     }
-    public async ValueTask<bool> IsOwnerOf(int id, string userId)
+    public async Task<bool> IsOwnerOf(int id, string userId)
     {
         var model = await Get(id);
         return model is not null && model.UserId == userId;
     }
 
-    public async ValueTask<bool> Exists(int id)
+    public async Task<bool> Exists(int id)
     {
         return (await Get(id)) is not null;
     }

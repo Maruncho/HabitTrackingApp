@@ -11,5 +11,5 @@ public interface IGoodHabitSubject
 
 public interface IGoodHabitObserver
 {
-    public ValueTask<Response> NotifyWhenStatusChange(bool isActive, string userId);
+    public Task<Response> NotifyWhenStatusChange(bool isActive, string userId);
 }

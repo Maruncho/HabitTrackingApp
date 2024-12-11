@@ -11,5 +11,5 @@ public interface ITreatSubject
 
 public interface ITreatObserver
 {
-    public ValueTask<Response> NotifyWhenStatusChange(string userId);
+    public Task<Response> NotifyWhenStatusChange(string userId);
 }

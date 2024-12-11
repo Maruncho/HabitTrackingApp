@@ -18,7 +18,7 @@ public class GoodHabitService : IGoodHabitService
         changeStatusSubscribers = new();
     }
 
-    public async ValueTask<Response> Add(GoodHabitInputModel model, string userId)
+    public async Task<Response> Add(GoodHabitInputModel model, string userId)
     {
         if(model.Name.Length < GoodHabitNameLengthMin || model.Name.Length > GoodHabitNameLengthMax)
         {
@@ -54,7 +54,7 @@ public class GoodHabitService : IGoodHabitService
         return new Response(ResponseCode.Success, "Success");
     }
 
-    public async ValueTask<Response> Delete(int id, string userId)
+    public async Task<Response> Delete(int id, string userId)
     {
         bool exists = await repo.Exists(id);
         if(!exists)
@@ -85,17 +85,17 @@ public class GoodHabitService : IGoodHabitService
         return new Response(ResponseCode.Success, "Success");
     }
 
-    public async ValueTask<Response<GoodHabitModel[]>> GetAll(string userId)
+    public async Task<Response<GoodHabitModel[]>> GetAll(string userId)
     {
         return new Response<GoodHabitModel[]>(ResponseCode.Success, "Success.", await repo.GetAll(userId));
     }
 
-    public async ValueTask<Response<int[]>> GetAllIds(string userId, bool onlyActive = false)
+    public async Task<Response<int[]>> GetAllIds(string userId, bool onlyActive = false)
     {
         return new Response<int[]>(ResponseCode.Success, "Success.", await repo.GetAllIds(userId, onlyActive));
     }
 
-    public async ValueTask<Response<GoodHabitInputModel>> GetInputModel(int id, string userId)
+    public async Task<Response<GoodHabitInputModel>> GetInputModel(int id, string userId)
     {
         bool exists = await repo.Exists(id);
         if(!exists)
@@ -114,7 +114,7 @@ public class GoodHabitService : IGoodHabitService
         return new Response<GoodHabitInputModel>(ResponseCode.Success, "Success", model);
     }
 
-    public async ValueTask<Response<GoodHabitLogicModel>> GetLogicModel(int id, string userId)
+    public async Task<Response<GoodHabitLogicModel>> GetLogicModel(int id, string userId)
     {
 
         bool exists = await repo.Exists(id);
@@ -135,7 +135,7 @@ public class GoodHabitService : IGoodHabitService
     }
 
 
-    public async ValueTask<Response> Update(int id, GoodHabitInputModel model, string userId)
+    public async Task<Response> Update(int id, GoodHabitInputModel model, string userId)
     {
         if(model.Name.Length < GoodHabitNameLengthMin || model.Name.Length > GoodHabitNameLengthMax)
         {
@@ -212,12 +212,12 @@ public class GoodHabitService : IGoodHabitService
         changeStatusSubscribers.Remove(observer);
     }
 
-    public ValueTask<bool> Exists(int id)
+    public Task<bool> Exists(int id)
     {
         return repo.Exists(id);
     }
 
-    public ValueTask<bool> IsOwnerOf(int id, string userId)
+    public Task<bool> IsOwnerOf(int id, string userId)
     {
         return repo.IsOwnerOf(id, userId);
     }

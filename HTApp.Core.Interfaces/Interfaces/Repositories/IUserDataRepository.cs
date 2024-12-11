@@ -8,6 +8,6 @@ public interface IUserDataRepository
     public Task<int> GetCredits(string userId);
     public Task<byte> GetRefundsPerSession(string userId);
 
-    public ValueTask SetCredits(string userId, int newValue);
-    public ValueTask SetRefundsPerSession(string userId, byte newValue);
+    public Task SetCredits(string userId, int newValue);
+    public Task SetRefundsPerSession(string userId, byte newValue);
 }

@@ -45,7 +45,7 @@ public class SessionService : ISessionService
         trService.UnsubscribeToStatusChange(this);
     }
 
-    public async ValueTask<Response<SessionModel>> GetLastSession(string userId, bool isNotFinished)
+    public async Task<Response<SessionModel>> GetLastSession(string userId, bool isNotFinished)
     {
         SessionModel? model = await repo.GetLastSession(userId, isNotFinished);
 
@@ -57,7 +57,7 @@ public class SessionService : ISessionService
         return new Response<SessionModel>(ResponseCode.Success, "Success.", model);
     }
 
-    public async ValueTask<ResponseStruct<int>> GetLastSessionId(string userId, bool mustNotBeFinished)
+    public async Task<ResponseStruct<int>> GetLastSessionId(string userId, bool mustNotBeFinished)
     {
         int? id = null;
         if(mustNotBeFinished)
@@ -219,7 +219,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public async ValueTask<Response> BuyTreat(int id, string userId)
+    public async Task<Response> BuyTreat(int id, string userId)
     {
         //Don't allow to change if not in progress
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -284,7 +284,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public async ValueTask<Response> RefundTreat(int id, string userId)
+    public async Task<Response> RefundTreat(int id, string userId)
     {
         //Don't allow to change if not in progress
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -347,7 +347,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public async ValueTask<Response> StartNewSession(string userId)
+    public async Task<Response> StartNewSession(string userId)
     {
         //Don't allow if already in session
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -384,7 +384,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public async ValueTask<Response> FinishCurrentSession(string userId)
+    public async Task<Response> FinishCurrentSession(string userId)
     {
         //Don't allow to change if not in progress
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -441,7 +441,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public async ValueTask<Response> RefreshIfDataIsNotInSync(string userId)
+    public async Task<Response> RefreshIfDataIsNotInSync(string userId)
     {
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
         if(lastSession is null || lastSession.IsFinished)
@@ -462,7 +462,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Tried to refresh.");
     }
 
-    async ValueTask<Response> IGoodHabitObserver.NotifyWhenStatusChange(bool isActive, string userId)
+    async Task<Response> IGoodHabitObserver.NotifyWhenStatusChange(bool isActive, string userId)
     {
         //Don't allow to change if not in progress
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -472,7 +472,7 @@ public class SessionService : ISessionService
         }
         return await ghWhenChange(isActive, userId);
     }
-    private async ValueTask<Response> ghWhenChange(bool isActive, string userId)
+    private async Task<Response> ghWhenChange(bool isActive, string userId)
     {
         if(!isActive)
         {
@@ -490,7 +490,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    async ValueTask<Response> IBadHabitObserver.NotifyWhenStatusChange(string userId)
+    async Task<Response> IBadHabitObserver.NotifyWhenStatusChange(string userId)
     {
         //Don't allow to change if not in progress
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -500,7 +500,7 @@ public class SessionService : ISessionService
         }
         return await bhWhenChange(userId);
     }
-    private async ValueTask<Response> bhWhenChange(string userId)
+    private async Task<Response> bhWhenChange(string userId)
     {
         int[] ids = (await bhService.GetAllIds(userId)).Payload!;
 
@@ -514,7 +514,7 @@ public class SessionService : ISessionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    async ValueTask<Response> ITreatObserver.NotifyWhenStatusChange(string userId)
+    async Task<Response> ITreatObserver.NotifyWhenStatusChange(string userId)
     {
         //Don't allow to change if not in progress
         SessionIsFinishedModel? lastSession = await repo.GetIsLastSessionFinished(userId);
@@ -524,7 +524,7 @@ public class SessionService : ISessionService
         }
         return await trWHenChange(userId);
     }
-    private async ValueTask<Response> trWHenChange(string userId)
+    private async Task<Response> trWHenChange(string userId)
     {
         var pairs = (await trService.GetAllIdAndUnitsLeftPairs(userId)).Payload!;
 

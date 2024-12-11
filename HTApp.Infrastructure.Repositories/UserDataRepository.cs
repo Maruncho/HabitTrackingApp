@@ -40,13 +40,13 @@ public class UserDataRepository : IUserDataRepository
             .FirstAsync();
     }
 
-    public async ValueTask SetCredits(string userId, int newValue)
+    public async Task SetCredits(string userId, int newValue)
     {
         var user = await db.AppUsers.FindAsync(userId);
         user!.Credits = newValue;
     }
 
-    public async ValueTask SetRefundsPerSession(string userId, byte newValue)
+    public async Task SetRefundsPerSession(string userId, byte newValue)
     {
         var user = await db.AppUsers.FindAsync(userId);
         user!.RefundsPerSession = newValue;

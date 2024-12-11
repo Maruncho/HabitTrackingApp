@@ -32,21 +32,21 @@ public class TreatServiceTest
 
         treatRepository = new Mock<ITreatRepository>();
         treatRepository.Setup(x => x.Exists(It.IsAny<int>()))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
         treatRepository.Setup(x => x.Exists(NOT_FOUND))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         treatRepository.Setup(x => x.IsOwnerOf(It.IsAny<int>(), It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
         treatRepository.Setup(x => x.IsOwnerOf(It.IsAny<int>(), OWNERSHIP))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
 
         treatService = new TreatService(treatRepository.Object, unitOfWork.Object);
 
         observer = new Mock<ITreatObserver>();
         observer.Setup(x => x.NotifyWhenStatusChange(It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response(ResponseCode.Success, "")));
+            .Returns(Task.FromResult(new Response(ResponseCode.Success, "")));
         observer.Setup(x => x.NotifyWhenStatusChange(OBSERVER))
-            .Returns(ValueTask.FromResult(new Response(ResponseCode.RepositoryError, "")));
+            .Returns(Task.FromResult(new Response(ResponseCode.RepositoryError, "")));
         treatService.SubscribeToStatusChange(observer.Object);
 
     }
@@ -88,22 +88,22 @@ public class TreatServiceTest
         };
 
         //happy
-        treatRepository.Setup(x => x.Add(model)).Returns(ValueTask.FromResult(true));
+        treatRepository.Setup(x => x.Add(model)).Returns(Task.FromResult(true));
         var res = await treatService.Add(model, userId);
         Assert.That(res.Code, Is.EqualTo(ResponseCode.Success));
 
         //still happy
-        treatRepository.Setup(x => x.Add(model)).Returns(ValueTask.FromResult(true));
+        treatRepository.Setup(x => x.Add(model)).Returns(Task.FromResult(true));
         res = await treatService.Add(model, OBSERVER);
         Assert.That(res.Code, Is.EqualTo(ResponseCode.Success));
 
         //can't add
-        treatRepository.Setup(x => x.Add(model)).Returns(ValueTask.FromResult(false));
+        treatRepository.Setup(x => x.Add(model)).Returns(Task.FromResult(false));
         res = await treatService.Add(model, userId);
         Assert.That(res.Code, Is.EqualTo(ResponseCode.RepositoryError));
 
         //Invalid Name (hopefully)
-        treatRepository.Setup(x => x.Add(model)).Returns(ValueTask.FromResult(true));
+        treatRepository.Setup(x => x.Add(model)).Returns(Task.FromResult(true));
         model.Name = "";
         res = await treatService.Add(model, userId);
         Assert.That(res.Code, Is.EqualTo(ResponseCode.InvalidField));
@@ -113,9 +113,9 @@ public class TreatServiceTest
     public async Task DeleteTest()
     {
         treatRepository.Setup(x => x.Delete(CANT_DELETE))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         treatRepository.Setup(x => x.Delete(SUCCESS))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
 
         //happy
         var res = await treatService.Delete(SUCCESS, NEUTRAL);
@@ -151,9 +151,9 @@ public class TreatServiceTest
         };
 
         treatRepository.Setup(x => x.Update(CANT_UPDATE, model))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         treatRepository.Setup(x => x.Update(SUCCESS, model))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
 
         //happy
         var res = await treatService.Update(SUCCESS, model, NEUTRAL);

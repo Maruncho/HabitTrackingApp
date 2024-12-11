@@ -60,7 +60,7 @@ public class GoodHabitRepository
         return model;
     }
 
-    public async ValueTask<GoodHabitInputModel?> GetInputModel(int id)
+    public async Task<GoodHabitInputModel?> GetInputModel(int id)
     {
         GoodHabit? entity = await Get(id);
 
@@ -81,7 +81,7 @@ public class GoodHabitRepository
         return model;
     }
 
-    public ValueTask<bool> Add(GoodHabitInputModel model)
+    public Task<bool> Add(GoodHabitInputModel model)
     {
         GoodHabit entity = new GoodHabit
         {
@@ -94,10 +94,10 @@ public class GoodHabitRepository
         };
 
         Add(entity);
-        return ValueTask.FromResult(true);
+        return Task.FromResult(true);
     }
 
-    public async ValueTask<bool> Update(int id, GoodHabitInputModel model)
+    public async Task<bool> Update(int id, GoodHabitInputModel model)
     {
         GoodHabit? entity = await Get(id);
 
@@ -116,7 +116,7 @@ public class GoodHabitRepository
         return true;
     }
 
-    public async ValueTask<bool> Delete(int id)
+    public async Task<bool> Delete(int id)
     {
         GoodHabit? entity = await Get(id);
 
@@ -128,13 +128,13 @@ public class GoodHabitRepository
         Delete(entity);
         return true;
     }
-    public async ValueTask<bool> IsOwnerOf(int id, string userId)
+    public async Task<bool> IsOwnerOf(int id, string userId)
     {
         var model = await Get(id);
         return model is not null && model.UserId == userId;
     }
 
-    public async ValueTask<bool> Exists(int id)
+    public async Task<bool> Exists(int id)
     {
         return (await Get(id)) is not null;
     }

@@ -12,7 +12,7 @@ public abstract class RepositoryImmutableBaseSoftDelete<Entity, EntityId>
     {
         this.db = db;
     }
-    protected async ValueTask<Entity?> Get(EntityId id)
+    protected async Task<Entity?> Get(EntityId id)
     {
         Entity? res = await db.FindAsync<Entity>(id);
         if (res is null) return null;

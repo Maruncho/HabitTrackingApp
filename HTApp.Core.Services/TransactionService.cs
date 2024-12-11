@@ -30,7 +30,7 @@ public class TransactionService : ITransactionService
         sessionService.UnsubscribeToMakeTransaction(this);
     }
 
-    public async ValueTask<Response<TransactionServiceResponse>> GetAll(string userId, int pageCount, int pageNumber, string filterTypeName = "", bool fromLastSession = false)
+    public async Task<Response<TransactionServiceResponse>> GetAll(string userId, int pageCount, int pageNumber, string filterTypeName = "", bool fromLastSession = false)
     {
         if(!transactionTypes.Contains(filterTypeName))
         {
@@ -75,17 +75,17 @@ public class TransactionService : ITransactionService
         return new Response<TransactionServiceResponse>(ResponseCode.Success, "Success.", response);
     }
 
-    public async ValueTask<Response<TransactionServiceResponse>> GetAllLatest(string userId, int pageCount, string filterTypeName = "", bool fromLastSession = false)
+    public async Task<Response<TransactionServiceResponse>> GetAllLatest(string userId, int pageCount, string filterTypeName = "", bool fromLastSession = false)
     {
         return await GetAll(userId, pageCount, int.MaxValue, filterTypeName, fromLastSession);
     }
 
-    //public async ValueTask<ResponseStruct<int>> GetCount(string userId)
+    //public async Task<ResponseStruct<int>> GetCount(string userId)
     //{
     //    return new ResponseStruct<int>(ResponseCode.Success, "Success.", await repo.GetCount(userId));
     //}
 
-    public async ValueTask<Response<string[]>> GetTypeNames(string userId, string filterTypeName = "", bool fromLastSession = false)
+    public async Task<Response<string[]>> GetTypeNames(string userId, string filterTypeName = "", bool fromLastSession = false)
     {
         if(!transactionTypes.Contains(filterTypeName))
         {
@@ -110,7 +110,7 @@ public class TransactionService : ITransactionService
         return new Response<string[]>(ResponseCode.Success, "Success.", await repo.GetUsedTypeNames(userId, filterTypeName, lastSessionId));
     }
 
-    public async ValueTask<Response> Add(TransactionInputModel model, string userId, bool saveChanges = true)
+    public async Task<Response> Add(TransactionInputModel model, string userId, bool saveChanges = true)
     {
         if(model.Amount < TransactionAmountMin || model.Amount > TransactionAmountMax)
         {
@@ -151,7 +151,7 @@ public class TransactionService : ITransactionService
         return new Response(ResponseCode.Success, "Success.");
     }
 
-    public async ValueTask<Response> AddManual(int amount, string userId)
+    public async Task<Response> AddManual(int amount, string userId)
     {
         //Get current session Id if any
         int? lastSessionId = null;
@@ -178,7 +178,7 @@ public class TransactionService : ITransactionService
         return await Add(model, userId);
     }
 
-    public ValueTask<Response> NotifyWhenMakeTransaction(MakeTransactionInfo info)
+    public Task<Response> NotifyWhenMakeTransaction(MakeTransactionInfo info)
     {
         TransactionInputModel model = new TransactionInputModel
         {

@@ -11,5 +11,5 @@ public interface ISessionSubject
 
 public interface ISessionObserver
 {
-    public ValueTask<Response> NotifyWhenMakeTransaction(MakeTransactionInfo info);
+    public Task<Response> NotifyWhenMakeTransaction(MakeTransactionInfo info);
 }

@@ -17,17 +17,17 @@ public class UserDataService : IUserDataService
         this.unitOfWork = unitOfWork;
     }
 
-    public async ValueTask<Response<UserDataDump>> GetUserData(string userId)
+    public async Task<Response<UserDataDump>> GetUserData(string userId)
     {
         return new Response<UserDataDump>(ResponseCode.Success, "Success.", await repo.GetEverything(userId));
     }
 
-    public async ValueTask<ResponseStruct<int>> GetCredits(string userId)
+    public async Task<ResponseStruct<int>> GetCredits(string userId)
     {
         return new ResponseStruct<int>(ResponseCode.Success, "Success.", await repo.GetCredits(userId));
     }
 
-    public async ValueTask<Response<AppendCreditsResponse>> AppendCredits(int credits, string userId, bool saveChanges = true)
+    public async Task<Response<AppendCreditsResponse>> AppendCredits(int credits, string userId, bool saveChanges = true)
     {
         int oldCredits;
         //so we can track multiple appends before SaveChanges()
@@ -59,12 +59,12 @@ public class UserDataService : IUserDataService
         return new Response<AppendCreditsResponse>(ResponseCode.Success, "Success", new AppendCreditsResponse { NewAmount = newCredits, Diff = diff, Capped = capped});
     }
 
-    public async ValueTask<ResponseStruct<byte>> GetRefundsPerSession(string userId)
+    public async Task<ResponseStruct<byte>> GetRefundsPerSession(string userId)
     {
         return new ResponseStruct<byte>(ResponseCode.Success, "Success.", await repo.GetRefundsPerSession(userId));
     }
 
-    public async ValueTask<Response> SetRefundsPerSession(byte newRefunds, string userId)
+    public async Task<Response> SetRefundsPerSession(byte newRefunds, string userId)
     {
         if(newRefunds < UserDataRefundsMin || newRefunds > UserDataRefundsMax)
         {

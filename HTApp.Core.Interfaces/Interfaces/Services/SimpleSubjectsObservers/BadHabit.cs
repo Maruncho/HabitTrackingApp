@@ -11,5 +11,5 @@ public interface IBadHabitSubject
 
 public interface IBadHabitObserver
 {
-    public ValueTask<Response> NotifyWhenStatusChange(string userId);
+    public Task<Response> NotifyWhenStatusChange(string userId);
 }

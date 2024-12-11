@@ -53,7 +53,7 @@ public class TreatRepository
         return model;
     }
 
-    public async ValueTask<TreatInputModel?> GetInputModel(int id)
+    public async Task<TreatInputModel?> GetInputModel(int id)
     {
         Treat? entity = await Get(id);
 
@@ -73,7 +73,7 @@ public class TreatRepository
         return model;
     }
 
-    public ValueTask<bool> Add(TreatInputModel model)
+    public Task<bool> Add(TreatInputModel model)
     {
         Treat entity = new Treat
         {
@@ -85,10 +85,10 @@ public class TreatRepository
         };
 
         Add(entity);
-        return ValueTask.FromResult(true);
+        return Task.FromResult(true);
     }
 
-    public async ValueTask<bool> Update(int id, TreatInputModel model)
+    public async Task<bool> Update(int id, TreatInputModel model)
     {
         Treat? entity = await Get(id);
 
@@ -105,7 +105,7 @@ public class TreatRepository
         return true;
     }
 
-    public async ValueTask<bool> Delete(int id)
+    public async Task<bool> Delete(int id)
     {
         Treat? entity = await Get(id);
 
@@ -118,13 +118,13 @@ public class TreatRepository
         return true;
     }
 
-    public async ValueTask<bool> IsOwnerOf(int id, string userId)
+    public async Task<bool> IsOwnerOf(int id, string userId)
     {
         var model = await Get(id);
         return model is not null && model.UserId == userId;
     }
 
-    public async ValueTask<bool> Exists(int id)
+    public async Task<bool> Exists(int id)
     {
         return (await Get(id)) is not null;
     }

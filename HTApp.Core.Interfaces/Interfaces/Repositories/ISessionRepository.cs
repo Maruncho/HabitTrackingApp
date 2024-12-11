@@ -29,6 +29,6 @@ public interface ISessionRepository : _PredicatesExtra<int>
     public Task<bool> DecrementTreat(int id, string userId);
     public Task<bool> IncrementTreat(int id, string userId);
 
-    public ValueTask<bool> StartNewSession(SessionAddModel model);
-    public ValueTask<bool> FinishCurrentSession(string userId);
+    public Task<bool> StartNewSession(SessionAddModel model);
+    public Task<bool> FinishCurrentSession(string userId);
 }

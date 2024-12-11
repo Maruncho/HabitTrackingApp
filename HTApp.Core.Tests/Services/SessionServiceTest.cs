@@ -62,27 +62,27 @@ public class SessionServiceTest
 
         sessionRepository = new Mock<ISessionRepository>();
         sessionRepository.Setup(x => x.Exists(It.IsAny<int>()))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
         sessionRepository.Setup(x => x.Exists(NOT_FOUND))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         sessionRepository.Setup(x => x.IsOwnerOf(It.IsAny<int>(), It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
         sessionRepository.Setup(x => x.IsOwnerOf(It.IsAny<int>(), OWNERSHIP))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         sessionRepository.Setup(x => x.GetIsLastSessionFinished(It.IsAny<string>()))
             .Returns(Task.FromResult<SessionIsFinishedModel?>(new SessionIsFinishedModel { Id = 1, IsFinished = false }));
         sessionRepository.Setup(x => x.GetIsLastSessionFinished(FINISHED))
             .Returns(Task.FromResult<SessionIsFinishedModel?>(new SessionIsFinishedModel { Id = 1, IsFinished = true }));
         sessionRepository.Setup(x => x.StartNewSession(It.IsAny<SessionAddModel>()))
-            .Returns((SessionAddModel model) => ValueTask.FromResult(model.UserId == CANT_START ? false : true));
+            .Returns((SessionAddModel model) => Task.FromResult(model.UserId == CANT_START ? false : true));
         sessionRepository.Setup(x => x.GetGoodHabitsFailed(It.IsAny<string>()))
             .Returns(Task.FromResult<SessionHabitCreditsModel[]?>([new SessionHabitCreditsModel { Id = 1, Credits = 100 }]));
         sessionRepository.Setup(x => x.GetBadHabitsSuccess(It.IsAny<string>()))
             .Returns(Task.FromResult<SessionHabitCreditsModel[]?>([new SessionHabitCreditsModel { Id = 1, Credits = 100 }]));
         sessionRepository.Setup(x => x.FinishCurrentSession(It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
         sessionRepository.Setup(x => x.FinishCurrentSession(CANT_FINISH))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         sessionRepository.Setup(x => x.GetGoodHabitIds(It.IsAny<string>()))
             .Returns(Task.FromResult<int[]?>([GOOD_ID, GH_NOTACTIVE]));
         sessionRepository.Setup(x => x.GetGoodHabitIds(HAS_BAD_ID))
@@ -134,52 +134,52 @@ public class SessionServiceTest
 
         var userDataService = new Mock<IUserDataService>();
         userDataService.Setup(x => x.GetRefundsPerSession(It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new ResponseStruct<byte>(ResponseCode.Success, "", ApplicationInvariants.UserDataRefundsMax)));
+            .Returns(Task.FromResult(new ResponseStruct<byte>(ResponseCode.Success, "", ApplicationInvariants.UserDataRefundsMax)));
         userDataService.Setup(x => x.GetRefundsPerSession(NOREFUNDS))
-            .Returns(ValueTask.FromResult(new ResponseStruct<byte>(ResponseCode.Success, "", ApplicationInvariants.UserDataRefundsMin)));
+            .Returns(Task.FromResult(new ResponseStruct<byte>(ResponseCode.Success, "", ApplicationInvariants.UserDataRefundsMin)));
         userDataService.Setup(x => x.GetCredits(It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new ResponseStruct<int>(ResponseCode.Success, "", ApplicationInvariants.UserDataCreditsMax)));
+            .Returns(Task.FromResult(new ResponseStruct<int>(ResponseCode.Success, "", ApplicationInvariants.UserDataCreditsMax)));
         userDataService.Setup(x => x.GetCredits(NOCREDITS))
-            .Returns(ValueTask.FromResult(new ResponseStruct<int>(ResponseCode.Success, "", ApplicationInvariants.UserDataCreditsMin)));
+            .Returns(Task.FromResult(new ResponseStruct<int>(ResponseCode.Success, "", ApplicationInvariants.UserDataCreditsMin)));
 
         goodHabitService = new Mock<IGoodHabitService>();
         goodHabitService.Setup(x => x.GetLogicModel(It.IsAny<int>(), It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response<GoodHabitLogicModel>(ResponseCode.Success, "", new GoodHabitLogicModel { Id = 1, IsActive = true })));
+            .Returns(Task.FromResult(new Response<GoodHabitLogicModel>(ResponseCode.Success, "", new GoodHabitLogicModel { Id = 1, IsActive = true })));
         goodHabitService.Setup(x => x.GetLogicModel(It.IsAny<int>(), OWNERSHIP))
-            .Returns(ValueTask.FromResult(new Response<GoodHabitLogicModel>(ResponseCode.Unauthorized, "")));
+            .Returns(Task.FromResult(new Response<GoodHabitLogicModel>(ResponseCode.Unauthorized, "")));
         goodHabitService.Setup(x => x.GetLogicModel(It.IsAny<int>(), NOTFOUND))
-            .Returns(ValueTask.FromResult(new Response<GoodHabitLogicModel>(ResponseCode.NotFound, "")));
+            .Returns(Task.FromResult(new Response<GoodHabitLogicModel>(ResponseCode.NotFound, "")));
         goodHabitService.Setup(x => x.GetLogicModel(GH_NOTACTIVE, It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response<GoodHabitLogicModel>(ResponseCode.Success, "", new GoodHabitLogicModel { Id = 1, IsActive = false })));
+            .Returns(Task.FromResult(new Response<GoodHabitLogicModel>(ResponseCode.Success, "", new GoodHabitLogicModel { Id = 1, IsActive = false })));
         goodHabitService.Setup(x => x.GetAllIds(It.IsAny<string>(), It.IsAny<bool>()))
-            .Returns(ValueTask.FromResult(new Response<int[]>(ResponseCode.Success, "")));
+            .Returns(Task.FromResult(new Response<int[]>(ResponseCode.Success, "")));
 
         badHabitService = new Mock<IBadHabitService>();
         badHabitService.Setup(x => x.GetLogicModel(It.IsAny<int>(), It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response<BadHabitLogicModel>(ResponseCode.Success, "", new BadHabitLogicModel { Id = 1})));
+            .Returns(Task.FromResult(new Response<BadHabitLogicModel>(ResponseCode.Success, "", new BadHabitLogicModel { Id = 1})));
         badHabitService.Setup(x => x.GetLogicModel(It.IsAny<int>(), OWNERSHIP))
-            .Returns(ValueTask.FromResult(new Response<BadHabitLogicModel>(ResponseCode.Unauthorized, "")));
+            .Returns(Task.FromResult(new Response<BadHabitLogicModel>(ResponseCode.Unauthorized, "")));
         badHabitService.Setup(x => x.GetLogicModel(It.IsAny<int>(), NOTFOUND))
-            .Returns(ValueTask.FromResult(new Response<BadHabitLogicModel>(ResponseCode.NotFound, "")));
+            .Returns(Task.FromResult(new Response<BadHabitLogicModel>(ResponseCode.NotFound, "")));
         badHabitService.Setup(x => x.GetAllIds(It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response<int[]>(ResponseCode.Success, "")));
+            .Returns(Task.FromResult(new Response<int[]>(ResponseCode.Success, "")));
 
         treatService = new Mock<ITreatService>();
         treatService.Setup(x => x.GetLogicModel(It.IsAny<int>(), It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response<TreatLogicModel>(ResponseCode.Success, "", new TreatLogicModel { Id = 1, Price = 100, UnitsPerSession = ApplicationInvariants.TreatQuantityPerSessionMax})));
+            .Returns(Task.FromResult(new Response<TreatLogicModel>(ResponseCode.Success, "", new TreatLogicModel { Id = 1, Price = 100, UnitsPerSession = ApplicationInvariants.TreatQuantityPerSessionMax})));
         treatService.Setup(x => x.GetLogicModel(It.IsAny<int>(), OWNERSHIP))
-            .Returns(ValueTask.FromResult(new Response<TreatLogicModel>(ResponseCode.Unauthorized, "")));
+            .Returns(Task.FromResult(new Response<TreatLogicModel>(ResponseCode.Unauthorized, "")));
         treatService.Setup(x => x.GetLogicModel(It.IsAny<int>(), NOTFOUND))
-            .Returns(ValueTask.FromResult(new Response<TreatLogicModel>(ResponseCode.NotFound, "")));
+            .Returns(Task.FromResult(new Response<TreatLogicModel>(ResponseCode.NotFound, "")));
         treatService.Setup(x => x.GetAllIdAndUnitsLeftPairs(It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response<Tuple<int,byte>[]>(ResponseCode.Success, "")));
+            .Returns(Task.FromResult(new Response<Tuple<int,byte>[]>(ResponseCode.Success, "")));
 
         sessionService = new SessionService(sessionRepository.Object, unitOfWork.Object, userDataService.Object,
             goodHabitService.Object, badHabitService.Object, treatService.Object);
 
         observer = new Mock<ISessionObserver>();
         observer.Setup(x => x.NotifyWhenMakeTransaction(It.IsAny<MakeTransactionInfo>()))
-            .Returns((MakeTransactionInfo info) => ValueTask.FromResult(info.UserId == TRANSACTION_FAIL ? new Response(ResponseCode.RepositoryError, "") : new Response(ResponseCode.Success, "")));
+            .Returns((MakeTransactionInfo info) => Task.FromResult(info.UserId == TRANSACTION_FAIL ? new Response(ResponseCode.RepositoryError, "") : new Response(ResponseCode.Success, "")));
         sessionService.SubscribeToMakeTransaction(observer.Object);
 
     }
@@ -377,13 +377,13 @@ public class SessionServiceTest
     {
         const string MAXUNITS = "MaxUnits";
         treatService.Setup(x => x.GetLogicModel(It.IsAny<int>(), It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response<TreatLogicModel>(ResponseCode.Success, "", new TreatLogicModel { Id = 1, Price = 100, UnitsPerSession = ApplicationInvariants.TreatQuantityPerSessionMin})));
+            .Returns(Task.FromResult(new Response<TreatLogicModel>(ResponseCode.Success, "", new TreatLogicModel { Id = 1, Price = 100, UnitsPerSession = ApplicationInvariants.TreatQuantityPerSessionMin})));
         treatService.Setup(x => x.GetLogicModel(It.IsAny<int>(), MAXUNITS))
-            .Returns(ValueTask.FromResult(new Response<TreatLogicModel>(ResponseCode.Success, "", new TreatLogicModel { Id = 1, Price = 100, UnitsPerSession = ApplicationInvariants.TreatQuantityPerSessionMax})));
+            .Returns(Task.FromResult(new Response<TreatLogicModel>(ResponseCode.Success, "", new TreatLogicModel { Id = 1, Price = 100, UnitsPerSession = ApplicationInvariants.TreatQuantityPerSessionMax})));
         treatService.Setup(x => x.GetLogicModel(It.IsAny<int>(), OWNERSHIP))
-            .Returns(ValueTask.FromResult(new Response<TreatLogicModel>(ResponseCode.Unauthorized, "")));
+            .Returns(Task.FromResult(new Response<TreatLogicModel>(ResponseCode.Unauthorized, "")));
         treatService.Setup(x => x.GetLogicModel(It.IsAny<int>(), NOTFOUND))
-            .Returns(ValueTask.FromResult(new Response<TreatLogicModel>(ResponseCode.NotFound, "")));
+            .Returns(Task.FromResult(new Response<TreatLogicModel>(ResponseCode.NotFound, "")));
 
         //happy
         var res = await sessionService.RefundTreat(GOOD_ID, NEUTRAL);
@@ -424,56 +424,56 @@ public class SessionServiceTest
         Assert.That(res.Code, Is.EqualTo(ResponseCode.RepositoryError));
     }
 
-    [Test]
-    public async Task GetsTest()
-    {
-        ////Test Exists
-        //Assert.True(await sessionService.Exists(SUCCESS));
-        //Assert.False(await sessionService.Exists(NOT_FOUND));
+    //[Test]
+    //public async Task GetsTest()
+    //{
+    //    ////Test Exists
+    //    //Assert.True(await sessionService.Exists(SUCCESS));
+    //    //Assert.False(await sessionService.Exists(NOT_FOUND));
 
-        ////Test IsOwnerOf
-        //Assert.True(await sessionService.IsOwnerOf(SUCCESS, NEUTRAL));
-        //Assert.False(await sessionService.IsOwnerOf(SUCCESS, OWNERSHIP));
-
-
-        ////////// Test GetAll and GetAllIds ////////
-
-        ////GetAll
-        //var r1 = await sessionService.GetAll(NEUTRAL);
-        //Assert.That(r1.Code, Is.EqualTo(ResponseCode.Success));
-
-        ////GetAllIds
-        //var r2 = await sessionService.GetAllIds(NEUTRAL);
-        //Assert.That(r1.Code, Is.EqualTo(ResponseCode.Success));
+    //    ////Test IsOwnerOf
+    //    //Assert.True(await sessionService.IsOwnerOf(SUCCESS, NEUTRAL));
+    //    //Assert.False(await sessionService.IsOwnerOf(SUCCESS, OWNERSHIP));
 
 
-        ////////// Test GetInputModel ////////
+    //    ////////// Test GetAll and GetAllIds ////////
 
-        ////Success
-        //var r3 = await sessionService.GetInputModel(SUCCESS, NEUTRAL);
-        //Assert.That(r3.Code, Is.EqualTo(ResponseCode.Success));
+    //    ////GetAll
+    //    //var r1 = await sessionService.GetAll(NEUTRAL);
+    //    //Assert.That(r1.Code, Is.EqualTo(ResponseCode.Success));
 
-        ////not exists
-        //r3 = await sessionService.GetInputModel(NOT_FOUND, NEUTRAL);
-        //Assert.That(r3.Code, Is.EqualTo(ResponseCode.NotFound));
-
-        ////not exists
-        //r3 = await sessionService.GetInputModel(SUCCESS, OWNERSHIP);
-        //Assert.That(r3.Code, Is.EqualTo(ResponseCode.Unauthorized));
+    //    ////GetAllIds
+    //    //var r2 = await sessionService.GetAllIds(NEUTRAL);
+    //    //Assert.That(r1.Code, Is.EqualTo(ResponseCode.Success));
 
 
-        ////////// Test GetLogicModel ////////
+    //    ////////// Test GetInputModel ////////
 
-        ////Success
-        //var r4 = await sessionService.GetLogicModel(SUCCESS, NEUTRAL);
-        //Assert.That(r4.Code, Is.EqualTo(ResponseCode.Success));
+    //    ////Success
+    //    //var r3 = await sessionService.GetInputModel(SUCCESS, NEUTRAL);
+    //    //Assert.That(r3.Code, Is.EqualTo(ResponseCode.Success));
 
-        ////not exists
-        //r4 = await sessionService.GetLogicModel(NOT_FOUND, NEUTRAL);
-        //Assert.That(r4.Code, Is.EqualTo(ResponseCode.NotFound));
+    //    ////not exists
+    //    //r3 = await sessionService.GetInputModel(NOT_FOUND, NEUTRAL);
+    //    //Assert.That(r3.Code, Is.EqualTo(ResponseCode.NotFound));
 
-        ////not exists
-        //r4 = await sessionService.GetLogicModel(SUCCESS, OWNERSHIP);
-        //Assert.That(r4.Code, Is.EqualTo(ResponseCode.Unauthorized));
-    }
+    //    ////not exists
+    //    //r3 = await sessionService.GetInputModel(SUCCESS, OWNERSHIP);
+    //    //Assert.That(r3.Code, Is.EqualTo(ResponseCode.Unauthorized));
+
+
+    //    ////////// Test GetLogicModel ////////
+
+    //    ////Success
+    //    //var r4 = await sessionService.GetLogicModel(SUCCESS, NEUTRAL);
+    //    //Assert.That(r4.Code, Is.EqualTo(ResponseCode.Success));
+
+    //    ////not exists
+    //    //r4 = await sessionService.GetLogicModel(NOT_FOUND, NEUTRAL);
+    //    //Assert.That(r4.Code, Is.EqualTo(ResponseCode.NotFound));
+
+    //    ////not exists
+    //    //r4 = await sessionService.GetLogicModel(SUCCESS, OWNERSHIP);
+    //    //Assert.That(r4.Code, Is.EqualTo(ResponseCode.Unauthorized));
+    //}
 }

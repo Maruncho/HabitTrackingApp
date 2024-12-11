@@ -32,21 +32,21 @@ public class BadHabitServiceTest
 
         badHabitRepository = new Mock<IBadHabitRepository>();
         badHabitRepository.Setup(x => x.Exists(It.IsAny<int>()))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
         badHabitRepository.Setup(x => x.Exists(NOT_FOUND))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         badHabitRepository.Setup(x => x.IsOwnerOf(It.IsAny<int>(), It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
         badHabitRepository.Setup(x => x.IsOwnerOf(It.IsAny<int>(), OWNERSHIP))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
 
         badHabitService = new BadHabitService(badHabitRepository.Object, unitOfWork.Object);
 
         observer = new Mock<IBadHabitObserver>();
         observer.Setup(x => x.NotifyWhenStatusChange(It.IsAny<string>()))
-            .Returns(ValueTask.FromResult(new Response(ResponseCode.Success, "")));
+            .Returns(Task.FromResult(new Response(ResponseCode.Success, "")));
         observer.Setup(x => x.NotifyWhenStatusChange(OBSERVER))
-            .Returns(ValueTask.FromResult(new Response(ResponseCode.RepositoryError, "")));
+            .Returns(Task.FromResult(new Response(ResponseCode.RepositoryError, "")));
         badHabitService.SubscribeToStatusChange(observer.Object);
 
     }
@@ -88,22 +88,22 @@ public class BadHabitServiceTest
         };
 
         //happy
-        badHabitRepository.Setup(x => x.Add(model)).Returns(ValueTask.FromResult(true));
+        badHabitRepository.Setup(x => x.Add(model)).Returns(Task.FromResult(true));
         var res = await badHabitService.Add(model, userId);
         Assert.That(res.Code, Is.EqualTo(ResponseCode.Success));
 
         //still happy
-        badHabitRepository.Setup(x => x.Add(model)).Returns(ValueTask.FromResult(true));
+        badHabitRepository.Setup(x => x.Add(model)).Returns(Task.FromResult(true));
         res = await badHabitService.Add(model, OBSERVER);
         Assert.That(res.Code, Is.EqualTo(ResponseCode.Success));
 
         //can't add
-        badHabitRepository.Setup(x => x.Add(model)).Returns(ValueTask.FromResult(false));
+        badHabitRepository.Setup(x => x.Add(model)).Returns(Task.FromResult(false));
         res = await badHabitService.Add(model, userId);
         Assert.That(res.Code, Is.EqualTo(ResponseCode.RepositoryError));
 
         //Invalid Name (hopefully)
-        badHabitRepository.Setup(x => x.Add(model)).Returns(ValueTask.FromResult(true));
+        badHabitRepository.Setup(x => x.Add(model)).Returns(Task.FromResult(true));
         model.Name = "";
         res = await badHabitService.Add(model, userId);
         Assert.That(res.Code, Is.EqualTo(ResponseCode.InvalidField));
@@ -113,9 +113,9 @@ public class BadHabitServiceTest
     public async Task DeleteTest()
     {
         badHabitRepository.Setup(x => x.Delete(CANT_DELETE))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         badHabitRepository.Setup(x => x.Delete(SUCCESS))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
 
         //happy
         var res = await badHabitService.Delete(SUCCESS, NEUTRAL);
@@ -151,9 +151,9 @@ public class BadHabitServiceTest
         };
 
         badHabitRepository.Setup(x => x.Update(CANT_UPDATE, model))
-            .Returns(ValueTask.FromResult(false));
+            .Returns(Task.FromResult(false));
         badHabitRepository.Setup(x => x.Update(SUCCESS, model))
-            .Returns(ValueTask.FromResult(true));
+            .Returns(Task.FromResult(true));
 
         //happy
         var res = await badHabitService.Update(SUCCESS, model, NEUTRAL);
